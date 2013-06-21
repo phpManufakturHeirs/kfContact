@@ -1,0 +1,40 @@
+{
+  "name":"Contact",
+  "guid":"B531B756-0202-4317-A40F-E18CA27B5A7B",
+  "category":"extension",
+  "group":"phpManufaktur",
+  "vendor":"phpManufaktur",
+  "type":"application",
+  "path":"\/extension\/phpmanufaktur\/phpManufaktur\/FacebookGallery",
+  "namespace": "phpManufaktur\\Contact",
+  "link":{
+    "about":"\/contact\/about"
+  },
+  "release": {
+    "number" : "0.10",
+    "date" : "2013-06-21"
+  },
+  "description": {
+    "en": {
+      "title":"Contact management for kitFramework",
+      "short": "Contact management for kitFramework",
+      "long": "Contact management database for general use in kitFramework",
+      "url": "https:\/\/kit2.phpmanufaktur.de"
+    }
+  },
+  "require": {
+    "framework": {
+      "release": "0.18"
+    }
+  },
+  "license":"MIT License",
+  "download": {
+    "availability":"public",
+    "agreement":"free",
+    "github":{
+      "organization":"phpManufaktur",
+      "repository":"kfContact"
+    },
+    "url":"https:\/\/github.com\/phpManufaktur\/kfContact"
+  }
+}
