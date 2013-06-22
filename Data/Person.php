@@ -43,7 +43,7 @@ class Person
         `person_id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `gender` ENUM('MALE','FEMALE') NOT NULL DEFAULT 'MALE',
-        `title_id` INT(11) NOT NULL DEFAULT '-1',
+        `title_short` VARCHAR(32) NOT NULL DEFAULT '',
         `first_name` VARCHAR(128) NOT NULL DEFAULT '',
         `middle_name` VARCHAR(128) NOT NULL DEFAULT '',
         `last_name` VARCHAR(128) NOT NULL DEFAULT '',
@@ -68,7 +68,7 @@ class Person
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_contact'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addDebug("Created table 'contact_person'", array('method' => __METHOD__, 'line' => __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
