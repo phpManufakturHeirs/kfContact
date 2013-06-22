@@ -42,10 +42,9 @@ class Communication
     CREATE TABLE IF NOT EXISTS `$table` (
         `communication_id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
-        `type` ENUM('PHONE','MOBILE','FAX','EMAIL','URL','NETWORK') NOT NULL DEFAULT 'EMAIL',
-        `network_id` INT(11) NOT NULL DEFAULT '-1',
-        `usage` ENUM('PRIVATE','BUSINESS','PRIMARY','SECONDARY') NOT NULL DEFAULT 'PRIVATE',
-        `address` VARCHAR(255) NOT NULL DEFAULT '',
+        `communication_type` VARCHAR(32) NOT NULL DEFAULT 'NONE',
+        `communication_usage` VARCHAR(32) NOT NULl DEFAULT 'NONE',
+        `value` TEXT NOT NULL,
         `status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `timestamp` TIMESTAMP,
         PRIMARY KEY (`communication_id`),
@@ -59,7 +58,7 @@ class Communication
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_contact'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addDebug("Created table 'contact_communication'", array('method' => __METHOD__, 'line' => __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
