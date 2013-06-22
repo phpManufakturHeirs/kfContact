@@ -1,0 +1,18 @@
+[
+    {
+      "short":"Dr.",
+      "long":"doctor"
+    },
+    {
+      "short":"Prof.",
+      "long":"professor"
+    },
+    {
+      "short":"Graf",
+      "long":"earl"
+    },
+    {
+      "short":"Baron",
+      "long":"baron"
+    }
+]
