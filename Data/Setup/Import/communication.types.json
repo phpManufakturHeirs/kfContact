@@ -1,0 +1,30 @@
+[
+  {
+    "type":"phone",
+    "description":"telephone"
+  },
+  {
+    "type":"fax",
+    "description":"telefax"
+  },
+  {
+    "type":"cell",
+    "description":"cell phone"
+  },
+  {
+    "type":"email",
+    "description":"type: email"
+  },
+  {
+    "type":"google+",
+    "description":"Social network: Google+"
+  },
+  {
+    "type":"facebook",
+    "description":"Social network: Facebook"
+  },
+  {
+    "type":"url",
+    "description":"uniform resource locator"
+  }
+]
