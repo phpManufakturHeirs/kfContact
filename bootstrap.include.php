@@ -10,7 +10,13 @@
  */
 
 use phpManufaktur\Basic\Control\kitCommand\Basic as kitCommand;
+use phpManufaktur\Contact\Data\Setup\Setup;
 
 // scan the /Locale directory and add all available languages
 $app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale');
 
+$app->get('/admin/contact/setup', function() use($app) {
+    $Setup = new Setup($app);
+    $Setup->exec();
+    return "Success!";
+});
