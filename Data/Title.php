@@ -13,7 +13,7 @@ namespace phpManufaktur\Contact\Data;
 
 use Silex\Application;
 
-class Network
+class Title
 {
 
     protected $app = null;
@@ -41,13 +41,10 @@ class Network
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `title_id` INT(11) NOT NULL AUTO_INCREMENT,
-        `identifier` VARCHAR(64) NOT NULL DEFAULT '',
-        `name` VARCHAR(128) NOT NULL DEFAULT '',
-        `description` TEXT NOT NULL,
-        `status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
-        `timestamp` TIMESTAMP,
+        `title_short` VARCHAR(32) NOT NULL DEFAULT '',
+        `title_long` VARCHAR(64) NOT NULL DEFAULT '',
         PRIMARY KEY (`title_id`),
-        UNIQUE (`identifier`)
+        UNIQUE (`title_short`)
         )
     COMMENT='The person title definition table'
     ENGINE=InnoDB
@@ -57,7 +54,31 @@ class Network
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_contact'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addDebug("Created table 'contact_title'", array('method' => __METHOD__, 'line' => __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function initTitleList()
+    {
+        try {
+            // get the number of titles in the list
+            $count = $this->app['db']->fetchColumn("SELECT COUNT(`title_id`) FROM `".self::$table_name."`");
+            if ($count < 1) {
+                // no entries!
+                $json_import = MANUFAKTUR_PATH.'/Contact/Data/Setup/Import/titles.json';
+                if (!file_exists($json_import)) {
+                    throw new \Exception("Can't read the title definition list: $json_import");
+                }
+                $titles = $this->app['utils']->readJSON($json_import);
+                foreach ($titles as $title) {
+                    $this->app['db']->insert(self::$table_name, array(
+                        'title_short' => $title['short'],
+                        'title_long' => $this->app['utils']->sanitizeText($title['long'])
+                    ));
+                }
+            }
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
