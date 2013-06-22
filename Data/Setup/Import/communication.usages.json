@@ -1,0 +1,26 @@
+[
+  {
+    "usage":"private",
+    "description":"usage: private"
+  },
+  {
+    "usage":"business",
+    "description":"usage: business"
+  },
+  {
+    "usage":"primary",
+    "description":"usage: primary"
+  },
+  {
+    "usage":"P.O. Box",
+    "description":"usage: P.O. Box"
+  },
+  {
+    "usage":"delivery",
+    "description":"usage: delivery"
+  },
+  {
+    "usage":"billing",
+    "description":"usage: billing"
+  }
+]
