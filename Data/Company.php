@@ -65,7 +65,7 @@ class Company
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_contact'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addDebug("Created table 'contact_company'", array('method' => __METHOD__, 'line' => __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
