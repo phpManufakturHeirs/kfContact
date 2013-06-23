@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Data;
+namespace phpManufaktur\Contact\Data\Contact;
 
 use Silex\Application;
 
@@ -31,7 +31,7 @@ class Person
     }
 
     /**
-     * Create the base list
+     * Create the PERSON table
      *
      * @throws \Exception
      */
@@ -43,9 +43,8 @@ class Person
         `person_id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `gender` ENUM('MALE','FEMALE') NOT NULL DEFAULT 'MALE',
-        `title_short` VARCHAR(32) NOT NULL DEFAULT '',
+        `title` VARCHAR(32) NOT NULL DEFAULT '',
         `first_name` VARCHAR(128) NOT NULL DEFAULT '',
-        `middle_name` VARCHAR(128) NOT NULL DEFAULT '',
         `last_name` VARCHAR(128) NOT NULL DEFAULT '',
         `nick_name` VARCHAR(128) NOT NULL DEFAULT '',
         `birthday` DATE NOT NULL DEFAULT '0000-00-00',
@@ -69,6 +68,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addDebug("Created table 'contact_person'", array('method' => __METHOD__, 'line' => __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Insert a new PERSON record
+     *
+     * @param array $data
+     * @param reference integer $person_id
+     * @throws \Exception
+     */
+    public function insert($data, &$person_id=null)
+    {
+        try {
+            $insert = array();
+            foreach ($data as $key => $value) {
+                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            $this->app['db']->insert(self::$table_name, $data);
+            $id = $this->app['db']->lastInsertId();
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Data;
+namespace phpManufaktur\Contact\Data\Contact;
 
 use Silex\Application;
 
@@ -31,7 +31,7 @@ class Title
     }
 
     /**
-     * Create the base list
+     * Create the TITLE table
      *
      * @throws \Exception
      */
@@ -41,10 +41,11 @@ class Title
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `title_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `title_identifier` VARCHAR(32) NOT NULL DEFAULT '',
         `title_short` VARCHAR(32) NOT NULL DEFAULT '',
         `title_long` VARCHAR(64) NOT NULL DEFAULT '',
         PRIMARY KEY (`title_id`),
-        UNIQUE (`title_short`)
+        UNIQUE (`title_identifier`)
         )
     COMMENT='The person title definition table'
     ENGINE=InnoDB
@@ -60,6 +61,11 @@ EOD;
         }
     }
 
+    /**
+     * Initialize the title list with the defaults from /titles.json
+     *
+     * @throws \Exception
+     */
     public function initTitleList()
     {
         try {
@@ -74,11 +80,34 @@ EOD;
                 $titles = $this->app['utils']->readJSON($json_import);
                 foreach ($titles as $title) {
                     $this->app['db']->insert(self::$table_name, array(
-                        'title_short' => $title['short'],
+                        'title_identifier' => $title['identifier'],
+                        'title_short' => $this->app['utils']->sanitizeText($title['short']),
                         'title_long' => $this->app['utils']->sanitizeText($title['long'])
                     ));
                 }
             }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Return a array with all titles, prepared for usage with TWIG
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getArrayForTwig()
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` ORDER BY `title_short` ASC";
+            $titles = $this->app['db']->fetchAll($SQL);
+            $result = array();
+            $result[''] = '';
+            foreach ($titles as $title) {
+                $result[$title['title_identifier']] = $this->app['utils']->unsanitizeText($title['title_short']);
+            }
+            return $result;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

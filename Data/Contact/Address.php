@@ -9,11 +9,11 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Data;
+namespace phpManufaktur\Contact\Data\Contact;
 
 use Silex\Application;
 
-class Company
+class Address
 {
 
     protected $app = null;
@@ -27,11 +27,11 @@ class Company
     public function __construct(Application $app)
     {
         $this->app = $app;
-        self::$table_name = FRAMEWORK_TABLE_PREFIX.'contact_company';
+        self::$table_name = FRAMEWORK_TABLE_PREFIX.'contact_address';
     }
 
     /**
-     * Create the base list
+     * Create the ADDRESS table
      *
      * @throws \Exception
      */
@@ -40,24 +40,23 @@ class Company
         $table = self::$table_name;
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-        `company_id` INT(11) NOT NULL AUTO_INCREMENT,
-        `contact_id` INT(11) NOT NULL DEFAULT '-1',
-        `name` VARCHAR(128) NOT NULL DEFAULT '',
-        `department` VARCHAR(128) NOT NULL DEFAULT '',
-        `additional` VARCHAR(128) NOT NULL DEFAULT '',
-        `additional_2` VARCHAR(128) NOT NULL DEFAULT '',
-        `additional_3` VARCHAR(128) NOT NULL DEFAULT '',
-        `primary_address_id` INT(11) NOT NULL DEFAULT '-1',
-        `primary_person_id` INT(11) NOT NULL DEFAULT '-1',
-        `primary_phone_id` INT(11) NOT NULL DEFAULT '-1',
-        `primary_email_id` INT(11) NOT NULL DEFAULT '-1',
-        `primary_note_id` INT(11) NOT NULL DEFAULT '-1',
+        `address_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `address_type` VARCHAR(32) NOT NULL DEFAULT 'OTHER',
+        `address_identifier` VARCHAR(64) NOT NULL DEFAULT '',
+        `address_description` TEXT NOT NULL,
+        `address_line_1` VARCHAR(128) NOT NULL DEFAULT '',
+        `address_line_2` VARCHAR(128) NOT NULL DEFAULT '',
+        `address_line_3` VARCHAR(128) NOT NULL DEFAULT '',
+        `zip_code` VARCHAR(32) NOT NULL DEFAULT '',
+        `city` VARCHAR(128) NOT NULL DEFAULT '',
+        `area` VARCHAR(128) NOT NULL DEFAULT '',
+        `state` VARCHAR(128) NOT NULL DEFAULT '',
+        `country_code` VARCHAR(8) NOT NULL DEFAULT '',
         `status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `timestamp` TIMESTAMP,
-        PRIMARY KEY (`company_id`),
-        INDEX (`contact_id`)
+        PRIMARY KEY (`address_id`)
         )
-    COMMENT='The main contact table'
+    COMMENT='The contact address table'
     ENGINE=InnoDB
     AUTO_INCREMENT=1
     DEFAULT CHARSET=utf8
@@ -65,7 +64,7 @@ class Company
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_company'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addDebug("Created table 'contact_address'", array('method' => __METHOD__, 'line' => __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

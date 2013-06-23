@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Data;
+namespace phpManufaktur\Contact\Data\Contact;
 
 use Silex\Application;
 
@@ -31,7 +31,7 @@ class Country
     }
 
     /**
-     * Create the base list
+     * Create the COUNTRY table
      *
      * @throws \Exception
      */
@@ -60,6 +60,11 @@ EOD;
         }
     }
 
+    /**
+     * Initialize the communication usage list with the defaults from /countries.json
+     *
+     * @throws \Exception
+     */
     public function initCountryList()
     {
         try {
@@ -79,6 +84,28 @@ EOD;
                     ));
                 }
             }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Return a array with all countries, prepared for usage with TWIG
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getArrayForTwig()
+    {
+        try {
+            $SQL = "SELECT `country_code`, `country_name` FROM `".self::$table_name."` ORDER BY `country_name` ASC";
+            $countries = $this->app['db']->fetchAll($SQL);
+            $result = array();
+            $result[''] = '';
+            foreach ($countries as $country) {
+                $result[$country['country_code']] = $this->app['utils']->unsanitizeText($country['country_name']);
+            }
+            return $result;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

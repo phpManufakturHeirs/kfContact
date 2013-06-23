@@ -1,26 +1,26 @@
 [
   {
-    "usage":"private",
-    "description":"usage: private"
+    "usage":"PRIVATE",
+    "description":"description: private"
   },
   {
-    "usage":"business",
-    "description":"usage: business"
+    "usage":"BUSINESS",
+    "description":"description: business"
   },
   {
-    "usage":"primary",
-    "description":"usage: primary"
+    "usage":"PRIMARY",
+    "description":"description: primary"
   },
   {
-    "usage":"P.O. Box",
-    "description":"usage: P.O. Box"
+    "usage":"POBOX",
+    "description":"description: P.O. Box"
   },
   {
-    "usage":"delivery",
-    "description":"usage: delivery"
+    "usage":"DELIVERY",
+    "description":"description: delivery"
   },
   {
-    "usage":"billing",
-    "description":"usage: billing"
+    "usage":"BILLING",
+    "description":"description: billing"
   }
 ]

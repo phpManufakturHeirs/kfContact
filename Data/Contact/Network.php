@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Data;
+namespace phpManufaktur\Contact\Data\Contact;
 
 use Silex\Application;
 
@@ -31,7 +31,7 @@ class Network
     }
 
     /**
-     * Create the base list
+     * Create the NETWORK table
      *
      * @throws \Exception
      */

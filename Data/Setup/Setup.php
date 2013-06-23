@@ -12,16 +12,16 @@
 namespace phpManufaktur\Contact\Data\Setup;
 
 use Silex\Application;
-use phpManufaktur\Contact\Data\Address;
-use phpManufaktur\Contact\Data\Communication;
-use phpManufaktur\Contact\Data\Company;
-use phpManufaktur\Contact\Data\Contact;
-use phpManufaktur\Contact\Data\Network;
-use phpManufaktur\Contact\Data\Person;
-use phpManufaktur\Contact\Data\Title;
-use phpManufaktur\Contact\Data\Country;
-use phpManufaktur\Contact\Data\CommunicationType;
-use phpManufaktur\Contact\Data\CommunicationUsage;
+use phpManufaktur\Contact\Data\Contact\Address;
+use phpManufaktur\Contact\Data\Contact\Communication;
+use phpManufaktur\Contact\Data\Contact\Company;
+use phpManufaktur\Contact\Data\Contact\Contact;
+use phpManufaktur\Contact\Data\Contact\Network;
+use phpManufaktur\Contact\Data\Contact\Person;
+use phpManufaktur\Contact\Data\Contact\Title;
+use phpManufaktur\Contact\Data\Contact\Country;
+use phpManufaktur\Contact\Data\Contact\CommunicationType;
+use phpManufaktur\Contact\Data\Contact\CommunicationUsage;
 
 class Setup
 {

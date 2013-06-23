@@ -9,11 +9,11 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Data;
+namespace phpManufaktur\Contact\Data\Contact;
 
 use Silex\Application;
 
-class Contact
+class Company
 {
 
     protected $app = null;
@@ -27,11 +27,11 @@ class Contact
     public function __construct(Application $app)
     {
         $this->app = $app;
-        self::$table_name = FRAMEWORK_TABLE_PREFIX.'contact_contact';
+        self::$table_name = FRAMEWORK_TABLE_PREFIX.'contact_company';
     }
 
     /**
-     * Create the base list
+     * Create the COMPANY table
      *
      * @throws \Exception
      */
@@ -40,14 +40,22 @@ class Contact
         $table = self::$table_name;
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-        `contact_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `company_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `name` VARCHAR(128) NOT NULL DEFAULT '',
-        `login` VARCHAR(64) NOT NULL DEFAULT '',
-        `type` ENUM('PERSON', 'COMPANY') NOT NULL DEFAULT 'PERSON',
+        `department` VARCHAR(128) NOT NULL DEFAULT '',
+        `additional` VARCHAR(128) NOT NULL DEFAULT '',
+        `additional_2` VARCHAR(128) NOT NULL DEFAULT '',
+        `additional_3` VARCHAR(128) NOT NULL DEFAULT '',
+        `primary_address_id` INT(11) NOT NULL DEFAULT '-1',
+        `primary_person_id` INT(11) NOT NULL DEFAULT '-1',
+        `primary_phone_id` INT(11) NOT NULL DEFAULT '-1',
+        `primary_email_id` INT(11) NOT NULL DEFAULT '-1',
+        `primary_note_id` INT(11) NOT NULL DEFAULT '-1',
         `status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `timestamp` TIMESTAMP,
-        PRIMARY KEY (`contact_id`),
-        UNIQUE (`login`)
+        PRIMARY KEY (`company_id`),
+        INDEX (`contact_id`)
         )
     COMMENT='The main contact table'
     ENGINE=InnoDB
@@ -57,7 +65,7 @@ class Contact
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_contact'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addDebug("Created table 'contact_company'", array('method' => __METHOD__, 'line' => __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

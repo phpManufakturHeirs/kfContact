@@ -1,18 +1,22 @@
 [
     {
-      "short":"Dr.",
+      "identifier":"DOC",
+      "short":"doc",
       "long":"doctor"
     },
     {
-      "short":"Prof.",
+      "identifier":"PROF",
+      "short":"prof",
       "long":"professor"
     },
     {
-      "short":"Graf",
+      "identifier":"EARL",
+      "short":"earl",
       "long":"earl"
     },
     {
-      "short":"Baron",
+      "identifier":"BARON",
+      "short":"baron",
       "long":"baron"
     }
 ]

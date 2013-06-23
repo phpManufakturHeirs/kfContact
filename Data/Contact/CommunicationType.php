@@ -9,11 +9,11 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Data;
+namespace phpManufaktur\Contact\Data\Contact;
 
 use Silex\Application;
 
-class CommunicationUsage
+class CommunicationType
 {
 
     protected $app = null;
@@ -27,11 +27,11 @@ class CommunicationUsage
     public function __construct(Application $app)
     {
         $this->app = $app;
-        self::$table_name = FRAMEWORK_TABLE_PREFIX.'contact_communication_usage';
+        self::$table_name = FRAMEWORK_TABLE_PREFIX.'contact_communication_type';
     }
 
     /**
-     * Create the base list
+     * Create the COMMNUNICATION TYPE table
      *
      * @throws \Exception
      */
@@ -40,13 +40,13 @@ class CommunicationUsage
         $table = self::$table_name;
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-        `communication_usage_id` INT(11) NOT NULL AUTO_INCREMENT,
-        `communication_usage_name` VARCHAR(32) NOT NULL DEFAULT '',
-        `communication_usage_description` VARCHAR(255) NOT NULL DEFAULT '',
-        PRIMARY KEY (`communication_usage_id`),
-        UNIQUE (`communication_usage_name`)
+        `communication_type_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `communication_type_name` VARCHAR(32) NOT NULL DEFAULT '',
+        `communication_type_description` VARCHAR(255) NOT NULL DEFAULT '',
+        PRIMARY KEY (`communication_type_id`),
+        UNIQUE (`communication_type_name`)
         )
-    COMMENT='The communication usage definition table'
+    COMMENT='The communication type definition table'
     ENGINE=InnoDB
     AUTO_INCREMENT=1
     DEFAULT CHARSET=utf8
@@ -54,28 +54,33 @@ class CommunicationUsage
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_communication_usage'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addDebug("Created table 'contact_communication_type'", array('method' => __METHOD__, 'line' => __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
     }
 
-    public function initCommunicationUsageList()
+    /**
+     * Initialize the communication type list with the defaults from /communication.types.json
+     *
+     * @throws \Exception
+     */
+    public function initCommunicationTypeList()
     {
         try {
             // get the number of titles in the list
-            $count = $this->app['db']->fetchColumn("SELECT COUNT(`communication_usage_id`) FROM `".self::$table_name."`");
+            $count = $this->app['db']->fetchColumn("SELECT COUNT(`communication_type_id`) FROM `".self::$table_name."`");
             if ($count < 1) {
                 // no entries!
-                $json_import = MANUFAKTUR_PATH.'/Contact/Data/Setup/Import/communication.usages.json';
+                $json_import = MANUFAKTUR_PATH.'/Contact/Data/Setup/Import/communication.types.json';
                 if (!file_exists($json_import)) {
-                    throw new \Exception("Can't read the communication usage definition list: $json_import");
+                    throw new \Exception("Can't read the communication type definition list: $json_import");
                 }
                 $types = $this->app['utils']->readJSON($json_import);
                 foreach ($types as $type) {
                     $this->app['db']->insert(self::$table_name, array(
-                        'communication_usage_name' => $type['usage'],
-                        'communication_usage_description' => $this->app['utils']->sanitizeText($type['description'])
+                        'communication_type_name' => $type['type'],
+                        'communication_type_description' => $this->app['utils']->sanitizeText($type['description'])
                     ));
                 }
             }

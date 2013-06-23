@@ -1,30 +1,30 @@
 [
   {
-    "type":"phone",
-    "description":"telephone"
+    "type":"PHONE",
+    "description":"description: phone"
   },
   {
-    "type":"fax",
-    "description":"telefax"
+    "type":"FAX",
+    "description":"description: fax"
   },
   {
-    "type":"cell",
-    "description":"cell phone"
+    "type":"CELL",
+    "description":"description: cell"
   },
   {
-    "type":"email",
-    "description":"type: email"
+    "type":"EMAIL",
+    "description":"description: email"
   },
   {
-    "type":"google+",
-    "description":"Social network: Google+"
+    "type":"GOOGLE+",
+    "description":"description: google+"
   },
   {
-    "type":"facebook",
-    "description":"Social network: Facebook"
+    "type":"FACEBOOK",
+    "description":"description: facebook"
   },
   {
-    "type":"url",
-    "description":"uniform resource locator"
+    "type":"URL",
+    "description":"description: url"
   }
 ]

@@ -15,5 +15,34 @@ if ('á' != "\xc3\xa1") {
 }
 
 return array(
-
+    'baron'
+        => 'Baron',
+    'Country'
+        => 'Land',
+    'doc'
+        => 'Dr.',
+    'earl'
+        => 'Graf',
+    'female'
+        => 'Frau',
+    'gender'
+        => 'Geschlecht',
+    'male'
+        => 'Mann',
+    'Nick name'
+        => 'Spitzname',
+    'prof'
+        => 'Prof.',
+    'The contact record must contain a email address or a login name as unique identifier!'
+        => 'Der Kontakt Datensatz muss eine E-Mail Adresse oder einen Anmeldenamen (Login) für eine eindeutige Identifizierung enthalten!',
+    'The form is not valid, please check your input and try again!'
+        => 'Das Formular ist nicht gültig, bitte überprüfen Sie Ihre Eingabe und übermitteln Sie das Formular erneut!',
+    'The last name must be at least two characters long!'
+        => 'Der Nachname muss aus mindestens zwei Buchstaben bestehen!',
+    'The submitted email address is not valid, please check your input!'
+        => 'Die übermittelte E-Mail Adresse ist nicht gültig, bitte überprüfen Sie Ihre Eingabe!',
+    'Title'
+        => 'Titel',
+    'Zip'
+        => 'Postleitzahl'
 );
