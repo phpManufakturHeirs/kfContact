@@ -16,12 +16,12 @@ use phpManufaktur\Contact\Data\Contact\Address;
 use phpManufaktur\Contact\Data\Contact\Communication;
 use phpManufaktur\Contact\Data\Contact\Company;
 use phpManufaktur\Contact\Data\Contact\Contact;
-use phpManufaktur\Contact\Data\Contact\Network;
 use phpManufaktur\Contact\Data\Contact\Person;
 use phpManufaktur\Contact\Data\Contact\Title;
 use phpManufaktur\Contact\Data\Contact\Country;
 use phpManufaktur\Contact\Data\Contact\CommunicationType;
 use phpManufaktur\Contact\Data\Contact\CommunicationUsage;
+use phpManufaktur\Contact\Data\Contact\AddressType;
 
 class Setup
 {
@@ -44,6 +44,10 @@ class Setup
             $Address = new Address($this->app);
             $Address->createTable();
 
+            $AddressType = new AddressType($this->app);
+            $AddressType->createTable();
+            $AddressType->initAddressTypeList();
+
             $Communication = new Communication($this->app);
             $Communication->createTable();
 
@@ -60,9 +64,6 @@ class Setup
 
             $Contact = new Contact($this->app);
             $Contact->createTable();
-
-            $Network = new Network($this->app);
-            $Network->createTable();
 
             $Person = new Person($this->app);
             $Person->createTable();

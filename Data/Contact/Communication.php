@@ -44,9 +44,9 @@ class Communication
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `communication_type` VARCHAR(32) NOT NULL DEFAULT 'NONE',
         `communication_usage` VARCHAR(32) NOT NULl DEFAULT 'OTHER',
-        `value` TEXT NOT NULL,
-        `status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
-        `timestamp` TIMESTAMP,
+        `communication_value` TEXT NOT NULL,
+        `communication_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
+        `communication_timestamp` TIMESTAMP,
         PRIMARY KEY (`communication_id`),
         INDEX (`contact_id`)
         )
@@ -78,7 +78,7 @@ EOD;
         try {
             $type = strtoupper($type);
             $value = $this->app['utils']->sanitizeVariable($value);
-            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='$contact_id' AND `communication_type`='$type' AND `value`='$value'";
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='$contact_id' AND `communication_type`='$type' AND `communication_value`='$value'";
             $result = $this->app['db']->fetchAssoc($SQL);
             return (is_array($result) && isset($result['contact_id'])) ? true : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
@@ -100,8 +100,8 @@ EOD;
             foreach ($data as $key => $value) {
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
-            $this->app['db']->insert(self::$table_name, $data);
-            $id = $this->app['db']->lastInsertId();
+            $this->app['db']->insert(self::$table_name, $insert);
+            $communication_id = $this->app['db']->lastInsertId();
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

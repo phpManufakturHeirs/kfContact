@@ -42,20 +42,20 @@ class Person
     CREATE TABLE IF NOT EXISTS `$table` (
         `person_id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
-        `gender` ENUM('MALE','FEMALE') NOT NULL DEFAULT 'MALE',
-        `title` VARCHAR(32) NOT NULL DEFAULT '',
-        `first_name` VARCHAR(128) NOT NULL DEFAULT '',
-        `last_name` VARCHAR(128) NOT NULL DEFAULT '',
-        `nick_name` VARCHAR(128) NOT NULL DEFAULT '',
-        `birthday` DATE NOT NULL DEFAULT '0000-00-00',
-        `contact_since` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-        `primary_address_id` INT(11) NOT NULL DEFAULT '-1',
-        `primary_company_id` INT(11) NOT NULL DEFAULT '-1',
-        `primary_phone_id` INT(11) NOT NULL DEFAULT '-1',
-        `primary_email_id` INT(11) NOT NULL DEFAULT '-1',
-        `primary_note_id` INT(11) NOT NULL DEFAULT '-1',
-        `status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
-        `timestamp` TIMESTAMP,
+        `person_gender` ENUM('MALE','FEMALE') NOT NULL DEFAULT 'MALE',
+        `person_title` VARCHAR(32) NOT NULL DEFAULT '',
+        `person_first_name` VARCHAR(128) NOT NULL DEFAULT '',
+        `person_last_name` VARCHAR(128) NOT NULL DEFAULT '',
+        `person_nick_name` VARCHAR(128) NOT NULL DEFAULT '',
+        `person_birthday` DATE NOT NULL DEFAULT '0000-00-00',
+        `person_contact_since` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+        `person_primary_address_id` INT(11) NOT NULL DEFAULT '-1',
+        `person_primary_company_id` INT(11) NOT NULL DEFAULT '-1',
+        `person_primary_phone_id` INT(11) NOT NULL DEFAULT '-1',
+        `person_primary_email_id` INT(11) NOT NULL DEFAULT '-1',
+        `person_primary_note_id` INT(11) NOT NULL DEFAULT '-1',
+        `person_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
+        `person_timestamp` TIMESTAMP,
         PRIMARY KEY (`person_id`),
         INDEX (`contact_id`)
         )
@@ -88,7 +88,7 @@ EOD;
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             $this->app['db']->insert(self::$table_name, $data);
-            $id = $this->app['db']->lastInsertId();
+            $person_id = $this->app['db']->lastInsertId();
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

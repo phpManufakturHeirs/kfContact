@@ -39,8 +39,8 @@ return array(
         => 'Das Formular ist nicht gültig, bitte überprüfen Sie Ihre Eingabe und übermitteln Sie das Formular erneut!',
     'The last name must be at least two characters long!'
         => 'Der Nachname muss aus mindestens zwei Buchstaben bestehen!',
-    'The submitted email address is not valid, please check your input!'
-        => 'Die übermittelte E-Mail Adresse ist nicht gültig, bitte überprüfen Sie Ihre Eingabe!',
+    'The email address %email% is not valid, please check your input!'
+        => 'Die E-Mail Adresse %email% ist nicht gültig, bitte überprüfen Sie Ihre Eingabe!',
     'Title'
         => 'Titel',
     'Zip'

@@ -79,11 +79,29 @@ EOD;
                 $types = $this->app['utils']->readJSON($json_import);
                 foreach ($types as $type) {
                     $this->app['db']->insert(self::$table_name, array(
-                        'communication_type_name' => $type['type'],
+                        'communication_type_name' => strtoupper($type['type']),
                         'communication_type_description' => $this->app['utils']->sanitizeText($type['description'])
                     ));
                 }
             }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Check if the communication type exists
+     *
+     * @param string $type
+     * @throws \Exception
+     * @return boolean
+     */
+    public function existsType($type)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `communication_type_name`='".strtoupper($type)."'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            return (is_array($result) && isset($result['communication_type_name'])) ? true : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

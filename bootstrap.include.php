@@ -33,3 +33,9 @@ $app->match('/admin/contact/simple/contact', function() use($app) {
     $contact = new SimplePersonContact($app);
     return $contact->exec();
 });
+
+$app->match('/admin/contact/simple/contact/{contact_id}', function($contact_id) use($app) {
+    $contact = new SimplePersonContact($app);
+    $contact->setContactID($contact_id);
+    return $contact->exec();
+});

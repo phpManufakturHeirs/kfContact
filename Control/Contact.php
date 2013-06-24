@@ -33,6 +33,8 @@ class Contact
     protected $ContactData = null;
     protected $ContactPerson = null;
     protected $ContactCompany = null;
+    protected $ContactCommunication = null;
+    protected $ContactAddress = null;
 
     /**
      * Constructor
@@ -44,6 +46,8 @@ class Contact
         $this->app = $app;
         $this->ContactPerson = new ContactPerson($this->app);
         $this->ContactData = new ContactData($this->app);
+        $this->ContactCommunication = new ContactCommunication($this->app);
+        $this->ContactAddress = new ContactAddress($this->app);
     }
 
     /**
@@ -84,22 +88,37 @@ class Contact
     /**
      * Get the contact record for this contact_id
      */
-    public function getContactRecord()
+    public function getDefaultRecord()
     {
+        $data = array(
+            'contact' => array(
+                'contact_id' => -1,
+                'contact_name' => '',
+                'contact_login' => '',
+                'contact_type' => self::$type,
+                'contact_status' => 'ACTIVE',
+                'contact_timestamp' => '0000-00-00 00:00:00',
+            )
+        );
+
         if (self::$type === 'PERSON') {
-            $this->ContactPerson->setContactID(self::$contact_id);
-            return array(
-                'contact_id' => self::$contact_id,
-                'name' => self::$name,
-                'login' => self::$login,
-                'type' => self::$type,
-                'status' => self::$status,
-                'timestamp' => self::$timestamp,
-                'person' => $this->ContactPerson->getContactRecord()
-            );
+            $data['person'] = $this->ContactPerson->getDefaultRecord();
+        }
+        else {
+            throw ContactException::contactTypeNotSupported(self::$contact_type);
         }
 
-        throw ContactException::contactTypeNotSupported(self::$contact_type);
+        // default communication entry
+        $data['communication'] = array(
+            $this->ContactCommunication->getDefaultRecord()
+        );
+
+        // default address entry
+        $data['address'] = array(
+            $this->ContactAddress->getDefaultRecord()
+        );
+
+        return $data;
     }
 
     /**
@@ -115,10 +134,16 @@ class Contact
         if (is_numeric($identifier)) {
             self::$contact_id = $identifier;
             if (self::$contact_id < 1) {
-                return $this->getContactRecord();
+                return $this->getDefaultRecord();
             }
             else {
-
+                if (false === ($contact = $this->ContactData->select(self::$contact_id))) {
+                    self::$contact_id = -1;
+                    $this->setMessage("The contact with the ID %contact_id% does not exists!", array('%contact_id%' => $identifier));
+                    return $this->getDefaultRecord();
+                }
+                $contact = $this->ContactData->selectPersonContactRecord(self::$contact_id);
+                return $contact;
             }
         }
         else {
@@ -134,12 +159,18 @@ class Contact
      */
     public function validate($data)
     {
-        if (self::$type === 'PERSON') {
-            $result = $this->ContactPerson->validate($data);
-            self::$message = $this->ContactPerson->getMessage();
-            return $result;
+        $message = '';
+        $check = true;
+
+        if (isset($data['communication'])) {
+            if (!$this->ContactCommunication->validate($data)) {
+                $message .= $this->ContactCommunication->getMessage();
+                $check = false;
+            }
         }
-        throw ContactException::contactTypeNotSupported(self::$contact_type);
+
+        self::$message = $message;
+        return $check;
     }
 
     /**
@@ -153,32 +184,106 @@ class Contact
      */
     public function insert($data, &$contact_id=null)
     {
-        if (!isset($data['email']) && !isset($data['login'])) {
-            $this->setMessage('The contact record must contain a email address or a login name as unique identifier!');
+        if (!isset($data['contact']['contact_login']) || empty($data['contact']['contact_login'])) {
+            if (isset($data['communication'])) {
+                foreach ($data['communication'] as $communication) {
+                    if (isset($communication['communication_type']) && isset($communication['communication_value']) &&
+                        !empty($communication['communication_value']) && ($communication['communication_type'] === 'EMAIL')) {
+                        $data['contact']['contact_login'] = $communication['communication_value'];
+                        break;
+                    }
+                }
+            }
+            if (!isset($data['contact']['contact_login']) || empty($data['contact']['contact_login'])) {
+                $this->setMessage('The contact record must contain a email address or a login name as unique identifier!');
+                return false;
+            }
+        }
+        if (false !== ($check = $this->ContactData->selectLogin($data['contact']['contact_login']))) {
+            $this->setMessage('The login <b>%login%</b> is already in use, please choose another one!',
+                array('%login%' => $data['contact']['contact_login']));
             return false;
         }
-        $login = (isset($data['login'])) ? $data['login'] : $data['email'];
-
-        if (false !== ($check = $this->ContactData->selectName($login))) {
-            $this->setMessage('The login <b>%login%</b> is already in use, please choose another one!', array('%login%' => $login));
-            return false;
+        if (!isset($data['contact']['contact_name']) || empty($data['contact']['contact_name'])) {
+            $data['contact']['contact_name'] = $data['contact']['contact_login'];
         }
         try {
             // BEGIN TRANSACTION
             $this->app['db']->beginTransaction();
 
             // first step: insert a contact record
-            $insert = array(
-                'name' => $login,
-                'login' => $login,
-                'type' => self::$type,
-                'status' => (isset($data['status'])) ? $data['status'] : 'ACTIVE'
-            );
-            $this->ContactData->insert($insert, self::$contact_id);
+            $this->ContactData->insert($data['contact'], self::$contact_id);
             $contact_id = self::$contact_id;
 
-            // second step: insert the contact record for the person
-            if (!$this->ContactPerson->insert($data, self::$contact_id, self::$person_id)) {
+            // check the communication
+            if (isset($data['communication'])) {
+                foreach ($data['communication'] as $communication) {
+                    $communication_id = -1;
+                    if ($this->ContactCommunication->insert($communication, self::$contact_id, $communication_id)) {
+                        switch ($communication['communication_type']) {
+                            case 'EMAIL':
+                                if (self::$type === 'PERSON') {
+                                    if (!isset($data['person']['person_primary_email_id']) ||
+                                        (isset($data['person']['person_primary_email_id']) && ($data['person']['person_primary_email_id'] < 1))) {
+                                        $data['person']['person_primary_email_id'] = $communication_id;
+                                    }
+                                }
+                                else {
+                                    throw ContactException::contactTypeNotSupported(self::$type);
+                                }
+                                break;
+                            case 'PHONE':
+                                if (self::$type === 'PERSON') {
+                                    if (!isset($data['person']['person_primary_phone_id']) ||
+                                        (isset($data['person']['person_primary_phone_id']) && ($data['person']['person_primary_phone_id'] < 1))) {
+                                        $data['person']['person_primary_phone_id'] = $communication_id;
+                                    }
+                                }
+                                else {
+                                    throw ContactException::contactTypeNotSupported(self::$type);
+                                }
+                                break;
+                        }
+                    }
+                    else {
+                        // rollback and return to the dialog
+                        $this->app['db']->rollback();
+                        self::$message = $this->ContactCommunication->getMessage();
+                        return false;
+                    }
+                }
+            }
+
+            if (isset($data['address'])) {
+                foreach ($data['address'] as $address) {
+                    // loop through the addresses
+                    $address_id = -1;
+                    if ($this->ContactAddress->insert($address, $contact_id, $address_id)) {
+                        if (self::$type === 'PERSON') {
+                            if (!isset($data['person']['person_primary_address_id']) ||
+                                (isset($data['person']['person_primary_address_id']) && ($data['person']['person_primary_address_id'] < 1))) {
+                                // pick the first address as primary address
+                                $data['person']['person_primary_address_id'] = $address_id;
+                                break;
+                            }
+                        }
+                        else {
+                            throw ContactException::contactTypeNotSupported(self::$type);
+                        }
+                    }
+                    else {
+                        // rollback and return to the dialog
+                        $this->app['db']->rollback();
+                        self::$message = $this->ContactAddress->getMessage();
+                        return false;
+                    }
+                }
+            }
+
+            // insert the contact record for the person
+            if ((self::$type === 'PERSON') && isset($data['person']) &&
+                !$this->ContactPerson->insert($data['person'], self::$contact_id, self::$person_id)) {
+                // something went wrong, rollback and return with message
                 $this->app['db']->rollback();
                 self::$message = $this->ContactPerson->getMessage();
                 return false;

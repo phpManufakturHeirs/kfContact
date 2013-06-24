@@ -90,4 +90,22 @@ EOD;
         }
     }
 
+    /**
+     * Check if the communication usage exists
+     *
+     * @param string $usage
+     * @throws \Exception
+     * @return boolean
+     */
+    public function existsUsage($usage)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `communication_usage_name`='".strtoupper($usage)."'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            return (is_array($result) && isset($result['communication_usage_name'])) ? true : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }
