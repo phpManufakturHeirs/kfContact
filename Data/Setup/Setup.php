@@ -22,6 +22,7 @@ use phpManufaktur\Contact\Data\Contact\Country;
 use phpManufaktur\Contact\Data\Contact\CommunicationType;
 use phpManufaktur\Contact\Data\Contact\CommunicationUsage;
 use phpManufaktur\Contact\Data\Contact\AddressType;
+use phpManufaktur\Contact\Data\Contact\Note;
 
 class Setup
 {
@@ -75,6 +76,10 @@ class Setup
             $Country = new Country($this->app);
             $Country->createTable();
             $Country->initCountryList();
+
+            $Note = new Note($this->app);
+            $Note->createTable();
+
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
