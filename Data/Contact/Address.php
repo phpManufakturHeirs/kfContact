@@ -73,6 +73,32 @@ EOD;
     }
 
     /**
+     * Get a default (empty) ADDRESS record
+     *
+     * @return array
+     */
+    public function getDefaultRecord()
+    {
+        return array(
+            'address_id' => -1,
+            'contact_id' => -1,
+            'address_type' => 'OTHER',
+            'address_identifier' => '',
+            'address_description' => '',
+            'address_street' => '',
+            'address_appendix_1' => '',
+            'address_appendix_2' => '',
+            'address_zip' => '',
+            'address_city' => '',
+            'address_area' => '',
+            'address_state' => '',
+            'address_country_code' => '',
+            'address_status' => 'ACTIVE',
+            'address_timestamp' => '0000-00-00 00:00:00'
+        );
+    }
+
+    /**
      * Insert a new ADDRESS record
      *
      * @param array $data
