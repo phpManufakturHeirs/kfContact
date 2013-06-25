@@ -65,6 +65,24 @@ EOD;
     }
 
     /**
+     * Return a default (empty) COMMUNICATION record
+     *
+     * @return array
+     */
+    public function getDefaultRecord()
+    {
+        return array(
+            'communication_id' => -1,
+            'contact_id' => -1,
+            'communication_type' => 'NONE',
+            'communication_usage' => 'OTHER',
+            'communication_value' => '',
+            'communication_status' => 'ACTIVE',
+            'communication_timestamp' => '0000-00-00 00:00:00'
+        );
+    }
+
+    /**
      * Check if a record with $contact_id, $type and $value exists.
      *
      * @param integer $contact_id
