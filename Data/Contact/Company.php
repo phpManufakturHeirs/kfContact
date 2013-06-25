@@ -71,4 +71,62 @@ EOD;
         }
     }
 
+    /**
+     * Return a default (empty) PERSON contact record.
+     *
+     * @return array
+     */
+    public function getDefaultRecord()
+    {
+        return array(
+            'company_id' => -1,
+            'contact_id' => -1,
+            'company_name' => '',
+            'company_department' => '',
+            'company_additional' => '',
+            'company_additional_2' => '',
+            'company_additional_3' => '',
+            'company_primary_address_id' => -1,
+            'company_primary_person_id' => -1,
+            'company_primary_phone_id' => -1,
+            'company_primary_email_id' => -1,
+            'company_primary_note_id' => -1,
+            'company_status' => 'ACTIVE',
+            'company_timestamp' => '0000-00-00 00:00:00',
+        );
+    }
+
+    /**
+     * Return all company records for the given Contact ID
+     *
+     * @param integer $contact_id
+     * @param string $status
+     * @param string $status_operator
+     * @throws \Exception
+     * @return array|boolean
+     */
+    public function selectByContactID($contact_id, $status='DELETED', $status_operator='!=')
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='$contact_id' AND `company_status`{$status_operator}'{$status}'";
+            $results = $this->app['db']->fetchAll($SQL);
+            if (is_array($results)) {
+                $company = array();
+                $level = 0;
+                foreach ($results as $result) {
+                    foreach ($result as $key => $value) {
+                        $company[$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                    }
+                    $level++;
+                }
+                return $company;
+            }
+            else {
+                return false;
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }
