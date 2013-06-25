@@ -74,6 +74,33 @@ EOD;
     }
 
     /**
+     * Return a default (empty) PERSON contact record.
+     *
+     * @return array
+     */
+    public function getDefaultRecord()
+    {
+        return array(
+            'person_id' => -1,
+            'contact_id' => -1,
+            'person_gender' => 'MALE',
+            'person_title' => '',
+            'person_first_name' => '',
+            'person_last_name' => '',
+            'person_nick_name' => '',
+            'person_birthday' => '0000-00-00',
+            'person_contact_since' => '0000-00-00 00:00:00',
+            'person_primary_address_id' => -1,
+            'person_primary_company_id' => -1,
+            'person_primary_phone_id' => -1,
+            'person_primary_email_id' => -1,
+            'person_primary_note_id' => -1,
+            'person_status' => 'ACTIVE',
+            'person_timestamp' => '0000-00-00 00:00:00'
+        );
+    }
+
+    /**
      * Insert a new PERSON record
      *
      * @param array $data
@@ -89,6 +116,39 @@ EOD;
             }
             $this->app['db']->insert(self::$table_name, $data);
             $person_id = $this->app['db']->lastInsertId();
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Return all records for the given Contact ID
+     *
+     * @param integer $contact_id
+     * @param string $status
+     * @param string $status_operator
+     * @throws \Exception
+     * @return array|boolean
+     */
+    public function selectByContactID($contact_id, $status='DELETED', $status_operator='!=')
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='$contact_id' AND `person_status`{$status_operator}'{$status}'";
+            $results = $this->app['db']->fetchAll($SQL);
+            if (is_array($results)) {
+                $person = array();
+                $level = 0;
+                foreach ($results as $result) {
+                    foreach ($result as $key => $value) {
+                        $person[$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                    }
+                    $level++;
+                }
+                return $person;
+            }
+            else {
+                return false;
+            }
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
