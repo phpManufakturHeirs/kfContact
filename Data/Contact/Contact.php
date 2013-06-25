@@ -18,6 +18,9 @@ class Contact
 
     protected $app = null;
     protected static $table_name = null;
+    protected $Person = null;
+    protected $Company = null;
+    protected $Note = null;
 
     /**
      * Constructor
@@ -28,6 +31,9 @@ class Contact
     {
         $this->app = $app;
         self::$table_name = FRAMEWORK_TABLE_PREFIX.'contact_contact';
+        $this->Person = new Person($this->app);
+        $this->Company = new Company($this->app);
+        $this->Note = new Note($this->app);
     }
 
     /**
@@ -140,10 +146,21 @@ EOD;
         }
     }
 
-    public function selectPersonContactRecord($contact_id, $status='DELETED', $status_operator='!=')
+    /**
+     * Return a complete structured associative array for the contact with all
+     * depending records and informations
+     *
+     * @param integer $contact_id
+     * @param string $status
+     * @param string $status_operator
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Exception
+     * @return array|boolean FALSE if SELECT return no result
+     */
+    public function selectContact($contact_id, $status='DELETED', $status_operator='!=')
     {
         try {
-            $prefix = FRAMEWORK_TABLE_PREFIX;
+            // first get the main contact record ...
             $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='{$contact_id}' AND `contact_status`{$status_operator}'{$status}'";
             $result = $this->app['db']->fetchAssoc($SQL);
             if (is_array($result) && isset($result['contact_id'])) {
@@ -151,19 +168,17 @@ EOD;
                 foreach ($result as $key => $value) {
                     $contact['contact'][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
                 }
-                if ($contact['contact']['contact_type'] === 'PERSON') {
-                    $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE `contact_id`='$contact_id' AND `person_status`{$status_operator}'{$status}'";
-                    $result = $this->app['db']->fetchAssoc($SQL);
-                    if (is_array($result) && isset($result['person_id'])) {
-                        foreach ($result as $key => $value) {
-                            $contact['person'][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
-                        }
-                    }
+
+                // select the PERSON data record
+                if (false === ($contact['person'] = $this->Person->selectByContactID($contact_id, $status, $status_operator))) {
+                    $contact['person'] = array();
                 }
-                else {
-                    // COMPANY is not supported yet ...
-                    throw new \Doctrine\DBAL\DBALException("The contact type '{$contact['contact']['contact_type']}' is not supported!");
+
+                // select the COMPANY data record
+                if (false === ($contact['company'] = $this->Company->selectByContactID($contact_id, $status, $status_operator))) {
+                    $contact['company'] = array();
                 }
+
                 // add the communication entries
                 $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_communication` WHERE `contact_id`='{$contact_id}' AND `communication_status`{$status_operator}'{$status}'";
                 $results = $this->app['db']->fetchAll($SQL);
@@ -176,6 +191,7 @@ EOD;
                         $level++;
                     }
                 }
+
                 // add the addresses
                 $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_address` WHERE `contact_id`='{$contact_id}' AND `address_status`{$status_operator}'{$status}'";
                 $results = $this->app['db']->fetchAll($SQL);
@@ -188,6 +204,12 @@ EOD;
                         $level++;
                     }
                 }
+
+                // add the NOTES
+                if (false === ($contact['note'] = $this->Note->selectByContactID($contact_id, $status, $status_operator))) {
+                    $contact['note'] = array();
+                }
+
                 // return the formatted contact array
                 return $contact;
             }

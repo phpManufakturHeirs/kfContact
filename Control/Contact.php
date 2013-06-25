@@ -14,10 +14,8 @@ namespace phpManufaktur\Contact\Control;
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Contact as ContactData;
 
-class Contact
+class Contact extends ContactParent
 {
-    protected $app = null;
-    protected static $message = '';
 
     protected static $contact_id = -1;
     protected static $person_id = -1;
@@ -43,46 +41,11 @@ class Contact
      */
     public function __construct(Application $app)
     {
-        $this->app = $app;
+        parent::__construct($app);
         $this->ContactPerson = new ContactPerson($this->app);
         $this->ContactData = new ContactData($this->app);
         $this->ContactCommunication = new ContactCommunication($this->app);
         $this->ContactAddress = new ContactAddress($this->app);
-    }
-
-    /**
-     * @return the $message
-     */
-    public function getMessage()
-    {
-        return self::$message;
-    }
-
-    /**
-     * @param string $message
-     */
-    public function setMessage($message, $params=array())
-    {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'message.twig'),
-            array('message' => $this->app['translator']->trans($message, $params)));
-    }
-
-    /**
-     * Check if a message is active
-     *
-     * @return boolean
-     */
-    public function isMessage()
-    {
-        return !empty(self::$message);
-    }
-
-    /**
-     * Clear the existing message(s)
-     */
-    public function clearMessage()
-    {
-        self::$message = '';
     }
 
     /**
@@ -102,7 +65,7 @@ class Contact
         );
 
         if (self::$type === 'PERSON') {
-            $data['person'] = $this->ContactPerson->getDefaultRecord();
+            $data['person'] = array($this->ContactPerson->getDefaultRecord());
         }
         else {
             throw ContactException::contactTypeNotSupported(self::$contact_type);
@@ -142,7 +105,7 @@ class Contact
                     $this->setMessage("The contact with the ID %contact_id% does not exists!", array('%contact_id%' => $identifier));
                     return $this->getDefaultRecord();
                 }
-                $contact = $this->ContactData->selectPersonContactRecord(self::$contact_id);
+                $contact = $this->ContactData->selectContact(self::$contact_id);
                 return $contact;
             }
         }

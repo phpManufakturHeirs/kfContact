@@ -14,12 +14,9 @@ namespace phpManufaktur\Contact\Control;
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Address as AddressData;
 
-class ContactAddress
+class ContactAddress extends ContactParent
 {
-
-    protected $app = null;
-    protected static $message = '';
-    protected $AdressData = null;
+    protected $AddressData = null;
 
     /**
      * Constructor
@@ -28,64 +25,13 @@ class ContactAddress
      */
     public function __construct(Application $app)
     {
-        $this->app = $app;
-        $this->AdressData = new AddressData($this->app);
-    }
-
-    /**
-     * @return the $message
-     */
-    public function getMessage()
-    {
-        return self::$message;
-    }
-
-    /**
-     * @param string $message
-     */
-    public function setMessage($message, $params=array())
-    {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'message.twig'),
-            array('message' => $this->app['translator']->trans($message, $params)));
-    }
-
-    /**
-     * Check if a message is active
-     *
-     * @return boolean
-     */
-    public function isMessage()
-    {
-        return !empty(self::$message);
-    }
-
-    /**
-     * Clear the existing message(s)
-     */
-    public function clearMessage()
-    {
-        self::$message = '';
+        parent::__construct($app);
+        $this->AddressData = new AddressData($this->app);
     }
 
     public function getDefaultRecord()
     {
-        return array(
-            'address_id' => -1,
-            'contact_id' => -1,
-            'address_type' => 'OTHER',
-            'address_identifier' => '',
-            'address_description' => '',
-            'address_street' => '',
-            'address_appendix_1' => '',
-            'address_appendix_2' => '',
-            'address_zip' => '',
-            'address_city' => '',
-            'address_area' => '',
-            'address_state' => '',
-            'address_country_code' => '',
-            'address_status' => 'ACTIVE',
-            'address_timestamp' => '0000-00-00 00:00:00'
-        );
+        return $this->AddressData->getDefaultRecord();
     }
 
     public function validate($data)

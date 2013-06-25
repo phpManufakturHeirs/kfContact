@@ -17,10 +17,8 @@ use phpManufaktur\Contact\Data\Contact\CommunicationType as CommunicationTypeDat
 use phpManufaktur\Contact\Data\Contact\CommunicationUsage as CommunicationUsageData;
 use phpManufaktur\Contact\Data\Contact\Communication as CommunicationData;
 
-class ContactCommunication
+class ContactCommunication extends ContactParent
 {
-    protected $app = null;
-    protected static $message = '';
     protected $CommunicationTypeData = null;
     protected $CommunicationUsageData = null;
     protected $CommunicationData = null;
@@ -32,58 +30,20 @@ class ContactCommunication
      */
     public function __construct(Application $app)
     {
-        $this->app = $app;
+        parent::__construct($app);
         $this->CommunicationTypeData = new CommunicationTypeData($this->app);
         $this->CommunicationUsageData = new CommunicationUsageData($this->app);
         $this->CommunicationData = new CommunicationData($this->app);
     }
 
     /**
-     * @return the $message
-     */
-    public function getMessage()
-    {
-        return self::$message;
-    }
-
-    /**
-     * @param string $message
-     */
-    public function setMessage($message, $params=array())
-    {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'message.twig'),
-            array('message' => $this->app['translator']->trans($message, $params)));
-    }
-
-    /**
-     * Check if a message is active
+     * Return a default (empty) COMMUNICATION record
      *
-     * @return boolean
+     * @return array
      */
-    public function isMessage()
-    {
-        return !empty(self::$message);
-    }
-
-    /**
-     * Clear the existing message(s)
-     */
-    public function clearMessage()
-    {
-        self::$message = '';
-    }
-
     public function getDefaultRecord()
     {
-        return array(
-            'communication_id' => -1,
-            'contact_id' => -1,
-            'communication_type' => 'NONE',
-            'communication_usage' => 'OTHER',
-            'communication_value' => '',
-            'communication_status' => 'ACTIVE',
-            'communication_timestamp' => '0000-00-00 00:00:00'
-        );
+        return $this->CommunicationData->getDefaultRecord();
     }
 
     public function validate($data)

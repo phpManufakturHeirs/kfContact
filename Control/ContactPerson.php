@@ -15,9 +15,8 @@ use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Communication;
 use phpManufaktur\Contact\Data\Contact\Person as PersonData;
 
-class ContactPerson
+class ContactPerson extends ContactParent
 {
-    protected $app = null;
     protected $CommunicationData = null;
     protected $PersonData = null;
     protected $ContactCommunication = null;
@@ -27,8 +26,6 @@ class ContactPerson
     protected static $contact_id = -1;
     protected static $person_id = -1;
 
-    protected static $message = '';
-
     /**
      * Constructor
      *
@@ -36,73 +33,20 @@ class ContactPerson
      */
     public function __construct(Application $app)
     {
-        $this->app = $app;
+        parent::__construct($app);
         $this->CommunicationData = new Communication($this->app);
         $this->PersonData = new PersonData($this->app);
         $this->ContactCommunication = new ContactCommunication($this->app);
     }
 
     /**
-     * @return the $message
-     */
-    public function getMessage()
-    {
-        return self::$message;
-    }
-
-    /**
-     * @param string $message
-     */
-    public function setMessage($message, $params=array())
-    {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'message.twig'),
-            array('message' => $this->app['translator']->trans($message, $params)));
-    }
-
-    /**
-     * Check if a message is active
-     *
-     * @return boolean
-     */
-    public function isMessage()
-    {
-        return !empty(self::$message);
-    }
-
-    /**
-     * Clear the existing message(s)
-     */
-    public function clearMessage()
-    {
-        self::$message = '';
-    }
-
-    /**
      * Return a default (empty) PERSON contact record.
-     * Contains virtual fields i.e. for the email address and other
      *
      * @return array
      */
     public function getDefaultRecord()
     {
-        return array(
-            'person_id' => -1,
-            'contact_id' => -1,
-            'person_gender' => 'MALE',
-            'person_title' => '',
-            'person_first_name' => '',
-            'person_last_name' => '',
-            'person_nick_name' => '',
-            'person_birthday' => '0000-00-00',
-            'person_contact_since' => '0000-00-00 00:00:00',
-            'person_primary_address_id' => -1,
-            'person_primary_company_id' => -1,
-            'person_primary_phone_id' => -1,
-            'person_primary_email_id' => -1,
-            'person_primary_note_id' => -1,
-            'person_status' => 'ACTIVE',
-            'person_timestamp' => '0000-00-00 00:00:00'
-        );
+        return $this->PersonData->getDefaultRecord();
     }
 
     /**
