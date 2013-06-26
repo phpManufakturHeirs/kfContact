@@ -21,6 +21,8 @@ class Contact
     protected $Person = null;
     protected $Company = null;
     protected $Note = null;
+    protected $Communication = null;
+    protected $Address = null;
 
     /**
      * Constructor
@@ -34,6 +36,8 @@ class Contact
         $this->Person = new Person($this->app);
         $this->Company = new Company($this->app);
         $this->Note = new Note($this->app);
+        $this->Communication = new Communication($this->app);
+        $this->Address = new Address($this->app);
     }
 
     /**
@@ -63,7 +67,7 @@ class Contact
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_contact'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addInfo("Created table 'contact_contact'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -137,6 +141,7 @@ EOD;
         try {
             $insert = array();
             foreach ($data as $key => $value) {
+                if ($key === 'contact_id') continue;
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             $this->app['db']->insert(self::$table_name, $insert);
@@ -147,12 +152,35 @@ EOD;
     }
 
     /**
+     * Update the contact record with the given contact_id
+     *
+     * @param array $data
+     * @param integer $contact_id
+     * @throws \Exception
+     */
+    public function update($data, $contact_id)
+    {
+        try {
+            $update = array();
+            foreach ($data as $key => $value) {
+                if ($key === 'contact_id') continue;
+                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('contact_id' => $contact_id));
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
      * Return a complete structured associative array for the contact with all
      * depending records and informations
      *
      * @param integer $contact_id
-     * @param string $status
-     * @param string $status_operator
+     * @param string $status can be ACTIVE, LOCKED or DELETED, default is DELETED
+     * @param string $status_operator can be '=' or '!=', default is '!='
      * @throws \Doctrine\DBAL\DBALException
      * @throws \Exception
      * @return array|boolean FALSE if SELECT return no result
@@ -168,48 +196,32 @@ EOD;
                 foreach ($result as $key => $value) {
                     $contact['contact'][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
                 }
-
                 // select the PERSON data record
-                if (false === ($contact['person'] = $this->Person->selectByContactID($contact_id, $status, $status_operator))) {
-                    $contact['person'] = array();
+                if ((false === ($contact['person'] = $this->Person->selectByContactID($contact_id, $status, $status_operator))) ||
+                    empty($contact['person'])) {
+                    $contact['person'] = array($this->Person->getDefaultRecord());
                 }
 
                 // select the COMPANY data record
-                if (false === ($contact['company'] = $this->Company->selectByContactID($contact_id, $status, $status_operator))) {
-                    $contact['company'] = array();
+                if ((false === ($contact['company'] = $this->Company->selectByContactID($contact_id, $status, $status_operator))) ||
+                    empty($contact['company'])) {
+                    $contact['company'] = array($this->Company->getDefaultRecord());
                 }
-
                 // add the communication entries
-                $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_communication` WHERE `contact_id`='{$contact_id}' AND `communication_status`{$status_operator}'{$status}'";
-                $results = $this->app['db']->fetchAll($SQL);
-                if (is_array($results)) {
-                    $level = 0;
-                    foreach ($results as $result) {
-                        foreach ($result as $key => $value) {
-                            $contact['communication'][$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
-                        }
-                        $level++;
-                    }
+                if ((false === ($contact['communication'] = $this->Communication->selectByContactID($contact_id, $status, $status_operator))) ||
+                    empty($contact['communication'])) {
+                    $contact['communication'] = array($this->Communication->getDefaultRecord());
                 }
-
                 // add the addresses
-                $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_address` WHERE `contact_id`='{$contact_id}' AND `address_status`{$status_operator}'{$status}'";
-                $results = $this->app['db']->fetchAll($SQL);
-                if (is_array($results)) {
-                    $level = 0;
-                    foreach ($results as $result) {
-                        foreach ($result as $key => $value) {
-                            $contact['address'][$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
-                        }
-                        $level++;
-                    }
+                if ((false === ($contact['address'] = $this->Address->selectByContactID($contact_id, $status, $status_operator))) ||
+                    empty($contact['address'])) {
+                    $contact['address'] = array($this->Address->getDefaultRecord());
                 }
-
                 // add the NOTES
-                if (false === ($contact['note'] = $this->Note->selectByContactID($contact_id, $status, $status_operator))) {
+                if ((false === ($contact['note'] = $this->Note->selectByContactID($contact_id, $status, $status_operator))) ||
+                    empty($contact['note'])) {
                     $contact['note'] = array();
                 }
-
                 // return the formatted contact array
                 return $contact;
             }

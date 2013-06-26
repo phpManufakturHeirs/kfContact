@@ -21,11 +21,6 @@ class ContactPerson extends ContactParent
     protected $PersonData = null;
     protected $ContactCommunication = null;
 
-   // protected static $contact_record = array();
-
-    protected static $contact_id = -1;
-    protected static $person_id = -1;
-
     /**
      * Constructor
      *
@@ -50,30 +45,20 @@ class ContactPerson extends ContactParent
     }
 
     /**
-     * Set the contact_id
-     *
-     * @param integer $contact_id
-     */
-    public function setContactID($contact_id)
-    {
-        self::$contact_id = $contact_id;
-    }
-
-    /**
      * Validate the given PERSON data record
      *
-     * @param array $data
+     * @param reference array $person_data
+     * @param array $contact_data
+     * @param array $option
      * @return boolean
      */
-    public function validate($data)
+    public function validate(&$person_data, $contact_data=array(), $option=array())
     {
-        $message = '';
-        $check = true;
-
-        // not in use ...
-
-        self::$message = $message;
-        return $check;
+        if (!isset($person_data['person_id'])) {
+            $this->setMessage("Missing the PERSON ID! The ID should be set to -1 if you insert a new record.");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -88,16 +73,34 @@ class ContactPerson extends ContactParent
      */
     public function insert($data, $contact_id, &$person_id=null)
     {
-        try {
-            self::$contact_id = $contact_id;
-            $this->PersonData->insert($data, self::$person_id);
-            $person_id = self::$person_id;
-
-            $this->app['monolog']->addInfo("Inserted person record for the contactID {$contact_id}", array(__METHOD__, __LINE__));
-            return true;
-        } catch (\Exception $e) {
-            throw new ContactException($e);
+        if (!isset($data['contact_id'])) {
+            $data['contact_id'] = $contact_id;
         }
+        if (!$this->validate($data)) {
+            return false;
+        }
+        $person_id = -1;
+        $this->PersonData->insert($data, $person_id);
+        $this->app['monolog']->addInfo("Inserted person record for the contactID {$contact_id}", array(__METHOD__, __LINE__));
+        return true;
+    }
+
+    public function update($new_data, $old_data, $person_id)
+    {
+        if (!$this->validate($new_data)) {
+            return false;
+        }
+        $changed = array();
+        foreach ($new_data as $key => $value) {
+            if ($key === 'person_id') continue;
+            if (isset($old_data[$key]) && ($old_data[$key] !== $value)) {
+                $changed[$key] = $value;
+            }
+        }
+        if (!empty($changed)) {
+            $this->PersonData->update($changed, $person_id);
+        }
+        return true;
     }
 }
 

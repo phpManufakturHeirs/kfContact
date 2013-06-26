@@ -77,7 +77,6 @@ class SimplePersonContact
 
     protected function getForm($data=array())
     {
-
         // get the title array
         $title = new Title($this->app);
         $title_array = $title->getArrayForTwig();
@@ -91,13 +90,15 @@ class SimplePersonContact
             'label' => 'Birthday',
             'format' => 'ddMMyyyy',
             'years' => $years,
+            'empty_value' => '',
             'required' => false
         );
-        if (isset($address['person_birthday'])) {
-            $birthday_array['data'] = $data['person_birthday'];
+
+        if (!isset($data['person_birthday']) || ($data['person_birthday'] === '0000-00-00')) {
+            $data['person_birthday'] = null;
         }
-        else {
-            $birthday_array['empty_value'] = '';
+        if (isset($data['person_birthday'])) {
+            $birthday_array['data'] = new \DateTime($data['person_birthday']);
         }
 
         // get the country array
@@ -105,17 +106,17 @@ class SimplePersonContact
         $country_array = $country->getArrayForTwig();
 
         return $this->app['form.factory']->createBuilder('form', $data)
-            ->add('contact_type', 'hidden', array(
-                'data' => 'PERSON'
-            ))
             ->add('contact_id', 'text', array(
                 'read_only' => true,
                 'required' => false,
             ))
-            ->add('person_id', 'text', array(
-                'read_only' => true,
-                'required' => false
-            ))
+            ->add('person_id', 'hidden')
+            ->add('fax_id', 'hidden')
+            ->add('email_id', 'hidden')
+            ->add('address_id', 'hidden')
+            ->add('note_id', 'hidden')
+            ->add('phone_id', 'hidden')
+
             ->add('person_gender', 'choice', array(
                 'choices' => array('MALE' => 'male', 'FEMALE' => 'female'),
                 'expanded' => true,
@@ -129,17 +130,13 @@ class SimplePersonContact
                 'required' => false,
                 'label' => 'Title'
             ))
-            ->add('person_first_name', 'text', array(
+            ->add('person_primary_name', 'text', array(
                 'required' => false,
                 'label' => 'First name'
             ))
             ->add('person_last_name', 'text', array(
                 'required' => false,
                 'label' => 'Last name'
-            ))
-            ->add('person_nick_name', 'text', array(
-                'required' => false,
-                'label' => 'Nickname'
             ))
             ->add('person_birthday', 'date', $birthday_array)
             ->add('phone', 'text', array(
@@ -149,7 +146,7 @@ class SimplePersonContact
                 'required' => false
             ))
             ->add('email', 'text', array(
-
+                'required' => true
             ))
             ->add('address_street', 'text', array(
                 'required' => false,
@@ -163,51 +160,177 @@ class SimplePersonContact
                 'required' => false,
                 'label' => 'City'
             ))
-            ->add('address_country', 'choice', array(
+            ->add('address_country_code', 'choice', array(
                 'choices' => $country_array,
                 'expanded' => false,
                 'multiple' => false,
                 'required' => false,
                 'label' => 'Country'
             ))
+            ->add('note_content', 'textarea', array(
+                'required' => false,
+                'label' => 'Note'
+            ))
             ->getForm();
     }
 
-    public function exec()
+    /**
+     * The contact control return a multilevel array with all available contact
+     * data. For this dialog we dont need such a complex structure, so we flatten
+     * the data to only one level and ignore the information we dont need
+     *
+     * @param array $data
+     */
+    protected function flattenContactData($data)
     {
-        $Contact = new ContactControl($this->app);
-
-        // get the values of the record or defaults
-        $data = $Contact->select(self::$contact_id);
-        // level down the data array ...
-        foreach ($data['contact'] as $key => $value)
+        if (isset($data['contact']['contact_id'])) {
+            self::$contact_id = $data['contact']['contact_id'];
+        }
+        // level down the nested data array ...
+        foreach ($data['contact'] as $key => $value) {
             $data[$key] = $value;
+        }
         unset($data['contact']);
 
-        foreach ($data['person'] as $key => $value)
+        // we need only the first person data record!
+        foreach ($data['person'][0] as $key => $value) {
+            if ($key == 'contact_id') continue;
             $data[$key] = $value;
+        }
         unset($data['person']);
-        $data['person_birthday'] = null;
 
-        foreach ($data['address'][0] as $key => $value)
+        // we need only the first address of this contact
+        foreach ($data['address'][0] as $key => $value) {
+            if ($key == 'contact_id') continue;
             $data[$key] = $value;
+        }
         unset($data['address']);
 
+        // we need only EMAIL, PHONE and FAX
         foreach ($data['communication'] as $communication) {
             switch ($communication['communication_type']) {
                 case 'EMAIL':
                     $data['email'] = $communication['communication_value'];
+                    $data['email_id'] = $communication['communication_id'];
                     break;
                 case 'PHONE':
                     $data['phone'] = $communication['communication_value'];
+                    $data['phone_id'] = $communication['communication_id'];
                     break;
                 case 'FAX':
                     $data['fax'] = $communication['communication_value'];
+                    $data['fax_id'] = $communication['communication_id'];
                     break;
             }
         }
         unset($data['communication']);
 
+        // we need only the first note
+        foreach ($data['note'][0] as $key => $value) {
+            if ($key == 'contact_id') continue;
+            $data[$key] = $value;
+        }
+        unset($data['note']);
+
+        // we don't need the company informations for this dialog
+        unset($data['company']);
+
+        // return the array
+        return $data;
+    }
+
+    /**
+     * We had used a simple data structure, but the contact control expect a
+     * multilevel array containing the contact data, here we build it
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function buildContactData($data)
+    {
+        // collect the form data
+        return array(
+            // contact main information
+            'contact' => array(
+                'contact_id' => isset($data['contact_id']) ? $data['contact_id'] : -1,
+                'contact_type' => 'PERSON',
+            ),
+            // person record
+            'person' => array(
+                array(
+                    'person_id' => isset($data['person_id']) ? $data['person_id'] : -1,
+                    'person_gender' => isset($data['person_gender']) ? $data['person_gender'] : 'MALE',
+                    'person_title' => isset($data['person_title']) ? $data['person_title'] : '',
+                    'person_primary_name' => isset($data['person_primary_name']) ? $data['person_primary_name'] : '',
+                    'person_last_name' => isset($data['person_last_name']) ? $data['person_last_name'] : '',
+                    'person_birthday' => $data['person_birthday'],
+                    'person_contact_since' => isset($data['person_contact_since']) ? $data['person_contact_since'] : date('Y-m-d H:i:s'),
+                    'person_primary_address_id' => isset($data['person_primary_address_id']) ? $data['person_primary_address_id'] : -1,
+                    'person_primary_phone_id' => isset($data['phone_id']) ? $data['phone_id'] : -1,
+                    'person_primary_email_id' => isset($data['email_id']) ? $data['email_id'] : -1,
+                    'person_primary_note_id' => isset($data['person_primary_note_id']) ? $data['person_primary_note_id'] : -1,
+                    'person_status' => isset($data['person_status']) ? $data['person_status'] : 'ACTIVE'
+                    )
+            ),
+            // the communication entries
+            'communication' => array(
+                array(
+                    'communication_id' => isset($data['email_id']) ? $data['email_id'] : -1,
+                    'communication_type' => 'EMAIL',
+                    'communication_value' => strtolower($data['email'])
+                ),
+                array(
+                    'communication_id' => isset($data['fax_id']) ? $data['fax_id'] : -1,
+                    'communication_type' => 'FAX',
+                    'communication_value' => $data['fax']
+                    ),
+                array(
+                    'communication_id' => isset($data['phone_id']) ? $data['phone_id'] : -1,
+                    'communication_type' => 'PHONE',
+                    'communication_value' => $data['phone']
+                    )
+            ),
+            // the address
+            'address' => array(
+                array(
+                    'address_id' => isset($data['address_id']) ? $data['address_id'] : -1,
+                    'address_type' => 'PRIVATE',
+                    'address_street' => isset($data['address_street']) ? $data['address_street'] : '',
+                    'address_zip' => isset($data['address_zip']) ? $data['address_zip'] : '',
+                    'address_city' => isset($data['address_city']) ? $data['address_city'] : '',
+                    'address_country_code' => isset($data['address_country']) ? $data['address_country'] : ''
+                )
+            ),
+            // remarks and notes
+            'note' => array(
+                array(
+                    'note_id' => isset($data['note_id']) ? $data['note_id'] : -1,
+                    'note_type' => 'TEXT',
+                    'note_title' => 'General contact note',
+                    'note_content' => isset($data['note_content']) ? $data['note_content'] : '',
+                    'note_status' => 'ACTIVE'
+                )
+            )
+        );
+    }
+
+    public function exec()
+    {
+        $Contact = new ContactControl($this->app);
+        $form_request = $this->app['request']->request->get('form', array());
+        if (isset($form_request['contact_id'])) {
+            self::$contact_id = $form_request['contact_id'];
+        }
+
+        // get the values of the record or defaults
+        $data = $Contact->select(self::$contact_id);
+        // build a flatten array
+        $data = $this->flattenContactData($data);
+/*
+echo "<pre>";
+print_r($data);
+echo "</pre>";
+*/
         if ($Contact->isMessage()) {
             self::$message = $Contact->getMessage();
         }
@@ -217,70 +340,41 @@ class SimplePersonContact
             $form->bind($this->app['request']);
             if ($form->isValid()) {
                 $data = $form->getData();
-                // check the data
-                $insert = array(
-                    'contact' => array(
-                        'contact_name' => isset($data['contact_name']) ? $data['contact_name'] : '',
-                        'contact_login' => isset($data['contact_login']) ? $data['contact_login'] : '',
-                        'contact_type' => isset($data['contact_type']) ? $data['contact_type'] : 'PERSON',
-                        'contact_status' => isset($data['contact_status']) ? $data['contact_status'] : 'ACTIVE'
-                    ),
-                    'person' => array(
-                        'person_gender' => isset($data['person_gender']) ? $data['person_gender'] : 'MALE',
-                        'person_title' => isset($data['person_title']) ? $data['person_title'] : '',
-                        'person_first_name' => isset($data['person_first_name']) ? $data['person_first_name'] : '',
-                        'person_last_name' => isset($data['person_last_name']) ? $data['person_last_name'] : '',
-                        'person_nick_name' => isset($data['person_nick_name']) ? $data['person_nick_name'] : '',
-                        'person_birthday' => (isset($data['person_birthday']) && is_object($data['person_birthday'])) ? date('Y-m-d', $data['person_birthday']->getTimestamp()) : '0000-00-00',
-                        'person_contact_since' => isset($data['person_contact_since']) ? $data['person_contact_since'] : date('Y-m-d H:i:s'),
-                        'person_primary_address_id' => isset($data['person_primary_address_id']) ? $data['person_primary_address_id'] : -1,
-                        'person_primary_company_id' => isset($data['person_primary_company_id']) ? $data['person_primary_company_id'] : -1,
-                        'person_primary_phone_id' => isset($data['person_primary_phone_id']) ? $data['person_primary_phone_id'] : -1,
-                        'person_primary_email_id' => isset($data['person_primary_email_id']) ? $data['person_primary_email_id'] : -1,
-                        'person_primary_note_id' => isset($data['person_primary_note_id']) ? $data['person_primary_note_id'] : -1,
-                        'person_status' => isset($data['person_status']) ? $data['person_status'] : 'ACTIVE'
-                    )
-                );
-                $insert['communication'] = array(
-                    array(
-                        'communication_type' => 'EMAIL',
-                        'communication_value' => strtolower($data['email'])
-                    )
-                );
-                if (!empty($data['fax'])) {
-                    $insert['communication'][] = array(
-                        'communication_type' => 'FAX',
-                        'communication_value' => $data['fax']
-                    );
+                if (isset($data['contact_id'])) {
+                    self::$contact_id = $data['contact_id'];
                 }
-                if (!empty($data['phone'])) {
-                    $insert['communication'][] = array(
-                        'communication_type' => 'PHONE',
-                        'communication_value' => $data['phone']
-                    );
-                }
-                $insert['address'] = array(
-                    array(
-                        'address_type' => 'PRIVATE',
-                        'address_street' => isset($data['address_street']) ? $data['address_street'] : '',
-                        'address_zip' => isset($data['address_zip']) ? $data['address_zip'] : '',
-                        'address_city' => isset($data['address_city']) ? $data['address_city'] : '',
-                        'address_country_code' => isset($data['address_country']) ? $data['address_country'] : ''
-                    )
-                );
 
-                $this->clearMessage();
+                // the form submit a datetime object but we need a string
+                $data['person_birthday'] = (isset($data['person_birthday']) && is_object($data['person_birthday'])) ? date('Y-m-d', $data['person_birthday']->getTimestamp()) : '0000-00-00';
+
+                $insert = $this->buildContactData($data);
+                // validate the data
                 if (!$Contact->validate($insert)) {
                     self::$message = $Contact->getMessage();
                 }
 
                 if (!$this->isMessage()) {
                     // ok - insert or update the data
-                    if (!$Contact->insert($insert, self::$contact_id)) {
-                        self::$message = $Contact->getMessage();
+                    if (self::$contact_id < 1) {
+                        if (!$Contact->insert($insert, self::$contact_id)) {
+                            self::$message = $Contact->getMessage();
+                        }
+                        else {
+                            $data['contact_id'] = self::$contact_id;
+                            $this->setMessage("Inserted the new contact with the ID %contact_id%.", array('%contact_id%' => self::$contact_id));
+                        }
                     }
                     else {
-                        $this->setMessage("Inserted the new contact with the ID %contact_id%.", array('%contact_id%' => self::$contact_id));
+                        // update existing record
+                        if (!$Contact->update($insert, self::$contact_id)) {
+                            self::$message = $Contact->getMessage();
+                            if (!$this->isMessage()) {
+                                $this->setMessage("The update returned 'FALSE' but no message ...");
+                            }
+                        }
+                        else {
+                            $this->setMessage("The contact with the ID %contact_id% was successfull updated.", array('%contact_id%' => self::$contact_id));
+                        }
                     }
                 }
             }

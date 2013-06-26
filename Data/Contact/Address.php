@@ -66,7 +66,7 @@ class Address
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_address'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addInfo("Created table 'contact_address'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -110,13 +110,46 @@ EOD;
         try {
             $insert = array();
             foreach ($data as $key => $value) {
-                $insert[$this->app['db']->quoteIdentifier($key)] = $this->app['utils']->sanitizeVariable($value);
+                if ($key === 'address_id') continue;
+                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
             }
-            $this->app['db']->insert(self::$table_name, $data);
+            $this->app['db']->insert(self::$table_name, $insert);
             $address_id = $this->app['db']->lastInsertId();
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
     }
 
+    /**
+     * Return all ADDRESS records for the given Contact ID
+     *
+     * @param integer $contact_id
+     * @param string $status
+     * @param string $status_operator
+     * @throws \Exception
+     * @return array|boolean
+     */
+    public function selectByContactID($contact_id, $status='DELETED', $status_operator='!=')
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='$contact_id' AND `address_status`{$status_operator}'{$status}'";
+            $results = $this->app['db']->fetchAll($SQL);
+            if (is_array($results)) {
+                $address = array();
+                $level = 0;
+                foreach ($results as $result) {
+                    foreach ($result as $key => $value) {
+                        $address[$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                    }
+                    $level++;
+                }
+                return $address;
+            }
+            else {
+                return false;
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }

@@ -58,7 +58,7 @@ class Communication
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_communication'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addInfo("Created table 'contact_communication'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -116,6 +116,7 @@ EOD;
         try {
             $insert = array();
             foreach ($data as $key => $value) {
+                if ($key === 'communication_id') continue;
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             $this->app['db']->insert(self::$table_name, $insert);
@@ -124,4 +125,127 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    public function update($data, $communication_id)
+    {
+        try {
+            $update = array();
+            foreach ($data as $key => $value) {
+                if ($key === 'communication_id') continue;
+                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('communication_id' => $communication_id));
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Mark the given communication ID as DELETED but does not remove the
+     * record physically
+     *
+     * @param integer $communication_id
+     * @throws \Exception
+     */
+    public function delete($communication_id)
+    {
+        try {
+            $this->app['db']->update(self::$table_name, array('communication_status' => 'DELETED'),
+                array('communication_id' => $communication_id));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function selectValue($communication_id)
+    {
+        try {
+            $SQL = "SELECT `communication_value` FROM `".self::$table_name."` WHERE `communication_id`='$communication_id'";
+            return $this->app['db']->fetchColumn($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function selectEmailsByContactID($contact_id, $status='ACTIVE')
+    {
+        try {
+            $SQL = "SELECT `communication_value` FROM `".self::$table_name."` WHERE `communication_id`='$communication_id'";
+            return $this->app['db']->fetchColumn($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Return all COMMUNICATION records for the given Contact ID
+     *
+     * @param integer $contact_id
+     * @param string $status
+     * @param string $status_operator
+     * @throws \Exception
+     * @return array|boolean
+     */
+    public function selectByContactID($contact_id, $status='DELETED', $status_operator='!=')
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='$contact_id' AND `communication_status`{$status_operator}'{$status}'";
+            $results = $this->app['db']->fetchAll($SQL);
+            if (is_array($results)) {
+                $communication = array();
+                $level = 0;
+                foreach ($results as $result) {
+                    foreach ($result as $key => $value) {
+                        $communication[$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                    }
+                    $level++;
+                }
+                return $communication;
+            }
+            else {
+                return false;
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function isUsedAsPrimaryConnection($communication_id, $contact_id, $contact_type)
+    {
+        try {
+
+            switch ($contact_type) {
+                case 'EMAIL':
+                    $SQL = "SELECT `company_primary_email_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_company` WHERE ".
+                        "`contact_id`='$contact_id' AND `company_primary_email_id`='$communication_id' AND `company_status`!='DELETED'";
+                    if ($communication_id === ($check = $this->app['db']->fetchColumn($SQL))) {
+                        return true;
+                    }
+                    $SQL = "SELECT `person_primary_email_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
+                        "`contact_id`='$contact_id' AND `person_primary_email_id`='$communication_id' AND `person_status`!='DELETED'";
+                    if ($communication_id === ($check = $this->app['db']->fetchColumn($SQL))) {
+                        return true;
+                    }
+                    break;
+                case 'PHONE':
+                    $SQL = "SELECT `company_primary_phone_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_company` WHERE ".
+                        "`contact_id`='$contact_id' AND `company_primary_phone_id`='$communication_id' AND `company_status`!='DELETED'";
+                    if ($communication_id === ($check = $this->app['db']->fetchColumn($SQL))) {
+                        return true;
+                    }
+                    $SQL = "SELECT `person_primary_phone_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
+                        "`contact_id`='$contact_id' AND `person_primary_phone_id`='$communication_id' AND `person_status`!='DELETED'";
+                    if ($communication_id === ($check = $this->app['db']->fetchColumn($SQL))) {
+                        return true;
+                    }
+                    break;
+            }
+            return false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }

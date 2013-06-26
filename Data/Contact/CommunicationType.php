@@ -54,7 +54,7 @@ class CommunicationType
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_communication_type'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addInfo("Created table 'contact_communication_type'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

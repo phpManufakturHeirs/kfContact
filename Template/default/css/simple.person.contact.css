@@ -40,6 +40,12 @@ label[for=form_password_first] {
   width: 150px;
   margin: 0 0 10px 0;
 }
+.address_form textarea {
+  float: left;
+  width: 300px;
+  height: 100px;
+  margin: 0 0 10px 0;
+}
 #form_person_gender {
   float: left;
   width: 250px;

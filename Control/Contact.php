@@ -13,6 +13,7 @@ namespace phpManufaktur\Contact\Control;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Contact as ContactData;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Contact extends ContactParent
 {
@@ -28,11 +29,36 @@ class Contact extends ContactParent
     protected static $person = null;
     protected static $company = null;
 
+
     protected $ContactData = null;
     protected $ContactPerson = null;
     protected $ContactCompany = null;
     protected $ContactCommunication = null;
     protected $ContactAddress = null;
+    protected $ContactNote = null;
+
+    protected static $ContactBlocks = array(
+        'contact' => array(
+            'login' => array(
+                'use_email_address' => true
+            ),
+            'name' => array(
+                'use_login' => true
+            )
+        ),
+        'person',
+        'company',
+        'communication' => array(
+                'usage' => array(
+                    'default' => 'PRIVATE'
+                ),
+                'value' => array(
+                    'ignore_if_empty' => true
+                )
+            ),
+        'address',
+        'note'
+    );
 
     /**
      * Constructor
@@ -42,10 +68,40 @@ class Contact extends ContactParent
     public function __construct(Application $app)
     {
         parent::__construct($app);
+
         $this->ContactPerson = new ContactPerson($this->app);
         $this->ContactData = new ContactData($this->app);
         $this->ContactCommunication = new ContactCommunication($this->app);
         $this->ContactAddress = new ContactAddress($this->app);
+        $this->ContactNote = new ContactNote($this->app);
+        $this->ContactCompany = new ContactCompany($this->app);
+    }
+
+    /**
+     * Get the ContactBlocks used by the validate() functions
+     *
+     * @return array
+     */
+    public function getContactBlocks()
+    {
+        return self::$ContactBlocks;
+    }
+
+    /**
+     * Replace the default ContentBlocks with the given $blocks
+     *
+     * @param array $blocks
+     * @throws \Exception
+     */
+    public function setContactBlocks($blocks)
+    {
+        if (!is_array($blocks)) {
+            throw new \Exception("ContactBlocks must be submitted as array!");
+        }
+        self::$ContactBlocks = array();
+        foreach ($blocks as $block) {
+            self::$ContactBlocks[] = strtolower($block);
+        }
     }
 
     /**
@@ -65,7 +121,8 @@ class Contact extends ContactParent
         );
 
         if (self::$type === 'PERSON') {
-            $data['person'] = array($this->ContactPerson->getDefaultRecord());
+            $ContactPerson = new ContactPerson($this->app);
+            $data['person'] = array($ContactPerson->getDefaultRecord());
         }
         else {
             throw ContactException::contactTypeNotSupported(self::$contact_type);
@@ -81,6 +138,11 @@ class Contact extends ContactParent
             $this->ContactAddress->getDefaultRecord()
         );
 
+        // default note entry
+        $data['note'] = array(
+            $this->ContactNote->getDefaultRecord()
+        );
+
         return $data;
     }
 
@@ -94,6 +156,7 @@ class Contact extends ContactParent
      */
     public function select($identifier)
     {
+
         if (is_numeric($identifier)) {
             self::$contact_id = $identifier;
             if (self::$contact_id < 1) {
@@ -115,23 +178,182 @@ class Contact extends ContactParent
     }
 
     /**
-     * Validate the given $data record for all contact types
+     * Validate the CONTACT block and perform some actions.
+     * Can set the 'contact_login' and the 'contact_name' if specified in the
+     * $option array
      *
-     * @param array $data
+     * @param reference array $data
+     * @param array $contact_data
+     * @param array $option
      * @return boolean
      */
-    public function validate($data)
+    protected function validateContact(&$data, $contact_data=array(), $option=array())
     {
-        $message = '';
-        $check = true;
+        if (!isset($data['contact_id']) || !is_numeric($data['contact_id'])) {
+            $this->setMessage("Missing the contact ID! The ID should be set to -1 if you insert a new record.");
+            return false;
+        }
+        if (!isset($data['contact_login']) || empty($data['contact_login'])) {
+            // missing the login
+            if (isset($option['login']['use_email_address']) && $option['login']['use_email_address']) {
+                // try to use the email as login
 
-        if (isset($data['communication'])) {
-            if (!$this->ContactCommunication->validate($data)) {
-                $message .= $this->ContactCommunication->getMessage();
-                $check = false;
+                if (isset($contact_data['communication'])) {
+                    $use_email = false;
+                    foreach ($contact_data['communication'] as $communication) {
+                        if (isset($communication['communication_type']) && $communication['communication_type'] == 'EMAIL') {
+                            if (isset($communication['communication_value'])) {
+                                $errors = $this->app['validator']->validateValue($communication['communication_value'], new Assert\Email());
+                                if (count($errors) > 0) {
+                                    $this->setMessage("The contact login must be set!");
+                                    return false;
+                                }
+                                else {
+                                    $data['contact_login'] = strtolower($communication['communication_value']);
+                                    $use_email = true;
+                                    break;
+                                }
+                            }
+
+                        }
+                    }
+                    if (!$use_email) {
+                        $this->setMessage("The contact login must be set!");
+                        return false;
+                    }
+                }
+                else {
+                    $this->setMessage("The contact login must be set!");
+                    return false;
+                }
+            }
+            else {
+                $this->setMessage("The contact login must be set!");
+                return false;
             }
         }
 
+        if (!isset($data['contact_name']) || empty($data['contact_name'])) {
+            if (isset($option['name']['use_login']) && $option['name']['use_login']) {
+                // use the LOGIN also for the NAME
+                $data['contact_name'] = $data['contact_login'];
+            }
+            else {
+                $this->setMessage("The contact name must be set!");
+                return false;
+            }
+        }
+
+        // if this is new record check it the login name is available
+        if (($data['contact_id'] < 1) &&
+            (false !== ($check = $this->ContactData->selectLogin($data['contact_login'])))) {
+            $this->setMessage('The login <b>%login%</b> is already in use, please choose another one!',
+                array('%login%' => $data['contact_login']));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validate the given $data record for all contact types.
+     * With $options you can define the ContentBlocks which will be validated.
+     * You can also use SetContactBlocks() to set the ContentBlocks global for
+     * all operations and not only for validate()
+     *
+     * @param array $data
+     * @param array $options if empty the global ContactBlocks will be used
+     * @return boolean
+     */
+    public function validate(&$contact_data, $options=array())
+    {
+        if (!is_array($options) || empty($options)) {
+            $options = self::$ContactBlocks;
+        }
+
+        $message = '';
+        $check = true;
+
+        foreach ($options as $key => $value) {
+            if (is_array($value)) {
+                $block = strtolower($key);
+                $validate_options = $value;
+            }
+            else {
+                $block = strtolower($value);
+                $validate_options = array();
+            }
+            switch ($block) {
+                case 'contact':
+                    // check the contact block
+                    if (isset($contact_data[$block]) && is_array($contact_data[$block])) {
+                        if (!$this->validateContact($contact_data[$block], $contact_data, $validate_options)) {
+                            $message .= $this->getMessage();
+                            $check = false;
+                        }
+                    }
+                    break;
+                case 'person':
+                    // check the person block
+                    if (isset($contact_data[$block]) && is_array($contact_data[$block])) {
+                        $level = 0;
+                        foreach ($contact_data[$block] as $person_data) {
+                            if (!$this->ContactPerson->validate($person_data, $contact_data, $validate_options)) {
+                                $message .= $this->ContactPerson->getMessage();
+                                $check = false;
+                            }
+                            $contact_data[$block][$level] = $person_data;
+                            $level++;
+                        }
+                    }
+                    break;
+                case 'company':
+                    // check the company block
+                    if (isset($contact_data[$block]) && is_array($contact_data[$block])) {
+                        $level = 0;
+                        foreach ($contact_data[$block] as $company_data) {
+                            if (!$this->ContactCompany->validate($company_data, $contact_data, $validate_options)) {
+                                $message .= $this->ContactCompany->getMessage();
+                                $check = false;
+                            }
+                            $contact_data[$block][$level] = $company_data;
+                            $level++;
+                        }
+                    }
+                    break;
+                case 'communication':
+                    if (isset($contact_data[$block]) && is_array($contact_data[$block])) {
+                        $level = 0;
+                        foreach ($contact_data[$block] as $communication_data) {
+                            if (!$this->ContactCommunication->validate($communication_data, $contact_data, $validate_options)) {
+                                $message .= $this->ContactCommunication->getMessage();
+                                $check = false;
+                            }
+                            $contact_data[$block][$level] = $communication_data;
+                            $level++;
+                        }
+                    }
+                    break;
+                case 'address':
+                    if (isset($contact_data[$block]) && is_array($contact_data[$block])) {
+                        if (!$this->ContactAddress->validate($contact_data, $validate_options)) {
+                            $message .= $this->ContactAddress->getMessage();
+                            $check = false;
+                        }
+                    }
+                    break;
+                case 'note':
+                    if (isset($contact_data[$block]) && is_array($contact_data[$block])) {
+                        if (!$this->ContactNote->validate($contact_data, $validate_options)) {
+                            $message .= $this->ContactNote->getMessage();
+                            $check = false;
+                        }
+                    }
+                    break;
+                default:
+                    // ContactBlock does not exists
+                    throw new \Exception("The ContactBlock $block does not exists!");
+            }
+        }
         self::$message = $message;
         return $check;
     }
@@ -147,28 +369,9 @@ class Contact extends ContactParent
      */
     public function insert($data, &$contact_id=null)
     {
-        if (!isset($data['contact']['contact_login']) || empty($data['contact']['contact_login'])) {
-            if (isset($data['communication'])) {
-                foreach ($data['communication'] as $communication) {
-                    if (isset($communication['communication_type']) && isset($communication['communication_value']) &&
-                        !empty($communication['communication_value']) && ($communication['communication_type'] === 'EMAIL')) {
-                        $data['contact']['contact_login'] = $communication['communication_value'];
-                        break;
-                    }
-                }
-            }
-            if (!isset($data['contact']['contact_login']) || empty($data['contact']['contact_login'])) {
-                $this->setMessage('The contact record must contain a email address or a login name as unique identifier!');
-                return false;
-            }
-        }
-        if (false !== ($check = $this->ContactData->selectLogin($data['contact']['contact_login']))) {
-            $this->setMessage('The login <b>%login%</b> is already in use, please choose another one!',
-                array('%login%' => $data['contact']['contact_login']));
+
+        if (!$this->validate($data)) {
             return false;
-        }
-        if (!isset($data['contact']['contact_name']) || empty($data['contact']['contact_name'])) {
-            $data['contact']['contact_name'] = $data['contact']['contact_login'];
         }
         try {
             // BEGIN TRANSACTION
@@ -181,14 +384,18 @@ class Contact extends ContactParent
             // check the communication
             if (isset($data['communication'])) {
                 foreach ($data['communication'] as $communication) {
+                    // accept only arrays
+                    if (!is_array($communication)) continue;
+                    // ignore empty values
+                    if (empty($communication['communication_value'])) continue;
                     $communication_id = -1;
                     if ($this->ContactCommunication->insert($communication, self::$contact_id, $communication_id)) {
                         switch ($communication['communication_type']) {
                             case 'EMAIL':
                                 if (self::$type === 'PERSON') {
-                                    if (!isset($data['person']['person_primary_email_id']) ||
-                                        (isset($data['person']['person_primary_email_id']) && ($data['person']['person_primary_email_id'] < 1))) {
-                                        $data['person']['person_primary_email_id'] = $communication_id;
+                                    if (!isset($data['person'][0]['person_primary_email_id']) ||
+                                        (isset($data['person'][0]['person_primary_email_id']) && ($data['person'][0]['person_primary_email_id'] < 1))) {
+                                        $data['person'][0]['person_primary_email_id'] = $communication_id;
                                     }
                                 }
                                 else {
@@ -197,9 +404,9 @@ class Contact extends ContactParent
                                 break;
                             case 'PHONE':
                                 if (self::$type === 'PERSON') {
-                                    if (!isset($data['person']['person_primary_phone_id']) ||
-                                        (isset($data['person']['person_primary_phone_id']) && ($data['person']['person_primary_phone_id'] < 1))) {
-                                        $data['person']['person_primary_phone_id'] = $communication_id;
+                                    if (!isset($data['person'][0]['person_primary_phone_id']) ||
+                                        (isset($data['person'][0]['person_primary_phone_id']) && ($data['person'][0]['person_primary_phone_id'] < 1))) {
+                                        $data['person'][0]['person_primary_phone_id'] = $communication_id;
                                     }
                                 }
                                 else {
@@ -220,13 +427,14 @@ class Contact extends ContactParent
             if (isset($data['address'])) {
                 foreach ($data['address'] as $address) {
                     // loop through the addresses
+                    if (!is_array($address)) continue;
                     $address_id = -1;
-                    if ($this->ContactAddress->insert($address, $contact_id, $address_id)) {
+                    if ($this->ContactAddress->insert($address, self::$contact_id, $address_id)) {
                         if (self::$type === 'PERSON') {
-                            if (!isset($data['person']['person_primary_address_id']) ||
-                                (isset($data['person']['person_primary_address_id']) && ($data['person']['person_primary_address_id'] < 1))) {
+                            if (!isset($data['person'][0]['person_primary_address_id']) ||
+                                (isset($data['person'][0]['person_primary_address_id']) && ($data['person'][0]['person_primary_address_id'] < 1))) {
                                 // pick the first address as primary address
-                                $data['person']['person_primary_address_id'] = $address_id;
+                                $data['person'][0]['person_primary_address_id'] = $address_id;
                                 break;
                             }
                         }
@@ -243,13 +451,42 @@ class Contact extends ContactParent
                 }
             }
 
-            // insert the contact record for the person
-            if ((self::$type === 'PERSON') && isset($data['person']) &&
-                !$this->ContactPerson->insert($data['person'], self::$contact_id, self::$person_id)) {
-                // something went wrong, rollback and return with message
-                $this->app['db']->rollback();
-                self::$message = $this->ContactPerson->getMessage();
-                return false;
+            if (isset($data['note'])) {
+                foreach ($data['note'] as $note) {
+                    if (!is_array($note)) continue;
+                    $note_id = -1;
+                    if ($this->ContactNote->insert($note, self::$contact_id, $note_id)) {
+                        if (self::$type === 'PERSON') {
+                            if (!isset($data['person'][0]['person_primary_note_id']) ||
+                            (isset($data['person'][0]['person_primary_note_id']) && ($data['person'][0]['person_primary_note_id'] < 1))) {
+                                // pick the first address as primary address
+                                $data['person'][0]['person_primary_note_id'] = $note_id;
+                                break;
+                            }
+                        }
+                        else {
+                            throw ContactException::contactTypeNotSupported(self::$type);
+                        }
+                    }
+                    else {
+                        // rollback and return to the dialog
+                        $this->app['db']->rollback();
+                        self::$message = $this->ContactNote->getMessage();
+                        return false;
+                    }
+                }
+            }
+
+            if (isset($data['person'])) {
+                foreach ($data['person'] as $person) {
+                    if (!is_array($person)) continue;
+                    if (!$this->ContactPerson->insert($person, self::$contact_id, self::$person_id)) {
+                        // something went wrong, rollback and return with message
+                        $this->app['db']->rollback();
+                        self::$message = $this->ContactPerson->getMessage();
+                        return false;
+                    }
+                }
             }
 
             // COMMIT TRANSACTION
@@ -257,6 +494,134 @@ class Contact extends ContactParent
             return true;
         } catch (\Exception $e) {
             // ROLLBACK TRANSACTION
+            $this->app['db']->rollback();
+            throw new ContactException($e);
+        }
+    }
+
+    public function update($data, $contact_id)
+    {
+        if (!$this->validate($data)) {
+            return false;
+        }
+        // first get the existings record
+        if (false === ($old = $this->ContactData->selectContact($contact_id))) {
+            $this->setMessage("The contact record for the ID %contact_id% does not exists!",
+                array('%contact_id%' => $contact_id));
+            return false;
+        }
+
+        try {
+            // start transaction
+            $this->app['db']->beginTransaction();
+
+            $data_changed = false;
+
+            if (isset($data['contact'])) {
+                $changed = array();
+                foreach ($data['contact'] as $key => $value) {
+                    if ($key === 'contact_id') continue;
+                    if ($old['contact'][$key] !== $value) {
+                        $changed[$key] = $value;
+                    }
+                }
+                if (!empty($changed)) {
+                    $data_changed = true;
+                    $this->ContactData->update($changed, $contact_id);
+                }
+            }
+
+            if (isset($data['person'])) {
+                foreach ($data['person'] as $new_person) {
+                    if (!isset($new_person['person_id'])) {
+                        throw new \Exception("Update check fail because the 'person_id' is missing in the 'person' block!");
+                    }
+                    if ($new_person['person_id'] < 1) {
+                        // add as new record
+                        $person_id = -1;
+                        if (!$this->ContactPerson->insert($new_person, $contact_id, $person_id)) {
+                            self::$message = $this->ContactPerson->getMessage();
+                            // rollback
+                            $this->app['db']->rollback();
+                            return false;
+                        }
+                        $data_changed = true;
+                        continue;
+                    }
+                    foreach ($old['person'] as $old_person) {
+                        if ($old_person['person_id'] === $new_person['person_id']) {
+                            if (!$this->ContactPerson->update($new_person, $old_person, $new_person['person_id'])) {
+                                self::$message = $this->ContactPerson->getMessage();
+                                // rollback
+                                $this->app['db']->rollback();
+                                return false;
+                            }
+                            $data_changed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (isset($data['communication'])) {
+                foreach ($data['communication'] as $new_communication) {
+                    if (!is_array($new_communication)) continue;
+                    if (!isset($new_communication['communication_id'])) {
+                        throw new \Exception("Update check fail because the 'communication_id' is missing in the 'communication' block!");
+                    }
+                    if ($new_communication['communication_id'] === -1) {
+                        if (isset($new_communication['communication_type']) && !empty($new_communication['communication_type']) &&
+                            isset($new_communication['communication_value']) && ! empty($new_communication['communication_value'])) {
+                            // add as new record
+                            $communication_id = -1;
+                            if (!$this->ContactCommunication->insert($new_communication, $contact_id, $communication_id)) {
+                                self::$message = $this->ContactCommunication->getMessage();
+                                // rollback
+                                $this->app['db']->rollback();
+                                return false;
+                            }
+                            $data_changed = true;
+                        }
+                        continue;
+                    }
+                    foreach ($old['communication'] as $old_communication) {
+                        if ($old_communication['communication_id'] === $new_communication['communication_id']) {
+                            if (!$this->ContactCommunication->update($new_communication, $old_communication, $new_communication['communication_id'])) {
+                                self::$message = $this->ContactCommunication->getMessage();
+                                // rollback
+                                $this->app['db']->rollback();
+                                return false;
+                            }
+                            $data_changed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isset($data['address'])) {
+                foreach ($data['address'] as $new_address) {
+                    if (!is_array($new_address)) continue;
+                    if (!isset($new_address['address_id'])) {
+                        throw new \Exception("Update check fail because the 'address_id' is missing in the 'address' block!");
+                    }
+                    if ($new_address['address_id'] < 1) {
+                        // insert a new address
+                        $address_id = -1;
+                        $this->ContactAddress->insert($new_address, $contact_id, $address_id);
+                    }
+                }
+            }
+
+            // commit transaction
+            $this->app['db']->commit();
+
+            if (!$data_changed) {
+                $this->setMessage("The contact record was not changed!");
+                return false;
+            }
+            return true;
+        } catch (\Exception $e) {
+            // rollback transaction
             $this->app['db']->rollback();
             throw new ContactException($e);
         }

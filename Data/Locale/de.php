@@ -31,6 +31,8 @@ return array(
         => 'Mann',
     'Nick name'
         => 'Spitzname',
+    'Note'
+        => 'Notiz',
     'prof'
         => 'Prof.',
     'The contact record must contain a email address or a login name as unique identifier!'

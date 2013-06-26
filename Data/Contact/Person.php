@@ -44,7 +44,7 @@ class Person
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `person_gender` ENUM('MALE','FEMALE') NOT NULL DEFAULT 'MALE',
         `person_title` VARCHAR(32) NOT NULL DEFAULT '',
-        `person_first_name` VARCHAR(128) NOT NULL DEFAULT '',
+        `person_primary_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_last_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_nick_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_birthday` DATE NOT NULL DEFAULT '0000-00-00',
@@ -67,7 +67,7 @@ class Person
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_person'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addInfo("Created table 'contact_person'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -85,7 +85,7 @@ EOD;
             'contact_id' => -1,
             'person_gender' => 'MALE',
             'person_title' => '',
-            'person_first_name' => '',
+            'person_primary_name' => '',
             'person_last_name' => '',
             'person_nick_name' => '',
             'person_birthday' => '0000-00-00',
@@ -112,17 +112,34 @@ EOD;
         try {
             $insert = array();
             foreach ($data as $key => $value) {
+                if ($key === 'person_id') continue;
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
-            $this->app['db']->insert(self::$table_name, $data);
+            $this->app['db']->insert(self::$table_name, $insert);
             $person_id = $this->app['db']->lastInsertId();
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
     }
 
+    public function update($data, $person_id)
+    {
+        try {
+            $update = array();
+            foreach ($data as $key => $value) {
+                if ($key === 'person_id') continue;
+                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('person_id' => $person_id));
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
     /**
-     * Return all records for the given Contact ID
+     * Return all PERSON records for the given Contact ID
      *
      * @param integer $contact_id
      * @param string $status

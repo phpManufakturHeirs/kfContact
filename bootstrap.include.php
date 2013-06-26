@@ -22,13 +22,6 @@ $app->get('/admin/contact/setup', function() use($app) {
     return "Success!";
 });
 
-$app->get('/admin/contact/test', function() use($app) {
-    $contact = new Contact($app);
-    print_r($contact->getContactRecord());
-
-    return "<p>OK</p>";
-});
-
 $app->match('/admin/contact/simple/contact', function() use($app) {
     $contact = new SimplePersonContact($app);
     return $contact->exec();
@@ -38,4 +31,17 @@ $app->match('/admin/contact/simple/contact/{contact_id}', function($contact_id) 
     $contact = new SimplePersonContact($app);
     $contact->setContactID($contact_id);
     return $contact->exec();
+});
+
+$app->match('/admin/contact/test', function() use($app) {
+    $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
+        "`contact_id`='5'";
+
+    $SQL = "SELECT `person_primary_email_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
+        "`contact_id`='5' AND `person_primary_email_id`='7' AND `person_status`!='DELETED'";
+
+    $check = $app['db']->fetchAssoc($SQL);
+
+    print_r($check);
+    return true;
 });

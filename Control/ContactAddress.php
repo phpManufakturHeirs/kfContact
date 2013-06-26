@@ -12,11 +12,11 @@
 namespace phpManufaktur\Contact\Control;
 
 use Silex\Application;
-use phpManufaktur\Contact\Data\Contact\Address as AddressData;
+use phpManufaktur\Contact\Data\Contact\Address;
 
 class ContactAddress extends ContactParent
 {
-    protected $AddressData = null;
+    protected $Address = null;
 
     /**
      * Constructor
@@ -26,16 +26,17 @@ class ContactAddress extends ContactParent
     public function __construct(Application $app)
     {
         parent::__construct($app);
-        $this->AddressData = new AddressData($this->app);
+        $this->Address = new Address($this->app);
     }
 
     public function getDefaultRecord()
     {
-        return $this->AddressData->getDefaultRecord();
+        return $this->Address->getDefaultRecord();
     }
 
     public function validate($data)
     {
+
         return true;
     }
 
@@ -47,12 +48,10 @@ class ContactAddress extends ContactParent
             (isset($data['address_zip']) && !empty($data['address_zip']))) {
             $check = true;
             $this->clearMessage();
-
             if (!isset($data['contact_id']) || ($data['contact_id'] < 1)) {
                 $data['contact_id'] = $contact_id;
             }
-            $this->AdressData->insert($data, $address_id);
-
+            $this->Address->insert($data, $address_id);
             return $check;
         }
         // nothing to do - return TRUE

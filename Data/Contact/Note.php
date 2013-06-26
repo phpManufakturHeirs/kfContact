@@ -58,7 +58,7 @@ class Note
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addDebug("Created table 'contact_note'", array('method' => __METHOD__, 'line' => __LINE__));
+            $this->app['monolog']->addInfo("Created table 'contact_note'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -123,6 +123,7 @@ EOD;
             $insert = array();
             $TextOnly = (isset($data['note_type']) && ($data['note_type'] === 'HTML')) ? false : true;
             foreach ($data as $key => $value) {
+                if ($key === 'note_id') continue;
             		if ($TextOnly && ($key === 'note_content')) {
             			$value = strip_tags($value);
             		}

@@ -13,15 +13,15 @@ namespace phpManufaktur\Contact\Control;
 
 use Silex\Application;
 use Symfony\Component\Validator\Constraints as Assert;
-use phpManufaktur\Contact\Data\Contact\CommunicationType as CommunicationTypeData;
-use phpManufaktur\Contact\Data\Contact\CommunicationUsage as CommunicationUsageData;
-use phpManufaktur\Contact\Data\Contact\Communication as CommunicationData;
+use phpManufaktur\Contact\Data\Contact\Communication;
+use phpManufaktur\Contact\Data\Contact\CommunicationType;
+use phpManufaktur\Contact\Data\Contact\CommunicationUsage;
 
 class ContactCommunication extends ContactParent
 {
-    protected $CommunicationTypeData = null;
-    protected $CommunicationUsageData = null;
-    protected $CommunicationData = null;
+    protected $Communication = null;
+    protected $CommunicationType = null;
+    protected $CommunicationUsage = null;
 
     /**
      * Constructor
@@ -31,9 +31,9 @@ class ContactCommunication extends ContactParent
     public function __construct(Application $app)
     {
         parent::__construct($app);
-        $this->CommunicationTypeData = new CommunicationTypeData($this->app);
-        $this->CommunicationUsageData = new CommunicationUsageData($this->app);
-        $this->CommunicationData = new CommunicationData($this->app);
+        $this->Communication = new Communication($this->app);
+        $this->CommunicationType = new CommunicationType($this->app);
+        $this->CommunicationUsage = new CommunicationUsage($this->app);
     }
 
     /**
@@ -43,59 +43,152 @@ class ContactCommunication extends ContactParent
      */
     public function getDefaultRecord()
     {
-        return $this->CommunicationData->getDefaultRecord();
+        return $this->Communication->getDefaultRecord();
     }
 
-    public function validate($data)
+    /**
+     * Validate the COMMUNICATION entry
+     *
+     * @param reference array $communication_data
+     * @param array $contact_data
+     * @param array $option
+     * @return boolean
+     */
+    public function validate(&$communication_data, $contact_data=array(), $option=array())
     {
-        $check = true;
-        $this->clearMessage();
-
-        if (isset($data['communication'])) {
-            foreach ($data['communication'] as $communication) {
-                if (isset($communication['communication_type']) && isset($communication['communication_value']) &&
-                ($communication['communication_type'] === 'EMAIL')) {
-                    $errors = $this->app['validator']->validateValue($communication['communication_value'], new Assert\Email());
-                    if (count($errors) > 0) {
-                        $this->setMessage('The email address %email% is not valid, please check your input!',
-                            array('%email%' => $communication['communication_value']));
-                        $check = false;
-                    }
-                }
+        if (!isset($communication_data['contact_id']) || !is_numeric($communication_data['contact_id'])) {
+            if (isset($contact_data['contact']['contact_id'])) {
+                $communication_data['contact_id'] = $contact_data['contact']['contact_id'];
+            }
+            else {
+                $this->setMessage("Missing the CONTACT ID in the COMMUNICATION record.");
+                return false;
             }
         }
-        return $check;
+
+        if (!isset($communication_data['communication_id']) || !is_numeric($communication_data['communication_id'])) {
+            $this->setMessage("Missing the COMMUNICATION ID in the COMMUNICATION record.");
+            return false;
+        }
+
+        if (!isset($communication_data['communication_type']) || empty($communication_data['communication_type'])) {
+            $this->setMessage("The COMMUNICATION TYPE must be set!");
+            return false;
+        }
+
+        if (!$this->CommunicationType->existsType($communication_data['communication_type'])) {
+            $this->setMessage("The COMMUNICATION TYPE %type% does not exists!",
+                array('%type%' => $communication_data['communication_type']));
+            return false;
+        }
+
+        if (!isset($communication_data['communication_usage']) || empty($communication_data['communication_usage'])) {
+            if (isset($option['usage']['default']) && !empty($option['usage']['default'])) {
+                $communication_data['communication_usage'] = $option['usage']['default'];
+            }
+            else {
+                $this->setMessage("The COMMUNICATION USAGE must be set!");
+                return false;
+            }
+        }
+
+        if (!$this->CommunicationUsage->existsUsage($communication_data['communication_usage'])) {
+            $this->setMessage("The COMMUNICATION USAGE %usage% does not exists!",
+                array('%usage%' => $communication_data['communication_usage']));
+            return false;
+        }
+
+        if (!isset($communication_data['communication_value']) || empty($communication_data['communication_value'])) {
+            if (isset($option['value']['ignore_if_empty']) && (false === $option['value']['ignore_if_empty'])) {
+                // dont ignore an empty value
+                $this->setMessage("The COMMUNICATION VALUE should not be empty!");
+                return false;
+            }
+        }
+
+        if (($communication_data['communication_type'] === 'EMAIL') && !empty($communication_data['communication_value'])) {
+            $errors = $this->app['validator']->validateValue($communication_data['communication_value'], new Assert\Email());
+            if (count($errors) > 0) {
+                $this->setMessage("The email %email% is not valid, please check your input!",
+                    array('%email%' => $communication_data['communication_value']));
+                return false;
+            }
+        }
+
+        return true;
     }
 
+    /**
+     * Insert a new COMMUNICATION record
+     *
+     * @param array $data
+     * @param integer $contact_id
+     * @param reference integer $communication_id
+     * @return boolean
+     */
     public function insert($data, $contact_id, &$communication_id)
     {
-        // check the minimum parameters
-        if (!isset($data['communication_type']) || empty($data['communication_type']) ||
-            !isset($data['communication_value']) || empty($data['communication_value'])) {
-            $this->setMessage("Missing the communication parameters 'type' or 'value', can't insert the record!");
-            return false;
-        }
-        // check if type exists
-        if (!$this->CommunicationTypeData->existsType($data['communication_type'])) {
-            $this->setMessage("The communication type %type% is not defined, can't insert the record!",
-                array('%type%' => $data['communication_type']));
-            $this->app['monolog']->addInfo("The communication type {$data['communication_type']} is not defined!",
-                array(__METHOD__, __LINE__));
-            return false;
-        }
-        // check if the usage exists
-        if (isset($data['communication_usage']) && !$this->CommunicationUsageData->existsUsage($data['communication_usage'])) {
-            $this->setMessage("The communication usage %usage% is not defined, can't insert the record!",
-                array('%usage%' => $data['communication_usage']));
-            $this->app['monolog']->addInfo("The communication usage {$data['communication_usage']} is not defined!",
-                array(__METHOD__, __LINE__));
-            return false;
-        }
         // insert the communication record
         if (!isset($data['contact_id'])) {
             $data['contact_id'] = $contact_id;
         }
-        $this->CommunicationData->insert($data, $communication_id);
+        if (!$this->validate($data)) {
+            return false;
+        }
+
+        // it is possible that the validation igonore empty values!
+        if (empty($data['communication_value'])) {
+            // ... do nothing!
+            return true;
+        }
+        $this->Communication->insert($data, $communication_id);
+        return true;
+    }
+
+    /**
+     * Update the given COMMUNICATION record
+     *
+     * @param array $new_data
+     * @param array $old_data
+     * @param integer $communication_id
+     * @return boolean
+     */
+    public function update($new_data, $old_data, $communication_id)
+    {
+        if (empty($new_data['communication_value'])) {
+            // check if this entry can be deleted
+            if ($this->Communication->isUsedAsPrimaryConnection($communication_id,
+                $old_data['contact_id'], $old_data['communication_type'])) {
+                // entry is marked for primary communication and can not deleted!
+                $this->setMessage("The %type% entry %value% is marked for primary communication and can not removed!",
+                    array('%type%' => $old_data['communication_type'], '%value%' => $old_data['communication_value']));
+                return false;
+            }
+            // delete the entry
+            $this->Communication->delete($communication_id);
+            $this->setMessage("The communication entry %communication% was successfull deleted.",
+                array('%communication%' => $old_data['communication_value']));
+            return true;
+        }
+
+        // validate the new data
+        if (!$this->validate($new_data)) {
+            return false;
+        }
+
+        // process the new data
+        $changed = array();
+        foreach ($new_data as $key => $value) {
+            if ($key === 'communication_id') continue;
+            if ($old_data[$key] !== $value) {
+                $changed[$key] = $value;
+            }
+        }
+
+        if (!empty($changed)) {
+            // update the communication record
+            $this->Communication->update($changed, $communication_id);
+        }
         return true;
     }
 }
