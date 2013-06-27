@@ -16,6 +16,7 @@ use phpManufaktur\Contact\Data\Contact\Note;
 
 class ContactNote extends ContactParent
 {
+    protected $Note = null;
 
     /**
      * Constructor
@@ -25,6 +26,7 @@ class ContactNote extends ContactParent
     public function __construct(Application $app)
     {
         parent::__construct($app);
+        $this->Note = new Note($this->app);
     }
 
     /**
@@ -34,25 +36,20 @@ class ContactNote extends ContactParent
      */
     public function getDefaultRecord()
     {
-        $Note = new Note($this->app);
-        return $Note->getDefaultRecord();
+        return $this->Note->getDefaultRecord();
     }
 
     /**
-     * Validate the given PERSON data record
+     * Validate the given NOTE record
      *
-     * @param array $data
+     * @param reference array $note_data
+     * @param array $contact_data
+     * @param array $option
      * @return boolean
      */
-    public function validate($data)
+    public function validate(&$note_data, $contact_data=array(), $option=array())
     {
-        $message = '';
-        $check = true;
-
-        // not in use ...
-
-        self::$message = $message;
-        return $check;
+        return true;
     }
 
     /**
@@ -67,18 +64,13 @@ class ContactNote extends ContactParent
      */
     public function insert($data, $contact_id, &$note_id=null)
     {
-        try {
-            $note_id = -1;
-            if (!isset($data['contact_id'])) {
-                $data['contact_id'] = $contact_id;
-            }
-            $Note = new Note($this->app);
-            $Note->insert($data, $note_id);
-            $this->app['monolog']->addInfo("Inserted note record for the contactID {$contact_id}", array(__METHOD__, __LINE__));
-            return true;
-        } catch (\Exception $e) {
-            throw new ContactException($e);
+        $note_id = -1;
+        if (!isset($data['contact_id'])) {
+            $data['contact_id'] = $contact_id;
         }
+        $this->Note->insert($data, $note_id);
+        $this->app['monolog']->addInfo("Inserted note record for the contactID {$contact_id}", array(__METHOD__, __LINE__));
+        return true;
     }
 }
 
