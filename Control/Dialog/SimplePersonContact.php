@@ -116,6 +116,7 @@ class SimplePersonContact
             ->add('address_id', 'hidden')
             ->add('note_id', 'hidden')
             ->add('phone_id', 'hidden')
+            ->add('person_contact_since', 'hidden')
 
             ->add('person_gender', 'choice', array(
                 'choices' => array('MALE' => 'male', 'FEMALE' => 'female'),
@@ -298,7 +299,7 @@ class SimplePersonContact
                     'address_street' => isset($data['address_street']) ? $data['address_street'] : '',
                     'address_zip' => isset($data['address_zip']) ? $data['address_zip'] : '',
                     'address_city' => isset($data['address_city']) ? $data['address_city'] : '',
-                    'address_country_code' => isset($data['address_country']) ? $data['address_country'] : ''
+                    'address_country_code' => isset($data['address_country_code']) ? $data['address_country_code'] : ''
                 )
             ),
             // remarks and notes
