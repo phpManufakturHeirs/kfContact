@@ -55,7 +55,8 @@ class ContactPerson extends ContactParent
     public function validate(&$person_data, $contact_data=array(), $option=array())
     {
         if (!isset($person_data['person_id'])) {
-            $this->setMessage("Missing the PERSON ID! The ID should be set to -1 if you insert a new record.");
+            $this->setMessage("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
+                array('%identifier%' => 'person_id'));
             return false;
         }
         return true;
@@ -85,20 +86,22 @@ class ContactPerson extends ContactParent
         return true;
     }
 
-    public function update($new_data, $old_data, $person_id)
+    public function update($new_data, $old_data, $person_id, &$has_changed=false)
     {
+        $has_changed = false;
         if (!$this->validate($new_data)) {
             return false;
         }
         $changed = array();
         foreach ($new_data as $key => $value) {
             if ($key === 'person_id') continue;
-            if (isset($old_data[$key]) && ($old_data[$key] !== $value)) {
+            if (isset($old_data[$key]) && ($old_data[$key] != $value)) {
                 $changed[$key] = $value;
             }
         }
         if (!empty($changed)) {
             $this->PersonData->update($changed, $person_id);
+            $has_changed = true;
         }
         return true;
     }
