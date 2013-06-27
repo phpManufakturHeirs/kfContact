@@ -56,16 +56,6 @@ class ContactCommunication extends ContactParent
      */
     public function validate(&$communication_data, $contact_data=array(), $option=array())
     {
-        if (!isset($communication_data['contact_id']) || !is_numeric($communication_data['contact_id'])) {
-            if (isset($contact_data['contact']['contact_id'])) {
-                $communication_data['contact_id'] = $contact_data['contact']['contact_id'];
-            }
-            else {
-                $this->setMessage("Missing the CONTACT ID in the COMMUNICATION record.");
-                return false;
-            }
-        }
-
         if (!isset($communication_data['communication_id']) || !is_numeric($communication_data['communication_id'])) {
             $this->setMessage("Missing the COMMUNICATION ID in the COMMUNICATION record.");
             return false;
@@ -109,7 +99,7 @@ class ContactCommunication extends ContactParent
         if (($communication_data['communication_type'] === 'EMAIL') && !empty($communication_data['communication_value'])) {
             $errors = $this->app['validator']->validateValue($communication_data['communication_value'], new Assert\Email());
             if (count($errors) > 0) {
-                $this->setMessage("The email %email% is not valid, please check your input!",
+                $this->setMessage('The email address %email% is not valid, please check your input!',
                     array('%email%' => $communication_data['communication_value']));
                 return false;
             }
@@ -132,10 +122,10 @@ class ContactCommunication extends ContactParent
         if (!isset($data['contact_id'])) {
             $data['contact_id'] = $contact_id;
         }
+
         if (!$this->validate($data)) {
             return false;
         }
-
         // it is possible that the validation igonore empty values!
         if (empty($data['communication_value'])) {
             // ... do nothing!
@@ -151,10 +141,12 @@ class ContactCommunication extends ContactParent
      * @param array $new_data
      * @param array $old_data
      * @param integer $communication_id
+     * @param reference boolean $has_changed
      * @return boolean
      */
-    public function update($new_data, $old_data, $communication_id)
+    public function update($new_data, $old_data, $communication_id, &$has_changed=false)
     {
+        $has_changed = false;
         if (empty($new_data['communication_value'])) {
             // check if this entry can be deleted
             if ($this->Communication->isUsedAsPrimaryConnection($communication_id,
@@ -168,6 +160,7 @@ class ContactCommunication extends ContactParent
             $this->Communication->delete($communication_id);
             $this->setMessage("The communication entry %communication% was successfull deleted.",
                 array('%communication%' => $old_data['communication_value']));
+            $has_changed = true;
             return true;
         }
 
@@ -180,7 +173,7 @@ class ContactCommunication extends ContactParent
         $changed = array();
         foreach ($new_data as $key => $value) {
             if ($key === 'communication_id') continue;
-            if ($old_data[$key] !== $value) {
+            if (isset($old_data[$key]) && ($old_data[$key] != $value)) {
                 $changed[$key] = $value;
             }
         }
@@ -188,6 +181,7 @@ class ContactCommunication extends ContactParent
         if (!empty($changed)) {
             // update the communication record
             $this->Communication->update($changed, $communication_id);
+            $has_changed = true;
         }
         return true;
     }
