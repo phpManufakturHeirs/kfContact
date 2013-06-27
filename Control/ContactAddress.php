@@ -34,28 +34,48 @@ class ContactAddress extends ContactParent
         return $this->Address->getDefaultRecord();
     }
 
-    public function validate($data)
+    /**
+     * Validate the given ADDRESS
+     *
+     * @param reference array $address_data
+     * @param array $contact_data
+     * @param array $option
+     * @return boolean
+     */
+    public function validate(&$address_data, $contact_data=array(), $option=array())
     {
 
         return true;
     }
 
+    /**
+     * Insert a ADDRESS record
+     *
+     * @param array $data
+     * @param integer $contact_id
+     * @param reference integer $address_id
+     * @return boolean
+     */
     public function insert($data, $contact_id, &$address_id)
     {
-        // check the minimun requirements
         if ((isset($data['address_street']) && (!empty($data['address_street']))) ||
             (isset($data['address_city']) && !empty($data['address_city'])) ||
             (isset($data['address_zip']) && !empty($data['address_zip']))) {
-            $check = true;
-            $this->clearMessage();
+            // insert the address
             if (!isset($data['contact_id']) || ($data['contact_id'] < 1)) {
                 $data['contact_id'] = $contact_id;
             }
+            if (!$this->validate($data)) {
+                return false;
+            }
             $this->Address->insert($data, $address_id);
-            return $check;
         }
-        // nothing to do - return TRUE
         return true;
+    }
+
+    public function update($new_data, $old_data, $address_id, $has_changed=false)
+    {
+
     }
 
 }
