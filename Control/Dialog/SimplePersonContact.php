@@ -250,7 +250,7 @@ class SimplePersonContact
     protected function buildContactData($data)
     {
         // collect the form data
-        return array(
+        $result = array(
             // contact main information
             'contact' => array(
                 'contact_id' => isset($data['contact_id']) ? $data['contact_id'] : -1,
@@ -279,29 +279,10 @@ class SimplePersonContact
                     'communication_id' => isset($data['email_id']) ? $data['email_id'] : -1,
                     'communication_type' => 'EMAIL',
                     'communication_value' => strtolower($data['email'])
-                ),
-                array(
-                    'communication_id' => isset($data['fax_id']) ? $data['fax_id'] : -1,
-                    'communication_type' => 'FAX',
-                    'communication_value' => $data['fax']
-                    ),
-                array(
-                    'communication_id' => isset($data['phone_id']) ? $data['phone_id'] : -1,
-                    'communication_type' => 'PHONE',
-                    'communication_value' => $data['phone']
-                    )
-            ),
-            // the address
-            'address' => array(
-                array(
-                    'address_id' => isset($data['address_id']) ? $data['address_id'] : -1,
-                    'address_type' => 'PRIVATE',
-                    'address_street' => isset($data['address_street']) ? $data['address_street'] : '',
-                    'address_zip' => isset($data['address_zip']) ? $data['address_zip'] : '',
-                    'address_city' => isset($data['address_city']) ? $data['address_city'] : '',
-                    'address_country_code' => isset($data['address_country_code']) ? $data['address_country_code'] : ''
                 )
             ),
+            // the address
+            'address' => array(),
             // remarks and notes
             'note' => array(
                 array(
@@ -313,6 +294,45 @@ class SimplePersonContact
                 )
             )
         );
+        if (!empty($data['fax'])) {
+            $result['communication'][] = array(
+                'communication_id' => isset($data['fax_id']) ? $data['fax_id'] : -1,
+                'communication_type' => 'FAX',
+                'communication_value' => $data['fax']
+            );
+        }
+        if (!empty($data['phone'])) {
+            $result['communication'][] = array(
+                'communication_id' => isset($data['phone_id']) ? $data['phone_id'] : -1,
+                'communication_type' => 'PHONE',
+                'communication_value' => $data['phone']
+            );
+        }
+        // insert the address only, if needed
+        if (empty($data['address_street']) && empty($data['address_zip']) && empty($data['address_city'])) {
+            if ($data['address_id'] > 0) {
+                $result['address'][] = array(
+                    'address_id' => isset($data['address_id']) ? $data['address_id'] : -1,
+                    'address_type' => 'PRIVATE',
+                    'address_street' => isset($data['address_street']) ? $data['address_street'] : '',
+                    'address_zip' => isset($data['address_zip']) ? $data['address_zip'] : '',
+                    'address_city' => isset($data['address_city']) ? $data['address_city'] : '',
+                    'address_country_code' => isset($data['address_country_code']) ? $data['address_country_code'] : ''
+                );
+            }
+        }
+        else {
+            $result['address'][] = array(
+                'address_id' => isset($data['address_id']) ? $data['address_id'] : -1,
+                'address_type' => 'PRIVATE',
+                'address_street' => isset($data['address_street']) ? $data['address_street'] : '',
+                'address_zip' => isset($data['address_zip']) ? $data['address_zip'] : '',
+                'address_city' => isset($data['address_city']) ? $data['address_city'] : '',
+                'address_country_code' => isset($data['address_country_code']) ? $data['address_country_code'] : ''
+            );
+        }
+
+        return $result;
     }
 
     public function exec()
@@ -325,6 +345,7 @@ class SimplePersonContact
 
         // get the values of the record or defaults
         $data = $Contact->select(self::$contact_id);
+$Contact->flattenContactArray($data);
         // build a flatten array
         $data = $this->flattenContactData($data);
 /*
@@ -349,10 +370,6 @@ echo "</pre>";
                 $data['person_birthday'] = (isset($data['person_birthday']) && is_object($data['person_birthday'])) ? date('Y-m-d', $data['person_birthday']->getTimestamp()) : '0000-00-00';
 
                 $insert = $this->buildContactData($data);
-                // validate the data
-                if (!$Contact->validate($insert)) {
-                    self::$message = $Contact->getMessage();
-                }
 
                 if (!$this->isMessage()) {
                     // ok - insert or update the data
@@ -361,8 +378,11 @@ echo "</pre>";
                             self::$message = $Contact->getMessage();
                         }
                         else {
-                            $data['contact_id'] = self::$contact_id;
                             $this->setMessage("Inserted the new contact with the ID %contact_id%.", array('%contact_id%' => self::$contact_id));
+                            // get the values of the new record
+                            $data = $Contact->select(self::$contact_id);
+                            // build a flatten array
+                            $data = $this->flattenContactData($data);
                         }
                     }
                     else {
@@ -372,6 +392,9 @@ echo "</pre>";
                             if (!$this->isMessage()) {
                                 $this->setMessage("The update returned 'FALSE' but no message ...");
                             }
+                        }
+                        elseif ($Contact->isMessage()) {
+                            self::$message = $Contact->getMessage();
                         }
                         else {
                             $this->setMessage("The contact with the ID %contact_id% was successfull updated.", array('%contact_id%' => self::$contact_id));
