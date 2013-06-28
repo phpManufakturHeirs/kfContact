@@ -233,4 +233,14 @@ EOD;
         }
     }
 
+    public function getContactType($contact_id)
+    {
+        try {
+            $SQL = "SELECT `contact_type` FROM `".self::$table_name."` WHERE `contact_id`='$contact_id'";
+            return $this->app['db']->fetchColumn($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }
