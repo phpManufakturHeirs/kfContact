@@ -89,6 +89,26 @@ EOD;
         }
     }
 
+    public function existsCountryCode($country_code)
+    {
+        try {
+            $SQL = "SELECT `country_code` FROM `".self::$table_name."` WHERE `country_code`='$country_code'";
+            $result = $this->app['db']->fetchColumn($SQL);
+            return ($country_code === $result) ? true : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function selectCountry($country_code) {
+        try {
+            $SQL = "SELECT `country_name` FROM `".self::$table_name."` WHERE `country_code`='$country_code'";
+            return $this->app['db']->fetchColumn($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
     /**
      * Return a array with all countries, prepared for usage with TWIG
      *
