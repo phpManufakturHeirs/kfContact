@@ -146,6 +146,67 @@ class Contact extends ContactParent
         return $data;
     }
 
+    public function levelDownContactArray($contact, $use_communication_type=true)
+    {
+        $flatten = array();
+        foreach ($contact as $key => $value) {
+            $level = 0;
+            foreach ($value as $subkey => $subvalue) {
+                if (is_array($subvalue)) {
+                    // loop through the sublevel array
+                    foreach ($subvalue as $subsubkey => $subsubvalue) {
+                        if ($use_communication_type && ($key == 'communication')) {
+                            $type = strtolower($contact[$key][$level]['communication_type']);
+                            $flatten["{$key}_{$type}_{$subsubkey}"] = $subsubvalue;
+                        }
+                        else {
+                            $flatten["{$key}_{$level}_{$subsubkey}"] = $subsubvalue;
+                        }
+                    }
+                    $level++;
+                }
+                else {
+                    // no further level
+                    $flatten["{$subkey}"] = $subvalue;
+                }
+            }
+        }
+        return $flatten;
+    }
+
+    public function levelUpContactArray($contact)
+    {
+        $multi = array();
+        $communication_types = array();
+
+        foreach ($contact as $contact_key => $contact_value) {
+            $key = substr($contact_key, 0, strpos($contact_key, '_'));
+            if ($key == 'contact') {
+                // the contact block has no further levels
+                $multi[$key][$contact_key] = $contact_value;
+            }
+            else {
+                $level = substr($contact_key, strlen($key)+1);
+                $tail = substr($level, strpos($level, '_')+1);
+                $level = substr($level, 0, strpos($level, '_'));
+                if (is_numeric($level)) {
+                    $multi[$key][$level][$tail] = $contact_value;
+                }
+                elseif ($key == 'communication') {
+                    if (!in_array($level, $communication_types)) {
+                        $communication_types[] = $level;
+                    }
+                    $c_level = array_search($level, $communication_types);
+                    $multi[$key][$c_level][$tail] = $contact_value;
+                }
+                else {
+                    throw new ContactException("Unexpected structure of the submitted contact array!");
+                }
+            }
+        }
+        return $multi;
+    }
+
     /**
      * General select function for contact records.
      * The identifier can be the contact_id or the login name.
@@ -189,6 +250,7 @@ class Contact extends ContactParent
      */
     protected function validateContact(&$data, $contact_data=array(), $option=array())
     {
+        // the contact_id must be always set
         if (!isset($data['contact_id']) || !is_numeric($data['contact_id'])) {
             $this->setMessage("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
                 array('%identifier%' => 'contact_id'));
@@ -443,7 +505,6 @@ class Contact extends ContactParent
                                 (isset($data['person'][0]['person_primary_address_id']) && ($data['person'][0]['person_primary_address_id'] < 1))) {
                                 // pick the first address as primary address
                                 $data['person'][0]['person_primary_address_id'] = $address_id;
-                                break;
                             }
                         }
                         else {
@@ -595,7 +656,7 @@ class Contact extends ContactParent
                         continue;
                     }
                     foreach ($old['communication'] as $old_communication) {
-                        if ($old_communication['communication_id'] === $new_communication['communication_id']) {
+                        if ($old_communication['communication_id'] == $new_communication['communication_id']) {
                             $has_changed = false;
                             if (!$this->ContactCommunication->update($new_communication, $old_communication, $new_communication['communication_id'], $has_changed)) {
                                 self::$message = $this->ContactCommunication->getMessage();
@@ -625,7 +686,21 @@ class Contact extends ContactParent
                         $data_changed = true;
                         continue;
                     }
-
+                    foreach ($old['address'] as $old_address) {
+                        if ($old_address['address_id'] == $new_address['address_id']) {
+                            $has_changed = false;
+                            if (!$this->ContactAddress->update($new_address, $old_address, $new_address['address_id'], $has_changed)) {
+                                self::$message = $this->ContactAddress->getMessage();
+                                // rollback
+                                $this->app['db']->rollback();
+                                return false;
+                            }
+                            if ($has_changed) {
+                                $data_changed = true;
+                            }
+                            break;
+                        }
+                    }
                 }
             }
 
