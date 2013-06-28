@@ -49,6 +49,36 @@ class ContactNote extends ContactParent
      */
     public function validate(&$note_data, $contact_data=array(), $option=array())
     {
+        // the note_id must be always set!
+        if (!isset($note_data['note_id'])) {
+            $this->setMessage("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
+                array('%identifier%' => 'note_id'));
+            return false;
+        }
+
+        // check if any value is NULL
+        foreach ($note_data as $key => $value) {
+            if (is_null($value)) {
+                switch ($key) {
+                    case 'note_title':
+                    case 'note_content':
+                        $note_data[$key] = '';
+                        break;
+                    case 'contact_id':
+                        $note_data[$key] = -1;
+                        break;
+                    case 'note_type':
+                        $note_data[$key] = 'TEXT';
+                        break;
+                    case 'note_status':
+                        $note_data[$key] = 'ACTIVE';
+                        break;
+                    default:
+                        throw new ContactException("The key $key is not defined!");
+                        break;
+                }
+            }
+        }
         return true;
     }
 
