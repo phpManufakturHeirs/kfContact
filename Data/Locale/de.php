@@ -15,6 +15,8 @@ if ('á' != "\xc3\xa1") {
 }
 
 return array(
+    "At minimum you must specify a street, a city or a zip code for a valid address"
+        => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
     'baron'
         => 'Baron',
     'Country'
@@ -25,7 +27,7 @@ return array(
         => 'Graf',
     'female'
         => 'Frau',
-    'gender'
+    'Gender'
         => 'Geschlecht',
     "Inserted the new contact with the ID %contact_id%."
         => 'Es wurde ein neuer Kontakt mit der ID %contact_id% hinzugefügt',
@@ -33,14 +35,14 @@ return array(
         => 'Mann',
     "Missing the %identifier%! The ID should be set to -1 if you insert a new record."
         => 'Das Feld <b>%identifier%</b> fehlt! Diese ID sollte auf -1 gesetzt sein, wenn Sie einen neuen Datensatz einfügen möchten.',
-    "Missing the COMMUNICATION ID in the COMMUNICATION record."
-        => 'Im <b>communication</b> Block fehlt die <b>communication ID</b>!',
     'Nick name'
         => 'Spitzname',
     'Note'
         => 'Notiz',
     'prof'
         => 'Prof.',
+    "The Address with the ID %address_id% was successfull deleted."
+        => 'Die Adresse mit der ID %address_id% wurde erfolgreich gelöscht.',
     "The communication entry %communication% was successfull deleted."
         => 'Der Kommunikationseintrag <b>%communication%</b> wurde gelöscht.',
     "The COMMUNICATION TYPE %type% does not exists!"
@@ -62,7 +64,9 @@ return array(
     "The contact with the ID %contact_id% does not exists!"
         => 'Es existiert kein Kontakt Datensatz mit der ID %contact_id%!',
     "The contact with the ID %contact_id% was successfull updated."
-        => 'Der Kontakt mit der ID %contact% wurde erfolgreich aktualisiert.',
+        => 'Der Kontakt mit der ID %contact_id% wurde erfolgreich aktualisiert.',
+    'The country code %country_code% does not exists!'
+        => 'Der Ländercode <b>%country_code%</b> existiert nicht!',
     'The email address %email% is not valid, please check your input!'
         => 'Die E-Mail Adresse %email% ist nicht gültig, bitte überprüfen Sie Ihre Eingabe!',
     'The form is not valid, please check your input and try again!'
@@ -75,6 +79,8 @@ return array(
         => 'Der Typ %type% mit dem Wert %value% ist für die primäre Kommunikation mit dem Kontakt festgelegt und kann nicht gelöscht werden!',
     "The update returned 'FALSE' but no message ..."
         => "Die Aktualisierungsfunktion hat den Datensatz <b>nicht</b> aktualisiert und keinen Grund dafür mitgeteilt.",
+    'The zip %zip% is not valid!'
+        => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
     'Title'
         => 'Titel',
     'Zip'
