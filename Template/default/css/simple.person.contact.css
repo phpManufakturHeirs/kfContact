@@ -46,24 +46,24 @@ label[for=form_password_first] {
   height: 100px;
   margin: 0 0 10px 0;
 }
-#form_person_gender {
+#form_person_0_person_gender {
   float: left;
   width: 250px;
 }
-#form_person_gender input {
+#form_person_0_person_gender input {
   clear: left;
   float:left;
   width: 15px;
   margin: 5px 10px 0 0;
   padding: 0;
 }
-#form_person_gender label {
+#form_person_0_person_gender label {
   clear: none;
   float: left;
   width: 50px;
   text-align: left;
 }
-#form_person_gender label.required:after {
+#form_person_0_person_gender label.required:after {
   content: none;
 }
 input#form_zip {
@@ -76,10 +76,10 @@ input#form_city {
 .address_form input[type=submit] {
   width: 150px;
 }
-select#form_person_birthday_day,
-select#form_person_birthday_month {
+select#form_person_0_person_birthday_day,
+select#form_person_0_person_birthday_month {
   width: 40px;
 }
-select#form_person_birthday_year {
+select#form_person_0_person_birthday_year {
   width: 60px;
 }
