@@ -55,7 +55,7 @@ class Company
         `company_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `company_timestamp` TIMESTAMP,
         PRIMARY KEY (`company_id`),
-        INDEX (`contact_id`)
+        UNIQUE (`contact_id`)
         )
     COMMENT='The main contact table'
     ENGINE=InnoDB
