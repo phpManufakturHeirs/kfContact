@@ -57,7 +57,7 @@ class Person
         `person_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `person_timestamp` TIMESTAMP,
         PRIMARY KEY (`person_id`),
-        INDEX (`contact_id`)
+        UNIQUE (`contact_id`)
         )
     COMMENT='The main contact table'
     ENGINE=InnoDB
@@ -166,6 +166,16 @@ EOD;
             else {
                 return false;
             }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getPrimaryAddressID($contact_id)
+    {
+        try {
+            $SQL = "SELECT `person_primary_address_id` FROM `".self::$table_name."` WHERE `contact_id`='$contact_id'";
+            return $this->app['db']->fetchColumn($SQL);
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
