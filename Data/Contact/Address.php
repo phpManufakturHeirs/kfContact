@@ -152,4 +152,46 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Check if the given $address_id is used as primary address for the contact
+     *
+     * @param integer $address_id
+     * @param integer $contact_id
+     * @throws \Exception
+     * @return boolean
+     */
+    public function isUsedAsPrimaryAddress($address_id, $contact_id)
+    {
+        try {
+            $SQL = "SELECT `company_primary_address_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_company` WHERE ".
+                "`contact_id`='$contact_id' AND `company_primary_address_id`='$address_id' AND `company_status`!='DELETED'";
+            if ($address_id == ($check = $this->app['db']->fetchColumn($SQL))) {
+                return true;
+            }
+            $SQL = "SELECT `person_primary_address_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
+                "`contact_id`='$contact_id' AND `person_primary_address_id`='$address_id' AND `person_status`!='DELETED'";
+            if ($address_id == ($check = $this->app['db']->fetchColumn($SQL))) {
+                return true;
+            }
+            return false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Mark the given $address_id as deleted but does not delete the record physically
+     *
+     * @param integer $address_id
+     * @throws \Exception
+     */
+    public function delete($address_id)
+    {
+        try {
+            $this->app['db']->update(self::$table_name, array('address_status' => 'DELETED'), array('address_id' => $address_id));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }
