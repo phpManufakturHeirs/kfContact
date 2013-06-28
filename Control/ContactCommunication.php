@@ -56,9 +56,35 @@ class ContactCommunication extends ContactParent
      */
     public function validate(&$communication_data, $contact_data=array(), $option=array())
     {
+        // the communication_id must be always set!
         if (!isset($communication_data['communication_id']) || !is_numeric($communication_data['communication_id'])) {
-            $this->setMessage("Missing the COMMUNICATION ID in the COMMUNICATION record.");
+            $this->setMessage("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
+                array('%identifier%' => 'communication_id'));
             return false;
+        }
+
+        // check if any value is NULL
+        foreach ($communication_data as $key => $value) {
+            if (is_null($value)) {
+                switch ($key) {
+                    case 'contact_id':
+                        $communication_data[$key] = -1;
+                        break;
+                    case 'communication_type':
+                        $communication_data[$key] = 'NONE';
+                        break;
+                    case 'communication_usage':
+                        $communication_data[$key] = 'OTHER';
+                        break;
+                    case 'communication_value':
+                        $communication_data[$key] = '';
+                        break;
+                    case 'communication_status':
+                        $communication_data[$key] = 'ACTIVE';
+                    default:
+                        throw new ContactException("The key $key is not defined!");
+                }
+            }
         }
 
         if (!isset($communication_data['communication_type']) || empty($communication_data['communication_type'])) {
