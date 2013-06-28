@@ -54,11 +54,47 @@ class ContactPerson extends ContactParent
      */
     public function validate(&$person_data, $contact_data=array(), $option=array())
     {
+        // the person_id must be always set!
         if (!isset($person_data['person_id'])) {
             $this->setMessage("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
                 array('%identifier%' => 'person_id'));
             return false;
         }
+        // check if any items are NULL
+        foreach ($person_data as $key => $value) {
+            if (is_null($value)) {
+                switch ($key) {
+                    case 'person_gender':
+                        $person_data[$key] = 'MALE';
+                        break;
+                    case 'person_title':
+                    case 'person_first_name':
+                    case 'person_last_name':
+                    case 'person_nick_name':
+                        $person_data[$key] = '';
+                        break;
+                    case 'person_birthday':
+                    case 'person_contact_since':
+                        $person_data[$key] = '0000-00-00 00:00:00';
+                        break;
+                    case 'person_status':
+                        $person_data[$key] = 'ACTIVE';
+                        break;
+                    case 'contact_id':
+                    case 'person_primary_address_id':
+                    case 'person_primary_phone_id':
+                    case 'person_primary_email_id':
+                    case 'person_primary_company_id':
+                    case 'person_primary_note_id':
+                        // all integer fields ...
+                        $person_data[$key] = -1;
+                        break;
+                    default:
+                        throw new ContactException("The key $key is not defined!");
+                }
+            }
+        }
+
         return true;
     }
 
