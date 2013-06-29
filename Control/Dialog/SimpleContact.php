@@ -100,13 +100,28 @@ class SimpleContact {
         $country_array = $country->getArrayForTwig();
 
         return $this->app['form.factory']->createBuilder('form', $contact)
+            // contact - hidden fields
+            ->add('contact_type', 'hidden', array(
+                'data' => 'PERSON'
+            ))
+
             // contact visible form fields
             ->add('contact_id', 'text', array(
                 'read_only' => true
             ))
+            ->add('contact_status', 'choice', array(
+                'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'DELETED' => 'deleted'),
+                'empty_value' => false,
+                'expanded' => false,
+                'multiple' => false,
+                'required' => false,
+                'label' => 'Status'
+            ))
+
             // person - hidden fields
             ->add('person_0_person_id', 'hidden')
             ->add('person_0_contact_id', 'hidden')
+
             // person - visible form fields
             ->add('person_0_person_gender', 'choice', array(
                 'choices' => array('MALE' => 'male', 'FEMALE' => 'female'),
@@ -115,6 +130,7 @@ class SimpleContact {
             ))
             ->add('person_0_person_title', 'choice', array(
                 'choices' => $title_array,
+                'empty_value' => '- please select -',
                 'expanded' => false,
                 'multiple' => false,
                 'required' => false,
@@ -199,6 +215,7 @@ class SimpleContact {
             ))
             ->add('address_0_address_country_code', 'choice', array(
                 'choices' => $country_array,
+                'empty_value' => '- please select -',
                 'expanded' => false,
                 'multiple' => false,
                 'required' => false,
@@ -221,6 +238,7 @@ class SimpleContact {
 
     public function exec()
     {
+
         // check if a contact ID isset
         $form_request = $this->app['request']->request->get('form', array());
         if (isset($form_request['contact_id'])) {
@@ -237,6 +255,10 @@ class SimpleContact {
         // we dont need a multilevel and nested contact array, so flatten it
         $contact = $this->Contact->levelDownContactArray($contact);
 
+        if ($this->Contact->isMessage()) {
+            self::$message = $this->Contact->getMessage();
+        }
+
         // get the form
         $form = $this->getForm($contact);
 
@@ -246,32 +268,29 @@ class SimpleContact {
             if ($form->isValid()) {
                 // get the form data
                 $contact = $form->getData();
+
+                // the form submit a datetime object but we need a string
+                $contact['person_0_person_birthday'] = (isset($contact['person_0_person_birthday']) && is_object($contact['person_0_person_birthday'])) ? date('Y-m-d', $contact['person_0_person_birthday']->getTimestamp()) : '0000-00-00';
+
                 // build a regular contact array
-/*
-    echo "<pre>";
-    print_r($contact);
-    echo "</pre>";
-*/
                 $contact = $this->Contact->levelUpContactArray($contact);
 
                 if (self::$contact_id < 1) {
                     // insert a new record
-/*
-    echo "<pre>";
-    print_r($contact);
-    echo "</pre>";
-*/
-                    if (!$this->Contact->insert($contact, self::$contact_id)) {
-                        self::$message = $this->Contact->getMessage();
-                        if (!$this->isMessage()) {
-                            // Uuups, insert fail but the process does not prompt a message...
-                            $this->setMessage("Contact insert fail, but the process does not return the reason!");
-                        }
-                    }
-                    else {
-                        $this->setMessage("Inserted the new contact with the ID %contact_id%.", array('%contact_id%' => self::$contact_id));
+                    $this->Contact->insert($contact, self::$contact_id);
+                }
+                else {
+                    // update the record
+                    $has_changed = false; // indicate changes
+                    $this->Contact->update($contact, self::$contact_id, $has_changed);
+                }
 
-                    }
+                if (!$this->Contact->isMessage()) {
+                    $this->setMessage("The contact process has not returned a status message");
+                }
+                else {
+                    // use the return status messages
+                    self::$message = $this->Contact->getMessage();
                 }
 
                 // get the values of the new or updated record

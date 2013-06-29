@@ -217,7 +217,6 @@ class Contact extends ContactParent
      */
     public function select($identifier)
     {
-
         if (is_numeric($identifier)) {
             self::$contact_id = $identifier;
             if (self::$contact_id < 1) {
@@ -229,7 +228,11 @@ class Contact extends ContactParent
                     $this->setMessage("The contact with the ID %contact_id% does not exists!", array('%contact_id%' => $identifier));
                     return $this->getDefaultRecord();
                 }
-                $contact = $this->ContactData->selectContact(self::$contact_id);
+                if (false === ($contact = $this->ContactData->selectContact(self::$contact_id))) {
+                    $this->setMessage("Can't read the contact with the ID %contact_id% - it is possibly deleted.",
+                        array('%contact_id%' => $identifier));
+                    return $this->getDefaultRecord();
+                }
                 return $contact;
             }
         }
@@ -248,7 +251,7 @@ class Contact extends ContactParent
      * @param array $option
      * @return boolean
      */
-    protected function validateContact(&$data, $contact_data=array(), $option=array())
+    protected function validateContact(&$data, $contact_data=null, $option=null)
     {
         // the contact_id must be always set
         if (!isset($data['contact_id']) || !is_numeric($data['contact_id'])) {
@@ -256,31 +259,47 @@ class Contact extends ContactParent
                 array('%identifier%' => 'contact_id'));
             return false;
         }
-        if (!isset($data['contact_login']) || empty($data['contact_login'])) {
-            // missing the login
-            if (isset($option['login']['use_email_address']) && $option['login']['use_email_address']) {
-                // try to use the email as login
 
-                if (isset($contact_data['communication'])) {
-                    $use_email = false;
-                    foreach ($contact_data['communication'] as $communication) {
-                        if (isset($communication['communication_type']) && $communication['communication_type'] == 'EMAIL') {
-                            if (isset($communication['communication_value'])) {
-                                $errors = $this->app['validator']->validateValue($communication['communication_value'], new Assert\Email());
-                                if (count($errors) > 0) {
-                                    $this->setMessage("The contact login must be set!");
-                                    return false;
+        // the contact type must be always set
+        $contact_types = $this->ContactData->getContactTypes();
+        if (!isset($data['contact_type']) || !in_array($data['contact_type'], $contact_types)) {
+            $this->setMessage("The contact_type must be always set (%contact_types%).",
+                array('%contact_types%' => implode(', ', $contact_types)));
+            return false;
+        }
+
+        if (!isset($option['mode']['insert'])) {
+            // check only if not insert a new record
+            if (!isset($data['contact_login']) || empty($data['contact_login'])) {
+                // missing the login
+                if (isset($option['login']['use_email_address']) && $option['login']['use_email_address']) {
+                    // try to use the email as login
+
+                    if (isset($contact_data['communication'])) {
+                        $use_email = false;
+                        foreach ($contact_data['communication'] as $communication) {
+                            if (isset($communication['communication_type']) && $communication['communication_type'] == 'EMAIL') {
+                                if (isset($communication['communication_value'])) {
+                                    $errors = $this->app['validator']->validateValue($communication['communication_value'], new Assert\Email());
+                                    if (count($errors) > 0) {
+                                        $this->setMessage("The contact login must be set!");
+                                        return false;
+                                    }
+                                    else {
+                                        $data['contact_login'] = strtolower($communication['communication_value']);
+                                        $use_email = true;
+                                        break;
+                                    }
                                 }
-                                else {
-                                    $data['contact_login'] = strtolower($communication['communication_value']);
-                                    $use_email = true;
-                                    break;
-                                }
+
                             }
-
+                        }
+                        if (!$use_email) {
+                            $this->setMessage("The contact login must be set!");
+                            return false;
                         }
                     }
-                    if (!$use_email) {
+                    else {
                         $this->setMessage("The contact login must be set!");
                         return false;
                     }
@@ -290,20 +309,16 @@ class Contact extends ContactParent
                     return false;
                 }
             }
-            else {
-                $this->setMessage("The contact login must be set!");
-                return false;
-            }
-        }
 
-        if (!isset($data['contact_name']) || empty($data['contact_name'])) {
-            if (isset($option['name']['use_login']) && $option['name']['use_login']) {
-                // use the LOGIN also for the NAME
-                $data['contact_name'] = $data['contact_login'];
-            }
-            else {
-                $this->setMessage("The contact name must be set!");
-                return false;
+            if (!isset($data['contact_name']) || empty($data['contact_name'])) {
+                if (isset($option['name']['use_login']) && $option['name']['use_login']) {
+                    // use the LOGIN also for the NAME
+                    $data['contact_name'] = $data['contact_login'];
+                }
+                else {
+                    $this->setMessage("The contact name must be set!");
+                    return false;
+                }
             }
         }
 
@@ -314,6 +329,7 @@ class Contact extends ContactParent
                 array('%login%' => $data['contact_login']));
             return false;
         }
+
         return true;
     }
 
@@ -434,6 +450,60 @@ class Contact extends ContactParent
     }
 
     /**
+     * Insert the contact block of the new contact record into the database
+     *
+     * @param array $contact_data
+     * @param array $complete_data
+     * @param reference integer $contact_id
+     * @return boolean
+     */
+    protected function insertContact($contact_data, $complete_data=null, &$contact_id=null)
+    {
+        $contact_data['contact_id'] = -1;
+
+        $contact_blocks = $this->getContactBlocks();
+        $option = isset($contact_blocks['content']) ? $contact_blocks['content'] : array();
+        $option['mode'] = 'insert';
+
+        // if no contact_login isset, try to set the email address as login
+        if (!isset($contact_data['contact_login']) || empty($contact_data['contact_login'])) {
+            // try to get an email address
+            $check = false;
+            if (isset($complete_data['communication'])) {
+                foreach ($complete_data['communication'] as $communication) {
+                    if (isset($communication['communication_type']) && ($communication['communication_type'] == 'EMAIL') &&
+                        !empty($communication['communication_value'])) {
+                        $contact_data['contact_login'] = $communication['communication_value'];
+                        $check = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!$check) {
+                $this->setMessage("The login_name or a email address must be always set, can't insert the record!");
+                return false;
+            }
+        }
+
+        if (!isset($contact_data['contact_name']) || empty($contact_data['contact_name'])) {
+            // set the contact_login also as contact_name
+            $contact_data['contact_name'] = $contact_data['contact_login'];
+        }
+
+        if (!$this->validateContact($contact_data, $complete_data, $option)) {
+            // contact validation fail
+            return false;
+        }
+
+        // insert the new record
+        $this->ContactData->insert($contact_data, $contact_id);
+
+        return true;
+    }
+
+
+    /**
      * Insert the given $data record into the contact database. Process all needed
      * steps, uses transaction and roll back if necessary.
      *
@@ -445,15 +515,26 @@ class Contact extends ContactParent
     public function insert($data, &$contact_id=null)
     {
 
-        if (!$this->validate($data)) {
-            return false;
-        }
         try {
             // BEGIN TRANSACTION
             $this->app['db']->beginTransaction();
 
+            // get the contact blocks with the options
+            $contact_blocks = $this->getContactBlocks();
+
             // first step: insert a contact record
-            $this->ContactData->insert($data['contact'], self::$contact_id);
+            if (!isset($data['contact'])) {
+                $this->setMessage("Missing the contact block! Can't insert the new record!");
+                $this->app['db']->rollback();
+                return false;
+            }
+
+            if (!$this->insertContact($data['contact'], $data, self::$contact_id)) {
+                $this->app['db']->rollback();
+                return false;
+            }
+            // set the contact ID
+            $data['contact']['contact_id'] = self::$contact_id;
             $contact_id = self::$contact_id;
 
             // as next we need the person record
@@ -512,6 +593,11 @@ class Contact extends ContactParent
 
             // COMMIT TRANSACTION
             $this->app['db']->commit();
+
+            if (!$this->isMessage()) {
+                $this->setMessage("Inserted the new contact with the ID %contact_id%.", array('%contact_id%' => self::$contact_id));
+            }
+
             return true;
         } catch (\Exception $e) {
             // ROLLBACK TRANSACTION
@@ -520,11 +606,57 @@ class Contact extends ContactParent
         }
     }
 
-    public function update($data, $contact_id)
+    protected function updateContact($new_data, $old_data, $contact_id, &$has_changed=false)
     {
-        if (!$this->validate($data)) {
-            return false;
+        $has_changed = false;
+        $changed = array();
+
+        foreach ($new_data as $key => $value) {
+            if ($key == 'contact_key') continue;
+            if ($old_data[$key] != $value) {
+                $changed[$key] = $value;
+            }
         }
+
+        if (!empty($changed)) {
+            foreach ($changed as $key => $value) {
+                switch ($key) {
+                    case 'contact_login':
+                        if (is_null($value) || empty($value)) {
+                            // contact_login must be always set!
+                            $this->setMessage("The field %field% can not be empty!", array('%field%' => 'contact_login'));
+                            return false;
+                        }
+                        // check if the login already exists
+                        if ($this->ContactData->existsLogin($value, $contact_id)) {
+                            $this->setMessage('The login <b>%login%</b> is already in use, please choose another one!',
+                                array('%login%' => $value));
+                            return false;
+                        }
+                        break;
+                    case 'contact_name':
+                        if (is_null($value) || empty($value)) {
+                            // contact_name must be always set!
+                            $this->setMessage("The field %field% can not be empty!", array('%field%' => 'contact_name'));
+                            return false;
+                        }
+                        if ($this->ContactData->existsName($value, $contact_id)) {
+                            // the contact_name already exists - tell it the user but update the record!
+                            $this->setMessage("The contact name %name% already exists! The update has still executed, please check if you really want this duplicate name.",
+                                array('%name%' => $value));
+                            // don't return false!!!
+                        }
+                }
+            }
+            $this->ContactData->update($changed, $contact_id);
+            $has_changed = true;
+        }
+
+        return true;
+    }
+
+    public function update($data, $contact_id, &$data_changed=false)
+    {
         // first get the existings record
         if (false === ($old = $this->ContactData->selectContact($contact_id))) {
             $this->setMessage("The contact with the ID %contact_id% does not exists!",
@@ -536,22 +668,54 @@ class Contact extends ContactParent
             // start transaction
             $this->app['db']->beginTransaction();
 
+            $this->clearMessage();
+
             $data_changed = false;
 
             if (isset($data['contact'])) {
-                $changed = array();
-                foreach ($data['contact'] as $key => $value) {
-                    if ($key === 'contact_id') continue;
-                    if ($old['contact'][$key] !== $value) {
-                        $changed[$key] = $value;
-                    }
+                $has_changed = false;
+                if (!$this->updateContact($data['contact'], $old['contact'], $contact_id, $has_changed)) {
+                    // rollback
+                    $this->app['db']->rollback();
+                    return false;
                 }
-                if (!empty($changed)) {
+                if ($has_changed) {
                     $data_changed = true;
-                    $this->ContactData->update($changed, $contact_id);
                 }
             }
 
+            if (isset($data['person'])) {
+                foreach ($data['person'] as $new_person) {
+                    $has_changed = false;
+                    if ($new_person['person_id'] < 1) {
+                        // add as new record
+                        if (!$this->ContactPerson->insert($new_person, $contact_id)) {
+                            self::$message .= $this->ContactPerson->getMessage();
+                            // rollback
+                            $this->app['db']->rollback();
+                            return false;
+                        }
+                        $data_changed = true;
+                        continue;
+                    }
+                    foreach ($old['person'] as $old_person) {
+                        if ($old_person['person_id'] == $new_person['person_id']) {
+                            if (!$this->ContactPerson->update($new_person, $old_person, $new_person['person_id'], $has_changed)) {
+                                // rollback
+                                self::$message .= $this->ContactPerson->getMessage();
+                                $this->app['db']->rollback();
+                                return false;
+                            }
+                            if ($has_changed) {
+                                $data_changed = true;
+                            }
+                            self::$message .= $this->ContactPerson->getMessage();
+                            break;
+                        }
+                    }
+                }
+            }
+/*
             if (isset($data['person'])) {
                 foreach ($data['person'] as $new_person) {
                     if (!isset($new_person['person_id'])) {
@@ -585,7 +749,7 @@ class Contact extends ContactParent
                     }
                 }
             }
-
+/*
             if (isset($data['communication'])) {
                 foreach ($data['communication'] as $new_communication) {
                     if (!is_array($new_communication)) continue;
@@ -672,13 +836,20 @@ class Contact extends ContactParent
 
                 }
             }
-
+*/
             // commit transaction
             $this->app['db']->commit();
 
-            if (!$data_changed) {
-                $this->setMessage("The contact record was not changed!");
-                return false;
+            if ($data_changed) {
+                if (!$this->isMessage()) {
+                    $this->setMessage("The contact with the ID %contact_id% was successfull updated.",
+                        array('%contact_id%' => self::$contact_id));
+                }
+            }
+            else {
+                if (!$this->isMessage()) {
+                    $this->setMessage("The contact record was not changed!");
+                }
             }
             return true;
         } catch (\Exception $e) {

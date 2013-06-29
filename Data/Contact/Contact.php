@@ -74,6 +74,24 @@ EOD;
     }
 
     /**
+     * Return the enum values of the field contact_type
+     *
+     * @throws \Exception
+     * @return Ambigous <boolean, multitype:> array on success, false if fail
+     */
+    public function getContactTypes()
+    {
+        try {
+            $SQL = "SELECT column_type FROM information_schema.columns WHERE table_name='".self::$table_name."' AND column_name='contact_type'";
+            $result = $this->app['db']->fetchColumn($SQL);
+            $result = explode("','", str_replace(array("enum('", "')", "''"), array('', '', "'"), $result));
+            return (is_array($result)) ? $result : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
      * Select a contact record by the given contact_id
      * Return FALSE if the record does not exists
      *
@@ -109,10 +127,10 @@ EOD;
      * @throws \Exception
      * @return multitype:array|boolean
      */
-    public function selectLogin($login)
+    public function selectLogin($contact_login)
     {
         try {
-            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_login`='$login'";
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_login`='$contact_login'";
             $result = $this->app['db']->fetchAssoc($SQL);
             if (is_array($result) && isset($result['contact_id'])) {
                 $contact = array();
@@ -121,9 +139,53 @@ EOD;
                 }
                 return $contact;
             }
-            else {
-                return false;
+            return false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Check if the desired contact login already existst. Optionally exclude the
+     * given contact id from the check
+     *
+     * @param integer $contact_login
+     * @param integer $exclude_contact_id
+     * @throws \Exception
+     * @return boolean
+     */
+    public function existsLogin($contact_login, $exclude_contact_id=null)
+    {
+        try {
+            $SQL = "SELECT `contact_login` FROM `".self::$table_name."` WHERE `contact_login`='$contact_login'";
+            if (is_numeric($exclude_contact_id)) {
+                $SQL .= " AND `contact_id` != '$exclude_contact_id'";
             }
+            $result = $this->app['db']->fetchColumn($SQL);
+            return ($result == $contact_login) ? true : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Check if the desired contact name already existst. Optionally exclude the
+     * given contact id from the check
+     *
+     * @param integer $contact_login
+     * @param integer $exclude_contact_id
+     * @throws \Exception
+     * @return boolean
+     */
+    public function existsName($contact_name, $exclude_contact_id=null)
+    {
+        try {
+            $SQL = "SELECT `contact_name` FROM `".self::$table_name."` WHERE `contact_name`='$contact_name'";
+            if (is_numeric($exclude_contact_id)) {
+                $SQL .= " AND `contact_id` != '$exclude_contact_id'";
+            }
+            $result = $this->app['db']->fetchColumn($SQL);
+            return ($result == $contact_name) ? true : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

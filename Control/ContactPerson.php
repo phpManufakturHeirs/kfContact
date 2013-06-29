@@ -122,13 +122,20 @@ class ContactPerson extends ContactParent
         return true;
     }
 
+    /**
+     * Update the given person contact block
+     *
+     * @param array $new_data
+     * @param array $old_data
+     * @param integer $person_id
+     * @param reference boolean $has_changed
+     * @return boolean
+     */
     public function update($new_data, $old_data, $person_id, &$has_changed=false)
     {
         $has_changed = false;
-        if (!$this->validate($new_data)) {
-            return false;
-        }
         $changed = array();
+
         foreach ($new_data as $key => $value) {
             if ($key === 'person_id') continue;
             if (isset($old_data[$key]) && ($old_data[$key] != $value)) {
