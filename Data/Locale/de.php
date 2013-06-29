@@ -15,14 +15,20 @@ if ('á' != "\xc3\xa1") {
 }
 
 return array(
+    'active'
+        => 'Aktiv',
     "At minimum you must specify a street, a city or a zip code for a valid address"
         => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
     'baron'
         => 'Baron',
+    "Can't read the contact with the ID %contact_id% - it is possibly deleted."
+        => 'Der Kontakt Datensatz mit der ID %contact_id% konnte nicht gelesen werden, er wurde möglicher Weise gelöscht.',
     "Contact insert fail, but the process does not return the reason!"
         => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
     'Country'
         => 'Land',
+    'deleted'
+        => 'Gelöscht',
     'doc'
         => 'Dr.',
     'earl'
@@ -33,6 +39,8 @@ return array(
         => 'Geschlecht',
     "Inserted the new contact with the ID %contact_id%."
         => 'Es wurde ein neuer Kontakt mit der ID %contact_id% hinzugefügt',
+    'locked'
+        => 'Gesperrt',
     'male'
         => 'Mann',
     "Missing the %identifier%! The ID should be set to -1 if you insert a new record."
@@ -59,10 +67,14 @@ return array(
         => 'Der Kommunikationswert darf nicht leer oder Null sein!',
     "The contact login must be set!"
         => 'Der Kontakt <b>Login</b> muss gesetzt sein!',
+    "The contact name %name% already exists! The update has still executed, please check if you really want this duplicate name."
+        => "Der Kontakt Name <b>%name%</b> wird bereits verwendet! Der Datensatz wurde trotzdem aktualisiert, bitte prüfen Sie ob sie den doppelten Eintrag beibehalten möchten.",
     'The contact record must contain a email address or a login name as unique identifier!'
         => 'Der Kontakt Datensatz muss eine E-Mail Adresse oder einen Anmeldenamen (Login) für eine eindeutige Identifizierung enthalten!',
     "The contact record was not changed!"
         => 'Der Kontakt Datensatz wurde nicht geändert.',
+    "The contact_type must be always set (%contact_types%)."
+        => 'Der Kontakt Typ muss immer gesetzt sein, mögliche Werte: %contact_types%.',
     "The contact with the ID %contact_id% does not exists!"
         => 'Es existiert kein Kontakt Datensatz mit der ID %contact_id%!',
     "The contact with the ID %contact_id% was successfull updated."
@@ -71,12 +83,16 @@ return array(
         => 'Der Ländercode <b>%country_code%</b> existiert nicht!',
     'The email address %email% is not valid, please check your input!'
         => 'Die E-Mail Adresse %email% ist nicht gültig, bitte überprüfen Sie Ihre Eingabe!',
+    "The field %field% can not be empty!"
+        => 'Das Feld %field% darf nicht leer sein!',
     'The form is not valid, please check your input and try again!'
         => 'Das Formular ist nicht gültig, bitte überprüfen Sie Ihre Eingabe und übermitteln Sie das Formular erneut!',
     'The last name must be at least two characters long!'
         => 'Der Nachname muss aus mindestens zwei Buchstaben bestehen!',
     'The login <b>%login%</b> is already in use, please choose another one!'
         => "Der Login <b>%login%</b> wird bereits verwendet, bitte legen Sie einen anderen Login fest!",
+    "The login_name or a email address must be always set, can't insert the record!"
+        => 'Das Feld login_name oder eine E-Mail Adresse müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
     "The %type% entry %value% is marked for primary communication and can not removed!"
         => 'Der Typ %type% mit dem Wert %value% ist für die primäre Kommunikation mit dem Kontakt festgelegt und kann nicht gelöscht werden!',
     "The update returned 'FALSE' but no message ..."
