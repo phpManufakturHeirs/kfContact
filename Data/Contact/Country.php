@@ -121,7 +121,6 @@ EOD;
             $SQL = "SELECT `country_code`, `country_name` FROM `".self::$table_name."` ORDER BY `country_name` ASC";
             $countries = $this->app['db']->fetchAll($SQL);
             $result = array();
-            $result[''] = '';
             foreach ($countries as $country) {
                 $result[$country['country_code']] = $this->app['utils']->unsanitizeText($country['country_name']);
             }

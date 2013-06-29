@@ -103,7 +103,6 @@ EOD;
             $SQL = "SELECT * FROM `".self::$table_name."` ORDER BY `title_short` ASC";
             $titles = $this->app['db']->fetchAll($SQL);
             $result = array();
-            $result[''] = '';
             foreach ($titles as $title) {
                 $result[$title['title_identifier']] = $this->app['utils']->unsanitizeText($title['title_short']);
             }
