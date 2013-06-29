@@ -131,7 +131,7 @@ class SimplePersonContact
                 'required' => false,
                 'label' => 'Title'
             ))
-            ->add('person_primary_name', 'text', array(
+            ->add('person_first_name', 'text', array(
                 'required' => false,
                 'label' => 'First name'
             ))
@@ -262,7 +262,7 @@ class SimplePersonContact
                     'person_id' => isset($data['person_id']) ? $data['person_id'] : -1,
                     'person_gender' => isset($data['person_gender']) ? $data['person_gender'] : 'MALE',
                     'person_title' => isset($data['person_title']) ? $data['person_title'] : '',
-                    'person_primary_name' => isset($data['person_primary_name']) ? $data['person_primary_name'] : '',
+                    'person_first_name' => isset($data['person_first_name']) ? $data['person_first_name'] : '',
                     'person_last_name' => isset($data['person_last_name']) ? $data['person_last_name'] : '',
                     'person_birthday' => $data['person_birthday'],
                     'person_contact_since' => isset($data['person_contact_since']) ? $data['person_contact_since'] : date('Y-m-d H:i:s'),

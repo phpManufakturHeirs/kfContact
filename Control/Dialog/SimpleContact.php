@@ -119,9 +119,8 @@ class SimpleContact {
                 'multiple' => false,
                 'required' => false,
                 'label' => 'Title',
-                'data' => 'cc'
             ))
-            ->add('person_0_person_primary_name', 'text', array(
+            ->add('person_0_person_first_name', 'text', array(
                 'required' => false,
                 'label' => 'First name'
             ))
@@ -205,6 +204,18 @@ class SimpleContact {
                 'required' => false,
                 'label' => 'Country'
             ))
+
+            // note - hidden fields
+            ->add('note_0_note_id', 'hidden')
+            ->add('note_0_contact_id', 'hidden')
+            ->add('note_0_note_title', 'hidden')
+            ->add('note_0_note_type', 'hidden')
+
+            // note - visible form fields
+            ->add('note_0_note_content', 'textarea', array(
+                'label' => 'Note',
+                'required' => false
+            ))
             ->getForm();
     }
 
@@ -226,7 +237,7 @@ class SimpleContact {
         // we dont need a multilevel and nested contact array, so flatten it
         $contact = $this->Contact->levelDownContactArray($contact);
 
-
+        // get the form
         $form = $this->getForm($contact);
 
         if ('POST' == $this->app['request']->getMethod()) {
@@ -236,29 +247,39 @@ class SimpleContact {
                 // get the form data
                 $contact = $form->getData();
                 // build a regular contact array
-                echo "<pre>";
-                print_r($contact);
-                echo "</pre>";
+/*
+    echo "<pre>";
+    print_r($contact);
+    echo "</pre>";
+*/
                 $contact = $this->Contact->levelUpContactArray($contact);
 
                 if (self::$contact_id < 1) {
                     // insert a new record
-                    echo "<pre>";
-                    print_r($contact);
-                    echo "</pre>";
-
+/*
+    echo "<pre>";
+    print_r($contact);
+    echo "</pre>";
+*/
                     if (!$this->Contact->insert($contact, self::$contact_id)) {
                         self::$message = $this->Contact->getMessage();
+                        if (!$this->isMessage()) {
+                            // Uuups, insert fail but the process does not prompt a message...
+                            $this->setMessage("Contact insert fail, but the process does not return the reason!");
+                        }
                     }
                     else {
                         $this->setMessage("Inserted the new contact with the ID %contact_id%.", array('%contact_id%' => self::$contact_id));
-                        // get the values of the new record
-                        $contact = $this->Contact->select(self::$contact_id);
-                        // build a flatten array
-                        $contact = $this->Contact->levelDownContactArray($contact);
+
                     }
                 }
 
+                // get the values of the new or updated record
+                $contact = $this->Contact->select(self::$contact_id);
+                // build a flatten array
+                $contact = $this->Contact->levelDownContactArray($contact);
+                // get the form
+                $form = $this->getForm($contact);
 
             }
             else {
