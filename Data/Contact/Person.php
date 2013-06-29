@@ -44,7 +44,7 @@ class Person
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `person_gender` ENUM('MALE','FEMALE') NOT NULL DEFAULT 'MALE',
         `person_title` VARCHAR(32) NOT NULL DEFAULT '',
-        `person_primary_name` VARCHAR(128) NOT NULL DEFAULT '',
+        `person_first_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_last_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_nick_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_birthday` DATE NOT NULL DEFAULT '0000-00-00',
@@ -85,7 +85,7 @@ EOD;
             'contact_id' => -1,
             'person_gender' => 'MALE',
             'person_title' => '',
-            'person_primary_name' => '',
+            'person_first_name' => '',
             'person_last_name' => '',
             'person_nick_name' => '',
             'person_birthday' => '0000-00-00',
@@ -112,7 +112,7 @@ EOD;
         try {
             $insert = array();
             foreach ($data as $key => $value) {
-                if ($key === 'person_id') continue;
+                if (($key == 'person_id') || ($key == 'person_timestamp')) continue;
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             $this->app['db']->insert(self::$table_name, $insert);
@@ -122,12 +122,19 @@ EOD;
         }
     }
 
+    /**
+     * Update the person record for the given ID
+     *
+     * @param array $data
+     * @param integer $person_id
+     * @throws \Exception
+     */
     public function update($data, $person_id)
     {
         try {
             $update = array();
             foreach ($data as $key => $value) {
-                if ($key === 'person_id') continue;
+                if (($key == 'person_id') || ($key == 'person_timestamp')) continue;
                 $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             if (!empty($update)) {
@@ -171,14 +178,65 @@ EOD;
         }
     }
 
-    public function getPrimaryAddressID($contact_id)
+    /**
+     * Get the field name by the desired contact type (ADDRESS, NOTE ...)
+     *
+     * @param string $contact_type
+     * @throws \Exception
+     * @return string
+     */
+    protected static function getFieldByContactType($contact_type)
+    {
+        switch (strtoupper($contact_type)) {
+            case 'ADDRESS':
+                return 'person_primary_address_id';
+            case 'NOTE':
+                return 'person_primary_note_id';
+            case 'PHONE':
+                return 'person_primary_phone_id';
+            case 'EMAIL':
+                return 'person_primary_email_id';
+            case 'COMPANY':
+                return 'person_primary_company_id';
+            default:
+                throw new \Exception("Unknown contact type: $contact_type");
+        }
+    }
+
+    /**
+     * Return the primary ID for the desired contact type of PERSON contact ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     */
+    public function getPersonPrimaryContactTypeID($contact_id, $contact_type)
     {
         try {
-            $SQL = "SELECT `person_primary_address_id` FROM `".self::$table_name."` WHERE `contact_id`='$contact_id'";
+            $primary_type = self::getFieldByContactType($contact_type);
+            $SQL = "SELECT `$primary_type` FROM `".self::$table_name."` WHERE `contact_id`='$contact_id'";
             return $this->app['db']->fetchColumn($SQL);
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Set the primary ID for the desired contact type of PERSON contact ID
+     *
+     * @param integer $contact_id
+     * @param integer $address_id
+     * @throws \Exception
+     */
+    public function setPersonPrimaryContactTypeID($contact_id, $contact_type, $primary_id)
+    {
+        try {
+            $primary_type = self::getFieldByContactType($contact_type);
+            $this->app['db']->update(self::$table_name, array($primary_type => $primary_id), array('contact_id' => $contact_id));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+
 
 }

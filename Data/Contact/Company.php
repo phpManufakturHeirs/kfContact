@@ -129,4 +129,65 @@ EOD;
         }
     }
 
+    /**
+     * Get the field name by the desired contact type (ADDRESS, NOTE ...)
+     *
+     * @param string $contact_type
+     * @throws \Exception
+     * @return string
+     */
+    protected static function getFieldByContactType($contact_type)
+    {
+        switch (strtoupper($contact_type)) {
+            case 'ADDRESS':
+                return 'company_primary_address_id';
+            case 'NOTE':
+                return 'company_primary_note_id';
+            case 'PHONE':
+                return 'company_primary_phone_id';
+            case 'EMAIL':
+                return 'company_primary_email_id';
+            case 'PERSON':
+                return 'company_primary_person_id';
+            default:
+                throw new \Exception("Unknown contact type: $contact_type");
+        }
+    }
+
+    /**
+     * Return the primary ID for the desired contact type of COMPANY contact ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     */
+    public function getCompanyPrimaryContactTypeID($contact_id, $contact_type)
+    {
+        try {
+            $primary_type = self::getFieldByContactType($contact_type);
+            $SQL = "SELECT `$primary_type` FROM `".self::$table_name."` WHERE `contact_id`='$contact_id'";
+            return $this->app['db']->fetchColumn($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Set the primary ID for the desired contact type of COMPANY contact ID
+     *
+     * @param integer $contact_id
+     * @param integer $primary_id
+     * @throws \Exception
+     */
+    public function setCompanyPrimaryContactTypeID($contact_id, $contact_type, $primary_id)
+    {
+        try {
+            $primary_type = self::getFieldByContactType($contact_type);
+            $this->app['db']->update(self::$table_name, array($primary_type => $primary_id), array('contact_id' => $contact_id));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+
+
 }

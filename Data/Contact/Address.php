@@ -110,7 +110,7 @@ EOD;
         try {
             $insert = array();
             foreach ($data as $key => $value) {
-                if ($key === 'address_id') continue;
+                if (($key == 'address_id') || ($key == 'address_timestamp')) continue;
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
             }
             $this->app['db']->insert(self::$table_name, $insert);
@@ -161,18 +161,22 @@ EOD;
      * @throws \Exception
      * @return boolean
      */
-    public function isUsedAsPrimaryAddress($address_id, $contact_id)
+    public function isUsedAsPrimaryAddress($address_id, $contact_id, $contact_type='PERSON')
     {
         try {
-            $SQL = "SELECT `company_primary_address_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_company` WHERE ".
-                "`contact_id`='$contact_id' AND `company_primary_address_id`='$address_id' AND `company_status`!='DELETED'";
-            if ($address_id == ($check = $this->app['db']->fetchColumn($SQL))) {
-                return true;
+            if ($contact_type == 'COMPANY') {
+                $SQL = "SELECT `company_primary_address_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_company` WHERE ".
+                    "`contact_id`='$contact_id' AND `company_primary_address_id`='$address_id' AND `company_status`!='DELETED'";
+                if ($address_id == ($check = $this->app['db']->fetchColumn($SQL))) {
+                    return true;
+                }
             }
-            $SQL = "SELECT `person_primary_address_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
-                "`contact_id`='$contact_id' AND `person_primary_address_id`='$address_id' AND `person_status`!='DELETED'";
-            if ($address_id == ($check = $this->app['db']->fetchColumn($SQL))) {
-                return true;
+            else {
+                $SQL = "SELECT `person_primary_address_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
+                    "`contact_id`='$contact_id' AND `person_primary_address_id`='$address_id' AND `person_status`!='DELETED'";
+                if ($address_id == ($check = $this->app['db']->fetchColumn($SQL))) {
+                    return true;
+                }
             }
             return false;
         } catch (\Doctrine\DBAL\DBALException $e) {

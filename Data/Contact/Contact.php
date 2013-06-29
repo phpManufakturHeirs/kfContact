@@ -141,7 +141,7 @@ EOD;
         try {
             $insert = array();
             foreach ($data as $key => $value) {
-                if ($key === 'contact_id') continue;
+                if (($key == 'contact_id') || ($key == 'contact_timestamp')) continue;
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             $this->app['db']->insert(self::$table_name, $insert);
@@ -163,7 +163,7 @@ EOD;
         try {
             $update = array();
             foreach ($data as $key => $value) {
-                if ($key === 'contact_id') continue;
+                if (($key == 'contact_id') || ($key == 'contact_timestamp')) continue;
                 $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             if (!empty($update)) {
@@ -233,6 +233,12 @@ EOD;
         }
     }
 
+    /**
+     * Return the contact TYPE for the given contact ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     */
     public function getContactType($contact_id)
     {
         try {
@@ -242,5 +248,185 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Get the primary ID for the given contact ID and and the type (PHONE, EMAIL, ADDRESS...)
+     *
+     * @param integer $contact_id
+     * @param string $contact_type
+     * @throws \Exception
+     */
+    protected function getPrimaryIDbyType($contact_id, $contact_type)
+    {
+        try {
+            // first we need the contact type
+            $type = $this->getContactType($contact_id);
+            if ($type == 'PERSON') {
+                return $this->Person->getPersonPrimaryContactTypeID($contact_id, $contact_type);
+            }
+            else {
+                return $this->Company->getCompanyPrimaryContactTypeID($contact_id, $contact_type);
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Set the primary ID for the given contact ID and and the type (PHONE, EMAIL, ADDRESS...)
+     *
+     * @param integer $contact_id
+     * @param string $contact_type
+     * @param integer $primary_id
+     * @throws \Exception
+     */
+    protected function setPrimaryIDbyType($contact_id, $contact_type, $primary_id)
+    {
+        try {
+            // first we need the contact type
+            $type = $this->getContactType($contact_id);
+            if ($type == 'PERSON') {
+                $this->Person->setPersonPrimaryContactTypeID($contact_id, $contact_type, $primary_id);
+            }
+            else {
+                $this->Company->setCompanyPrimaryContactTypeID($contact_id, $contact_type, $primary_id);
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Return the primary address ID for the CONTACT ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     */
+    public function getPrimaryAddressID($contact_id)
+    {
+        return $this->getPrimaryIDbyType($contact_id, 'ADDRESS');
+    }
+
+    /**
+     * Set the primary address ID for the CONTACT ID
+     *
+     * @param integer $contact_id
+     * @param integer $address_id
+     * @throws \Exception
+     */
+    public function setPrimaryAddressID($contact_id, $address_id)
+    {
+        return $this->setPrimaryIDbyType($contact_id, 'ADDRESS', $address_id);
+    }
+
+    /**
+     * Clear the primary address ID for the CONTACT ID and set it to -1
+     *
+     * @param integer $contact_id
+     */
+    public function clearPrimaryAddressID($contact_id)
+    {
+        return $this->setPrimaryIDbyType($contact_id, 'ADDRESS', -1);
+    }
+
+    /**
+     * Return the primary NOTE ID for the CONTACT ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     */
+    public function getPrimaryNoteID($contact_id)
+    {
+        return $this->getPrimaryIDbyType($contact_id, 'NOTE');
+    }
+
+    /**
+     * Set the primary NOTE ID for the CONTACT ID
+     *
+     * @param integer $contact_id
+     * @param integer $note_id
+     * @throws \Exception
+     */
+    public function setPrimaryNoteID($contact_id, $note_id)
+    {
+        return $this->setPrimaryIDbyType($contact_id, 'NOTE', $note_id);
+    }
+
+    /**
+     * Clear the primary NOTE ID for the CONTACT ID and set it to -1
+     *
+     * @param integer $contact_id
+     */
+    public function clearPrimaryNoteID($contact_id)
+    {
+        return $this->setPrimaryIDbyType($contact_id, 'NOTE', -1);
+    }
+
+    /**
+     * Return the primary EMAIL ID for the CONTACT ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     */
+    public function getPrimaryEmailID($contact_id)
+    {
+        return $this->getPrimaryIDbyType($contact_id, 'EMAIL');
+    }
+
+    /**
+     * Set the primary EMAIL ID for the CONTACT ID
+     *
+     * @param integer $contact_id
+     * @param integer $email_id
+     * @throws \Exception
+     */
+    public function setPrimaryEmailID($contact_id, $email_id)
+    {
+        return $this->setPrimaryIDbyType($contact_id, 'EMAIL', $email_id);
+    }
+
+    /**
+     * Clear the primary EMAIL ID for the CONTACT ID and set it to -1
+     *
+     * @param integer $contact_id
+     */
+    public function clearPrimaryEmailID($contact_id)
+    {
+        return $this->setPrimaryIDbyType($contact_id, 'EMAIL', -1);
+    }
+
+    /**
+     * Return the primary PHONE ID for the CONTACT ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     */
+    public function getPrimaryPhoneID($contact_id)
+    {
+        return $this->getPrimaryIDbyType($contact_id, 'PHONE');
+    }
+
+    /**
+     * Set the primary PHONE ID for the CONTACT ID
+     *
+     * @param integer $contact_id
+     * @param integer $phone_id
+     * @throws \Exception
+     */
+    public function setPrimaryPhoneID($contact_id, $phone_id)
+    {
+        return $this->setPrimaryIDbyType($contact_id, 'PHONE', $phone_id);
+    }
+
+    /**
+     * Clear the primary PHONE ID for the CONTACT ID and set it to -1
+     *
+     * @param integer $contact_id
+     */
+    public function clearPrimaryPhoneID($contact_id)
+    {
+        return $this->setPrimaryIDbyType($contact_id, 'PHONE', -1);
+    }
+
 
 }

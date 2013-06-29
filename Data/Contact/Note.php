@@ -123,7 +123,7 @@ EOD;
             $insert = array();
             $TextOnly = (isset($data['note_type']) && ($data['note_type'] === 'HTML')) ? false : true;
             foreach ($data as $key => $value) {
-                if ($key === 'note_id') continue;
+                if (($key == 'note_id') || ($key == 'note_timestamp')) continue;
             		if ($TextOnly && ($key === 'note_content')) {
             			$value = strip_tags($value);
             		}
