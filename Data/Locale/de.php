@@ -19,6 +19,8 @@ return array(
         => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
     'baron'
         => 'Baron',
+    "Contact insert fail, but the process does not return the reason!"
+        => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
     'Country'
         => 'Land',
     'doc'
