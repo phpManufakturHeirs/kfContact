@@ -104,15 +104,15 @@ class ContactPerson extends ContactParent
      *
      * @param array $data
      * @param integer $contact_id
-     * @param string $person_id
+     * @param reference integer $person_id
      * @throws ContactException
      * @return boolean
      */
-    public function insert($data, $contact_id, &$person_id=null)
+    public function insert($data, $contact_id, &$person_id=-1)
     {
-        if (!isset($data['contact_id'])) {
-            $data['contact_id'] = $contact_id;
-        }
+        // enshure that the contact_id isset
+        $data['contact_id'] = $contact_id;
+
         if (!$this->validate($data)) {
             return false;
         }

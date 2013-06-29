@@ -13,10 +13,12 @@ namespace phpManufaktur\Contact\Control;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Note;
+use phpManufaktur\Contact\Data\Contact\Contact as ContactData;
 
 class ContactNote extends ContactParent
 {
     protected $Note = null;
+    protected $Contact = null;
 
     /**
      * Constructor
@@ -27,6 +29,7 @@ class ContactNote extends ContactParent
     {
         parent::__construct($app);
         $this->Note = new Note($this->app);
+        $this->ContactData = new ContactData($this->app);
     }
 
     /**
@@ -94,12 +97,21 @@ class ContactNote extends ContactParent
      */
     public function insert($data, $contact_id, &$note_id=null)
     {
-        $note_id = -1;
-        if (!isset($data['contact_id'])) {
-            $data['contact_id'] = $contact_id;
+        // enshure that the contact_id isset
+        $data['contact_id'] = $contact_id;
+
+        if (!empty($data['note_content'])) {
+            if (!$this->validate($data)) {
+                return false;
+            }
+            $note_id = -1;
+            $this->Note->insert($data, $note_id);
+            $this->app['monolog']->addInfo("Inserted note record for the contactID {$contact_id}", array(__METHOD__, __LINE__));
+            if ($this->ContactData->getPrimaryNoteID($contact_id) < 1) {
+                $this->ContactData->setPrimaryNoteID($contact_id, $note_id);
+                $this->app['monolog']->addInfo("Set note ID $note_id as primary ID for contact $contact_id");
+            }
         }
-        $this->Note->insert($data, $note_id);
-        $this->app['monolog']->addInfo("Inserted note record for the contactID {$contact_id}", array(__METHOD__, __LINE__));
         return true;
     }
 }

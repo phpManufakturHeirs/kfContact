@@ -413,9 +413,14 @@ class Contact extends ContactParent
                     break;
                 case 'note':
                     if (isset($contact_data[$block]) && is_array($contact_data[$block])) {
-                        if (!$this->ContactNote->validate($contact_data, $validate_options)) {
-                            $message .= $this->ContactNote->getMessage();
-                            $check = false;
+                        $level = 0;
+                        foreach ($contact_data[$block] as $note_data) {
+                            if (!$this->ContactNote->validate($note_data, $contact_data, $validate_options)) {
+                                $message .= $this->ContactNote->getMessage();
+                                $check = false;
+                            }
+                            $contact_data[$block][$level] = $note_data;
+                            $level++;
                         }
                     }
                     break;
@@ -451,44 +456,30 @@ class Contact extends ContactParent
             $this->ContactData->insert($data['contact'], self::$contact_id);
             $contact_id = self::$contact_id;
 
+            // as next we need the person record
+            if (isset($data['person'])) {
+                foreach ($data['person'] as $person) {
+                    if (!is_array($person)) continue;
+                    if (!$this->ContactPerson->insert($person, self::$contact_id, self::$person_id)) {
+                        // something went wrong, rollback and return with message
+                        self::$message = $this->ContactPerson->getMessage();
+                        $this->app['db']->rollback();
+                        return false;
+                    }
+                }
+            }
+
+            // todo: COMPANY
+
             // check the communication
             if (isset($data['communication'])) {
                 foreach ($data['communication'] as $communication) {
                     // accept only arrays
                     if (!is_array($communication)) continue;
-                    // ignore empty values
-                    if (empty($communication['communication_value'])) continue;
-                    $communication_id = -1;
-                    if ($this->ContactCommunication->insert($communication, self::$contact_id, $communication_id)) {
-                        switch ($communication['communication_type']) {
-                            case 'EMAIL':
-                                if (self::$type === 'PERSON') {
-                                    if (!isset($data['person'][0]['person_primary_email_id']) ||
-                                        (isset($data['person'][0]['person_primary_email_id']) && ($data['person'][0]['person_primary_email_id'] < 1))) {
-                                        $data['person'][0]['person_primary_email_id'] = $communication_id;
-                                    }
-                                }
-                                else {
-                                    throw ContactException::contactTypeNotSupported(self::$type);
-                                }
-                                break;
-                            case 'PHONE':
-                                if (self::$type === 'PERSON') {
-                                    if (!isset($data['person'][0]['person_primary_phone_id']) ||
-                                        (isset($data['person'][0]['person_primary_phone_id']) && ($data['person'][0]['person_primary_phone_id'] < 1))) {
-                                        $data['person'][0]['person_primary_phone_id'] = $communication_id;
-                                    }
-                                }
-                                else {
-                                    throw ContactException::contactTypeNotSupported(self::$type);
-                                }
-                                break;
-                        }
-                    }
-                    else {
+                    if (!$this->ContactCommunication->insert($communication, self::$contact_id)) {
                         // rollback and return to the dialog
-                        $this->app['db']->rollback();
                         self::$message = $this->ContactCommunication->getMessage();
+                        $this->app['db']->rollback();
                         return false;
                     }
                 }
@@ -498,23 +489,10 @@ class Contact extends ContactParent
                 foreach ($data['address'] as $address) {
                     // loop through the addresses
                     if (!is_array($address)) continue;
-                    $address_id = -1;
-                    if ($this->ContactAddress->insert($address, self::$contact_id, $address_id)) {
-                        if (self::$type === 'PERSON') {
-                            if (!isset($data['person'][0]['person_primary_address_id']) ||
-                                (isset($data['person'][0]['person_primary_address_id']) && ($data['person'][0]['person_primary_address_id'] < 1))) {
-                                // pick the first address as primary address
-                                $data['person'][0]['person_primary_address_id'] = $address_id;
-                            }
-                        }
-                        else {
-                            throw ContactException::contactTypeNotSupported(self::$type);
-                        }
-                    }
-                    else {
+                    if (!$this->ContactAddress->insert($address, self::$contact_id)) {
                         // rollback and return to the dialog
-                        $this->app['db']->rollback();
                         self::$message = $this->ContactAddress->getMessage();
+                        $this->app['db']->rollback();
                         return false;
                     }
                 }
@@ -523,36 +501,10 @@ class Contact extends ContactParent
             if (isset($data['note'])) {
                 foreach ($data['note'] as $note) {
                     if (!is_array($note)) continue;
-                    $note_id = -1;
-                    if ($this->ContactNote->insert($note, self::$contact_id, $note_id)) {
-                        if (self::$type === 'PERSON') {
-                            if (!isset($data['person'][0]['person_primary_note_id']) ||
-                            (isset($data['person'][0]['person_primary_note_id']) && ($data['person'][0]['person_primary_note_id'] < 1))) {
-                                // pick the first address as primary address
-                                $data['person'][0]['person_primary_note_id'] = $note_id;
-                                break;
-                            }
-                        }
-                        else {
-                            throw ContactException::contactTypeNotSupported(self::$type);
-                        }
-                    }
-                    else {
-                        // rollback and return to the dialog
-                        $this->app['db']->rollback();
-                        self::$message = $this->ContactNote->getMessage();
-                        return false;
-                    }
-                }
-            }
-
-            if (isset($data['person'])) {
-                foreach ($data['person'] as $person) {
-                    if (!is_array($person)) continue;
-                    if (!$this->ContactPerson->insert($person, self::$contact_id, self::$person_id)) {
+                    if (!$this->ContactNote->insert($note, self::$contact_id)) {
                         // something went wrong, rollback and return with message
-                        $this->app['db']->rollback();
                         self::$message = $this->ContactPerson->getMessage();
+                        $this->app['db']->rollback();
                         return false;
                     }
                 }

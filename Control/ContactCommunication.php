@@ -16,12 +16,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 use phpManufaktur\Contact\Data\Contact\Communication;
 use phpManufaktur\Contact\Data\Contact\CommunicationType;
 use phpManufaktur\Contact\Data\Contact\CommunicationUsage;
+use phpManufaktur\Contact\Data\Contact\Contact as ContactData;
 
 class ContactCommunication extends ContactParent
 {
     protected $Communication = null;
     protected $CommunicationType = null;
     protected $CommunicationUsage = null;
+    protected $ContactData = null;
 
     /**
      * Constructor
@@ -34,6 +36,7 @@ class ContactCommunication extends ContactParent
         $this->Communication = new Communication($this->app);
         $this->CommunicationType = new CommunicationType($this->app);
         $this->CommunicationUsage = new CommunicationUsage($this->app);
+        $this->ContactData = new ContactData($this->app);
     }
 
     /**
@@ -142,22 +145,36 @@ class ContactCommunication extends ContactParent
      * @param reference integer $communication_id
      * @return boolean
      */
-    public function insert($data, $contact_id, &$communication_id)
+    public function insert($data, $contact_id, &$communication_id=-1)
     {
-        // insert the communication record
-        if (!isset($data['contact_id'])) {
-            $data['contact_id'] = $contact_id;
-        }
+        // enshure that the contact_id isset
+        $data['contact_id'] = $contact_id;
 
+        if (empty($data['communication_value'])) {
+            // skip empty value
+            $this->app['monolog']->addDebug("Skipped empty communication entry type {$data['communication_type']} for contact ID {$data['contact_id']}.");
+            return true;
+        }
+        // validate the entry
         if (!$this->validate($data)) {
             return false;
         }
-        // it is possible that the validation igonore empty values!
-        if (empty($data['communication_value'])) {
-            // ... do nothing!
-            return true;
-        }
+        // insert the new communication entry
         $this->Communication->insert($data, $communication_id);
+        if ($data['communication_type'] == 'EMAIL') {
+            // check primary ID for EMAIL
+            if ($this->ContactData->getPrimaryEmailID($contact_id) < 1) {
+                $this->ContactData->setPrimaryEmailID($contact_id, $communication_id);
+                $this->app['monolog']->addDebug("Set communication ID $communication_id as primary email for contact ID $contact_id.");
+            }
+        }
+        elseif ($data['communication_type'] == 'PHONE') {
+            // check primary ID for PHONE
+            if ($this->ContactData->getPrimaryPhoneID($contact_id) < 1) {
+                $this->ContactData->setPrimaryPhoneID($contact_id, $communication_id);
+                $this->app['monolog']->addDebug("Set communication ID $communication_id as primary phone for contact ID $contact_id.");
+            }
+        }
         return true;
     }
 
@@ -175,8 +192,9 @@ class ContactCommunication extends ContactParent
         $has_changed = false;
         if (empty($new_data['communication_value'])) {
             // check if this entry can be deleted
+            $contact_type = $this->ContactData->getContactType($old_data['contact_id']);
             if ($this->Communication->isUsedAsPrimaryConnection($communication_id,
-                $old_data['contact_id'], $old_data['communication_type'])) {
+                $old_data['contact_id'], $old_data['communication_type'], $contact_type)) {
                 // entry is marked for primary communication and can not deleted!
                 $this->setMessage("The %type% entry %value% is marked for primary communication and can not removed!",
                     array('%type%' => $old_data['communication_type'], '%value%' => $old_data['communication_value']));

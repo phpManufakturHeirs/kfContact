@@ -137,30 +137,32 @@ class ContactAddress extends ContactParent
      * @param reference integer $address_id
      * @return boolean
      */
-    public function insert($data, $contact_id, &$address_id)
+    public function insert($data, $contact_id, &$address_id=-1)
     {
-        if (!isset($data['contact_id']) || ($data['contact_id'] < 1)) {
-            $data['contact_id'] = $contact_id;
-        }
+        // enshure that the contact_id isset
+        $data['contact_id'] = $contact_id;
+
         if (!$this->validate($data)) {
            return false;
         }
         if ((isset($data['address_street']) && (!empty($data['address_street']))) ||
             (isset($data['address_city']) && !empty($data['address_city'])) ||
             (isset($data['address_zip']) && !empty($data['address_zip']))) {
+
             // insert only, if street, city or zip isset
-
             $this->Address->insert($data, $address_id);
-            // check if a primary address isset for the contact
-            $contact_type = $this->Contact->getContactType($contact_id);
-            if ($contact_type == 'PERSON') {
-                if ($this->Contact->getPrimaryAddressID($contact_id) < 1) {
+            $this->app['monolog']->addDebug("Insert address ID $address_id for contact ID $contact_id");
 
-                }
+            // check if a primary address isset for the contact
+            if ($this->Contact->getPrimaryAddressID($contact_id) < 1) {
+                // set the primary address
+                $this->Contact->setPrimaryAddressID($contact_id, $address_id);
+                $this->app['monolog']->addDebug("Set address ID $address_id as primary address for the contact ID $contact_id");
             }
         }
         else {
-            $this->app['monolog']->addInfo("Skipped ADRESS insert because no street, zip or city isset.");
+            // nothing to do
+            $this->app['monolog']->addDebug("Skipped ADDRESS insert because no street, zip or city isset.");
         }
         return true;
     }
