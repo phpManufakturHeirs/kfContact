@@ -21,6 +21,10 @@ return array(
         => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
     'baron'
         => 'Baron',
+    "Can't delete the Adress with the ID %address_id% because it is used as primary address."
+        => "Die Adresse mit der ID %address_id% kann nicht gelöscht werden, da sie als primäre Adresse für diesen Kontakt verwendet wird.",
+    "Can't delete the Note with the ID %note_id% because it is used as primary note for this contact."
+        => "Die Notiz mit der ID %note_id% kann nicht gelöscht werden, da sie als primäre Information für den Kontakt verwendet wird.",
     "Can't read the contact with the ID %contact_id% - it is possibly deleted."
         => 'Der Kontakt Datensatz mit der ID %contact_id% konnte nicht gelesen werden, er wurde möglicher Weise gelöscht.',
     "Contact insert fail, but the process does not return the reason!"
@@ -83,6 +87,8 @@ return array(
         => 'Der Ländercode <b>%country_code%</b> existiert nicht!',
     'The email address %email% is not valid, please check your input!'
         => 'Die E-Mail Adresse %email% ist nicht gültig, bitte überprüfen Sie Ihre Eingabe!',
+    "The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!"
+        => "Der Eintrag %entry% mit der ID %id% wurde nicht aktualisiert, es wurde kein passender Eintrag in der Tabelle gefunden!",
     "The field %field% can not be empty!"
         => 'Das Feld %field% darf nicht leer sein!',
     'The form is not valid, please check your input and try again!'
@@ -93,6 +99,8 @@ return array(
         => "Der Login <b>%login%</b> wird bereits verwendet, bitte legen Sie einen anderen Login fest!",
     "The login_name or a email address must be always set, can't insert the record!"
         => 'Das Feld login_name oder eine E-Mail Adresse müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
+    "The note with the ID %note_id% was successfull deleted."
+        => 'Die Notiz mit der ID %note_id% wurde gelöscht.',
     "The %type% entry %value% is marked for primary communication and can not removed!"
         => 'Der Typ %type% mit dem Wert %value% ist für die primäre Kommunikation mit dem Kontakt festgelegt und kann nicht gelöscht werden!',
     "The update returned 'FALSE' but no message ..."
