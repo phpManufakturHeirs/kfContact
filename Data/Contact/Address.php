@@ -153,36 +153,6 @@ EOD;
         }
     }
 
-    /**
-     * Check if the given $address_id is used as primary address for the contact
-     *
-     * @param integer $address_id
-     * @param integer $contact_id
-     * @throws \Exception
-     * @return boolean
-     */
-    public function isUsedAsPrimaryAddress($address_id, $contact_id, $contact_type='PERSON')
-    {
-        try {
-            if ($contact_type == 'COMPANY') {
-                $SQL = "SELECT `company_primary_address_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_company` WHERE ".
-                    "`contact_id`='$contact_id' AND `company_primary_address_id`='$address_id' AND `company_status`!='DELETED'";
-                if ($address_id == ($check = $this->app['db']->fetchColumn($SQL))) {
-                    return true;
-                }
-            }
-            else {
-                $SQL = "SELECT `person_primary_address_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
-                    "`contact_id`='$contact_id' AND `person_primary_address_id`='$address_id' AND `person_status`!='DELETED'";
-                if ($address_id == ($check = $this->app['db']->fetchColumn($SQL))) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (\Doctrine\DBAL\DBALException $e) {
-            throw new \Exception($e);
-        }
-    }
 
     /**
      * Mark the given $address_id as deleted but does not delete the record physically
@@ -194,6 +164,29 @@ EOD;
     {
         try {
             $this->app['db']->update(self::$table_name, array('address_status' => 'DELETED'), array('address_id' => $address_id));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Update the address record for the given ID
+     *
+     * @param array $data
+     * @param integer $address_id
+     * @throws \Exception
+     */
+    public function update($data, $address_id)
+    {
+        try {
+            $update = array();
+            foreach ($data as $key => $value) {
+                if (($key == 'address_id') || ($key == 'address_timestamp')) continue;
+                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('address_id' => $address_id));
+            }
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

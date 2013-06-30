@@ -168,4 +168,42 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Mark the given $note_id as deleted but does not delete the record physically
+     *
+     * @param integer $note_id
+     * @throws \Exception
+     */
+    public function delete($note_id)
+    {
+        try {
+            $this->app['db']->update(self::$table_name, array('note_status' => 'DELETED'), array('note_id' => $address_id));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Update the note record for the given ID
+     *
+     * @param array $data
+     * @param integer $note_id
+     * @throws \Exception
+     */
+    public function update($data, $note_id)
+    {
+        try {
+            $update = array();
+            foreach ($data as $key => $value) {
+                if (($key == 'note_id') || ($key == 'note_timestamp')) continue;
+                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('note_id' => $note_id));
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }

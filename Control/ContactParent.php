@@ -31,7 +31,7 @@ class ContactParent
     /**
      * @return the $message
      */
-    public function getMessage()
+    public static function getMessage()
     {
         return self::$message;
     }
@@ -50,7 +50,7 @@ class ContactParent
      *
      * @return boolean
      */
-    public function isMessage()
+    public static function isMessage()
     {
         return !empty(self::$message);
     }
@@ -58,7 +58,7 @@ class ContactParent
     /**
      * Clear the existing message(s)
      */
-    public function clearMessage()
+    public static function clearMessage()
     {
         self::$message = '';
     }

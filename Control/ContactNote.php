@@ -18,7 +18,7 @@ use phpManufaktur\Contact\Data\Contact\Contact as ContactData;
 class ContactNote extends ContactParent
 {
     protected $Note = null;
-    protected $Contact = null;
+    protected $ContactData = null;
 
     /**
      * Constructor
@@ -91,14 +91,16 @@ class ContactNote extends ContactParent
      *
      * @param array $data
      * @param integer $contact_id
-     * @param string $person_id
+     * @param reference integer $note_id
+     * @param reference boolean $has_inserted
      * @throws ContactException
      * @return boolean
      */
-    public function insert($data, $contact_id, &$note_id=null)
+    public function insert($data, $contact_id, &$note_id=null, &$has_inserted=null)
     {
         // enshure that the contact_id isset
         $data['contact_id'] = $contact_id;
+        $has_inserted = false;
 
         if (!empty($data['note_content'])) {
             if (!$this->validate($data)) {
@@ -106,12 +108,54 @@ class ContactNote extends ContactParent
             }
             $note_id = -1;
             $this->Note->insert($data, $note_id);
+            $has_inserted = true;
             $this->app['monolog']->addInfo("Inserted note record for the contactID {$contact_id}", array(__METHOD__, __LINE__));
             if ($this->ContactData->getPrimaryNoteID($contact_id) < 1) {
                 $this->ContactData->setPrimaryNoteID($contact_id, $note_id);
                 $this->app['monolog']->addInfo("Set note ID $note_id as primary ID for contact $contact_id");
             }
         }
+        return true;
+    }
+
+    public function update($new_data, $old_data, $note_id, &$has_changed)
+    {
+        $has_changed = false;
+
+        if (empty($new_data['note_content'])) {
+            // check if the entry can be deleted
+            if ($this->ContactData->getPrimaryNoteID($old_data['contact_id']) == $note_id) {
+                $this->setMessage("Can't delete the Note with the ID %note_id% because it is used as primary note for this contact.",
+                    array('%note_id%' => $note_id));
+                return false;
+            }
+            // delet the note
+            $this->Note->delete($note_id);
+            $this->setMessage("The note with the ID %note_id% was successfull deleted.", array('%note_id%' => $note_id));
+            $has_changed = true;
+            return true;
+        }
+
+        // now we can validate the address
+        if (!$this->validate($new_data)) {
+            return false;
+        }
+
+        // process the new data
+        $changed = array();
+        foreach ($new_data as $key => $value) {
+            if (($key == 'note_id') || ($key == 'note_timestamp')) continue;
+            if (isset($old_data[$key]) && ($old_data[$key] != $value)) {
+                $changed[$key] = $value;
+            }
+        }
+
+        if (!empty($changed)) {
+            // update the communication record
+            $this->Note->update($changed, $note_id);
+            $has_changed = true;
+        }
+
         return true;
     }
 }

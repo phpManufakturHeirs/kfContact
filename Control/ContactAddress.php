@@ -135,12 +135,14 @@ class ContactAddress extends ContactParent
      * @param array $data
      * @param integer $contact_id
      * @param reference integer $address_id
+     * @param reference boolean $has_inserted
      * @return boolean
      */
-    public function insert($data, $contact_id, &$address_id=-1)
+    public function insert($data, $contact_id, &$address_id=null, &$has_inserted=null)
     {
         // enshure that the contact_id isset
         $data['contact_id'] = $contact_id;
+        $has_inserted = false;
 
         if (!$this->validate($data)) {
            return false;
@@ -151,6 +153,7 @@ class ContactAddress extends ContactParent
 
             // insert only, if street, city or zip isset
             $this->Address->insert($data, $address_id);
+            $has_inserted = true;
             $this->app['monolog']->addDebug("Insert address ID $address_id for contact ID $contact_id");
 
             // check if a primary address isset for the contact
@@ -176,7 +179,7 @@ class ContactAddress extends ContactParent
             (!isset($new_data['address_city']) || empty($new_data['address_city']))) {
             // check if this address can be deleted
 
-            if ($this->Address->isUsedAsPrimaryAddress($address_id, $old_data['contact_id'])) {
+            if ($this->Contact->getPrimaryAddressID($old_data['contact_id']) == $address_id) {
                 $this->setMessage("Can't delete the Adress with the ID %address_id% because it is used as primary address.",
                     array('%address_id%' => $address_id));
                 return false;
@@ -196,7 +199,20 @@ class ContactAddress extends ContactParent
             return false;
         }
 
-        echo "check";
+        // process the new data
+        $changed = array();
+        foreach ($new_data as $key => $value) {
+            if (($key == 'address_id') || ($key == 'address_timestamp')) continue;
+            if (isset($old_data[$key]) && ($old_data[$key] != $value)) {
+                $changed[$key] = $value;
+            }
+        }
+
+        if (!empty($changed)) {
+            // update the communication record
+            $this->Address->update($changed, $address_id);
+            $has_changed = true;
+        }
         return true;
     }
 

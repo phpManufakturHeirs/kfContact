@@ -223,9 +223,13 @@ class SimpleContact {
             ))
 
             // note - hidden fields
-            ->add('note_0_note_id', 'hidden')
+            ->add('note_0_note_id', 'hidden', array(
+                'data' => (!empty($contact['note_0_note_id'])) ? $contact['note_0_note_id'] : -1
+            ))
             ->add('note_0_contact_id', 'hidden')
-            ->add('note_0_note_title', 'hidden')
+            ->add('note_0_note_title', 'hidden', array(
+                'data' => 'Account note'
+            ))
             ->add('note_0_note_type', 'hidden')
 
             // note - visible form fields
@@ -258,7 +262,7 @@ class SimpleContact {
         if ($this->Contact->isMessage()) {
             self::$message = $this->Contact->getMessage();
         }
-
+//echo "<pre>";print_r($contact);echo "</pre>";
         // get the form
         $form = $this->getForm($contact);
 
