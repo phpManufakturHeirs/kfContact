@@ -14,21 +14,13 @@ namespace phpManufaktur\Contact\Control;
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Contact as ContactData;
 use Symfony\Component\Validator\Constraints as Assert;
+use phpManufaktur\Contact\Data\Contact\Title;
+use phpManufaktur\Contact\Data\Contact\Country;
 
 class Contact extends ContactParent
 {
 
     protected static $contact_id = -1;
-    protected static $person_id = -1;
-
-    protected static $name = '';
-    protected static $login = '';
-    protected static $status = 'ACTIVE';
-    protected static $timestamp = '0000-00-00 00:00:00';
-    protected static $type = 'PERSON';
-    protected static $person = null;
-    protected static $company = null;
-
 
     protected $ContactData = null;
     protected $ContactPerson = null;
@@ -69,12 +61,12 @@ class Contact extends ContactParent
     {
         parent::__construct($app);
 
-        $this->ContactPerson = new ContactPerson($this->app);
-        $this->ContactData = new ContactData($this->app);
-        $this->ContactCommunication = new ContactCommunication($this->app);
         $this->ContactAddress = new ContactAddress($this->app);
-        $this->ContactNote = new ContactNote($this->app);
+        $this->ContactCommunication = new ContactCommunication($this->app);
         $this->ContactCompany = new ContactCompany($this->app);
+        $this->ContactData = new ContactData($this->app);
+        $this->ContactNote = new ContactNote($this->app);
+        $this->ContactPerson = new ContactPerson($this->app);
     }
 
     /**
@@ -104,6 +96,18 @@ class Contact extends ContactParent
         }
     }
 
+    public function getTitleArrayForTwig()
+    {
+        $title = new Title($this->app);
+        return $title->getArrayForTwig();
+    }
+
+    public function getCountryArrayForTwig()
+    {
+        $country = new Country($this->app);
+        return $country->getArrayForTwig();
+    }
+
     /**
      * Get the contact record for this contact_id
      */
@@ -114,13 +118,13 @@ class Contact extends ContactParent
                 'contact_id' => -1,
                 'contact_name' => '',
                 'contact_login' => '',
-                'contact_type' => self::$type,
+                'contact_type' => 'PERSON',
                 'contact_status' => 'ACTIVE',
                 'contact_timestamp' => '0000-00-00 00:00:00',
             )
         );
 
-        if (self::$type === 'PERSON') {
+        if ($data['contact']['contact_type'] === 'PERSON') {
             $ContactPerson = new ContactPerson($this->app);
             $data['person'] = array($ContactPerson->getDefaultRecord());
         }
@@ -146,6 +150,15 @@ class Contact extends ContactParent
         return $data;
     }
 
+    /**
+     * Level down the regular multilevel contact array to only one level. The keys
+     * of the resulting array contain all levels, i.e. $contact['address'][0]['address_id']
+     * will become $contact['address_0_address_id']
+     *
+     * @param array $contact
+     * @param boolean $use_communication_type use communication type instead of level (default)
+     * @return array
+     */
     public function levelDownContactArray($contact, $use_communication_type=true)
     {
         $flatten = array();
@@ -174,6 +187,14 @@ class Contact extends ContactParent
         return $flatten;
     }
 
+    /**
+     * Rebuild a one-level array created with levelDownContactArray() to a
+     * regular multilevel contact array
+     *
+     * @param array $contact
+     * @throws ContactException
+     * @return array
+     */
     public function levelUpContactArray($contact)
     {
         $multi = array();
@@ -543,7 +564,7 @@ class Contact extends ContactParent
             if (isset($data['person'])) {
                 foreach ($data['person'] as $person) {
                     if (!is_array($person)) continue;
-                    if (!$this->ContactPerson->insert($person, self::$contact_id, self::$person_id)) {
+                    if (!$this->ContactPerson->insert($person, self::$contact_id)) {
                         // something went wrong, rollback and return with message
                         $this->app['db']->rollback();
                         return false;
@@ -556,7 +577,6 @@ class Contact extends ContactParent
             // check the communication
             if (isset($data['communication'])) {
                 foreach ($data['communication'] as $communication) {
-                    // accept only arrays
                     if (!is_array($communication)) continue;
                     if (!$this->ContactCommunication->insert($communication, self::$contact_id)) {
                         // rollback and return to the dialog
@@ -582,7 +602,7 @@ class Contact extends ContactParent
                 foreach ($data['note'] as $note) {
                     if (!is_array($note)) continue;
                     if (!$this->ContactNote->insert($note, self::$contact_id)) {
-                        // something went wrong, rollback and return with message
+                        // something went wrong, rollback
                         $this->app['db']->rollback();
                         return false;
                     }
@@ -604,6 +624,16 @@ class Contact extends ContactParent
         }
     }
 
+    /**
+     * Update a contact block record with the given new and old data for the
+     * specified contact ID
+     *
+     * @param array $new_data the data to update
+     * @param array $old_data the existing data from database
+     * @param integer $contact_id
+     * @param reference boolean $has_changed will be set to true if data has changed
+     * @return boolean
+     */
     protected function updateContact($new_data, $old_data, $contact_id, &$has_changed=false)
     {
         $has_changed = false;
@@ -653,6 +683,16 @@ class Contact extends ContactParent
         return true;
     }
 
+    /**
+     * Update the complete contact with all blocks
+     *
+     * @param array $data regular contact array
+     * @param integer $contact_id
+     * @param reference boolean $data_changed will be set to true if data has changed
+     * @throws ContactException
+     * @throws \Exception
+     * @return boolean
+     */
     public function update($data, $contact_id, &$data_changed=false)
     {
         // first get the existings record
@@ -726,7 +766,7 @@ class Contact extends ContactParent
                 foreach ($data['communication'] as $new_communication) {
                     if (!is_array($new_communication)) continue;
                     if (!isset($new_communication['communication_id'])) {
-                        throw new \Exception("Update check fail because the 'communication_id' is missing in the 'communication' block!");
+                        throw new ContactException("Update check fail because the 'communication_id' is missing in the 'communication' block!");
                     }
                     if ($new_communication['communication_id'] < 1) {
                         // insert a new communication record
@@ -775,7 +815,7 @@ class Contact extends ContactParent
                 foreach ($data['address'] as $new_address) {
                     if (!is_array($new_address)) continue;
                     if (!isset($new_address['address_id'])) {
-                        throw new \Exception("Update check fail because the 'address_id' is missing in the 'address' block!");
+                        throw new ContactException("Update check fail because the 'address_id' is missing in the 'address' block!");
                     }
                     if ($new_address['address_id'] < 1) {
                         // insert a new address
@@ -876,7 +916,7 @@ class Contact extends ContactParent
                 }
             }
             return true;
-        } catch (\Exception $e) {
+        } catch (ContactException $e) {
             // rollback transaction
             $this->app['db']->rollback();
             throw new ContactException($e);
