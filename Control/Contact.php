@@ -349,8 +349,8 @@ class Contact extends ContactParent
             $options = self::$ContactBlocks;
         }
 
-        $message = '';
         $check = true;
+        $this->clearMessage();
 
         foreach ($options as $key => $value) {
             if (is_array($value)) {
@@ -366,7 +366,6 @@ class Contact extends ContactParent
                     // check the contact block
                     if (isset($contact_data[$block]) && is_array($contact_data[$block])) {
                         if (!$this->validateContact($contact_data[$block], $contact_data, $validate_options)) {
-                            $message .= $this->getMessage();
                             $check = false;
                         }
                     }
@@ -377,7 +376,7 @@ class Contact extends ContactParent
                         $level = 0;
                         foreach ($contact_data[$block] as $person_data) {
                             if (!$this->ContactPerson->validate($person_data, $contact_data, $validate_options)) {
-                                $message .= $this->ContactPerson->getMessage();
+                                $this->mergeMessage($this->ContactPerson->getMessage());
                                 $check = false;
                             }
                             $contact_data[$block][$level] = $person_data;
@@ -391,7 +390,7 @@ class Contact extends ContactParent
                         $level = 0;
                         foreach ($contact_data[$block] as $company_data) {
                             if (!$this->ContactCompany->validate($company_data, $contact_data, $validate_options)) {
-                                $message .= $this->ContactCompany->getMessage();
+                                $this->mergeMessage($this->ContactCompany->getMessage());
                                 $check = false;
                             }
                             $contact_data[$block][$level] = $company_data;
@@ -405,7 +404,7 @@ class Contact extends ContactParent
                         $level = 0;
                         foreach ($contact_data[$block] as $communication_data) {
                             if (!$this->ContactCommunication->validate($communication_data, $contact_data, $validate_options)) {
-                                $message .= $this->ContactCommunication->getMessage();
+                                $this->mergeMessage($this->ContactCommunication->getMessage());
                                 $check = false;
                             }
                             $contact_data[$block][$level] = $communication_data;
@@ -419,7 +418,7 @@ class Contact extends ContactParent
                         $level = 0;
                         foreach ($contact_data[$block] as $address_data) {
                             if (!$this->ContactAddress->validate($address_data, $contact_data, $validate_options)) {
-                                $message .= $this->ContactAddress->getMessage();
+                                $this->mergeMessage($this->ContactAddress->getMessage());
                                 $check = false;
                             }
                             $contact_data[$block][$level] = $address_data;
@@ -432,7 +431,7 @@ class Contact extends ContactParent
                         $level = 0;
                         foreach ($contact_data[$block] as $note_data) {
                             if (!$this->ContactNote->validate($note_data, $contact_data, $validate_options)) {
-                                $message .= $this->ContactNote->getMessage();
+                                $this->mergeMessage($this->ContactNote->getMessage());
                                 $check = false;
                             }
                             $contact_data[$block][$level] = $note_data;
@@ -445,7 +444,8 @@ class Contact extends ContactParent
                     throw new \Exception("The ContactBlock $block does not exists!");
             }
         }
-        self::$message = $message;
+
+        // return the result of the check
         return $check;
     }
 
@@ -519,6 +519,8 @@ class Contact extends ContactParent
             // BEGIN TRANSACTION
             $this->app['db']->beginTransaction();
 
+            $this->clearMessage();
+
             // get the contact blocks with the options
             $contact_blocks = $this->getContactBlocks();
 
@@ -543,7 +545,6 @@ class Contact extends ContactParent
                     if (!is_array($person)) continue;
                     if (!$this->ContactPerson->insert($person, self::$contact_id, self::$person_id)) {
                         // something went wrong, rollback and return with message
-                        self::$message = $this->ContactPerson->getMessage();
                         $this->app['db']->rollback();
                         return false;
                     }
@@ -559,7 +560,6 @@ class Contact extends ContactParent
                     if (!is_array($communication)) continue;
                     if (!$this->ContactCommunication->insert($communication, self::$contact_id)) {
                         // rollback and return to the dialog
-                        self::$message = $this->ContactCommunication->getMessage();
                         $this->app['db']->rollback();
                         return false;
                     }
@@ -572,7 +572,6 @@ class Contact extends ContactParent
                     if (!is_array($address)) continue;
                     if (!$this->ContactAddress->insert($address, self::$contact_id)) {
                         // rollback and return to the dialog
-                        self::$message = $this->ContactAddress->getMessage();
                         $this->app['db']->rollback();
                         return false;
                     }
@@ -584,7 +583,6 @@ class Contact extends ContactParent
                     if (!is_array($note)) continue;
                     if (!$this->ContactNote->insert($note, self::$contact_id)) {
                         // something went wrong, rollback and return with message
-                        self::$message = $this->ContactPerson->getMessage();
                         $this->app['db']->rollback();
                         return false;
                     }
@@ -672,6 +670,7 @@ class Contact extends ContactParent
 
             $data_changed = false;
 
+            // contact block
             if (isset($data['contact'])) {
                 $has_changed = false;
                 if (!$this->updateContact($data['contact'], $old['contact'], $contact_id, $has_changed)) {
@@ -683,99 +682,71 @@ class Contact extends ContactParent
                     $data_changed = true;
                 }
             }
+            else {
+                $this->setMessage("The contact block must be set always!");
+                // rollback
+                $this->app['db']->rollback();
+                return false;
+            }
 
-            if (isset($data['person'])) {
-                foreach ($data['person'] as $new_person) {
-                    $has_changed = false;
-                    if ($new_person['person_id'] < 1) {
-                        // add as new record
-                        if (!$this->ContactPerson->insert($new_person, $contact_id)) {
-                            self::$message .= $this->ContactPerson->getMessage();
-                            // rollback
-                            $this->app['db']->rollback();
-                            return false;
+            if ($old['contact']['contact_type'] == 'COMPANY') {
+
+                // Contact TYPE: COMPANY
+                throw new ContactException("The contact type COMPANY is not supported yet!");
+
+            }
+            else {
+                // Contact TYPE: PERSON
+                if (isset($data['person'])) {
+                    foreach ($data['person'] as $new_person) {
+                        $has_changed = false;
+                        if (count($old['person']) < 1) {
+                            // no handling of multiple persons
+                            throw new ContactException("The handling of multiple persons within one account of type PERSON is not supported yet.");
                         }
-                        $data_changed = true;
-                        continue;
-                    }
-                    foreach ($old['person'] as $old_person) {
-                        if ($old_person['person_id'] == $new_person['person_id']) {
-                            if (!$this->ContactPerson->update($new_person, $old_person, $new_person['person_id'], $has_changed)) {
-                                // rollback
-                                self::$message .= $this->ContactPerson->getMessage();
-                                $this->app['db']->rollback();
-                                return false;
+                        foreach ($old['person'] as $old_person) {
+                            if ($old_person['person_id'] == $new_person['person_id']) {
+                                // update the person
+                                if (!$this->ContactPerson->update($new_person, $old_person, $new_person['person_id'], $has_changed)) {
+                                    // rollback
+                                    $this->app['db']->rollback();
+                                    return false;
+                                }
+                                if ($has_changed) {
+                                    $data_changed = true;
+                                }
+                                break;
                             }
-                            if ($has_changed) {
-                                $data_changed = true;
-                            }
-                            self::$message .= $this->ContactPerson->getMessage();
-                            break;
                         }
                     }
                 }
             }
-/*
-            if (isset($data['person'])) {
-                foreach ($data['person'] as $new_person) {
-                    if (!isset($new_person['person_id'])) {
-                        throw new \Exception("The update check fail because the 'person_id' is missing in the 'person' block!");
-                    }
-                    if ($new_person['person_id'] < 1) {
-                        // add as new record
-                        if (!$this->ContactPerson->insert($new_person, $contact_id)) {
-                            self::$message = $this->ContactPerson->getMessage();
-                            // rollback
-                            $this->app['db']->rollback();
-                            return false;
-                        }
-                        $data_changed = true;
-                        continue;
-                    }
-                    foreach ($old['person'] as $old_person) {
-                        if ($old_person['person_id'] === $new_person['person_id']) {
-                            $has_changed = false;
-                            if (!$this->ContactPerson->update($new_person, $old_person, $new_person['person_id'], $has_changed)) {
-                                self::$message = $this->ContactPerson->getMessage();
-                                // rollback
-                                $this->app['db']->rollback();
-                                return false;
-                            }
-                            if ($has_changed) {
-                                $data_changed = true;
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-/*
+
             if (isset($data['communication'])) {
                 foreach ($data['communication'] as $new_communication) {
                     if (!is_array($new_communication)) continue;
                     if (!isset($new_communication['communication_id'])) {
                         throw new \Exception("Update check fail because the 'communication_id' is missing in the 'communication' block!");
                     }
-                    if ($new_communication['communication_id'] === -1) {
-                        if (isset($new_communication['communication_type']) && !empty($new_communication['communication_type']) &&
-                            isset($new_communication['communication_value']) && ! empty($new_communication['communication_value'])) {
-                            // add as new record
-                            $communication_id = -1;
-                            if (!$this->ContactCommunication->insert($new_communication, $contact_id, $communication_id)) {
-                                self::$message = $this->ContactCommunication->getMessage();
-                                // rollback
-                                $this->app['db']->rollback();
-                                return false;
-                            }
+                    if ($new_communication['communication_id'] < 1) {
+                        // insert a new communication record
+                        $communication_id = -1;
+                        $has_inserted = false;
+                        if (!$this->ContactCommunication->insert($new_communication, $contact_id, $communication_id, $has_inserted)) {
+                            // rollback
+                            $this->app['db']->rollback();
+                            return false;
+                        }
+                        if ($has_inserted) {
                             $data_changed = true;
                         }
                         continue;
                     }
+                    $processed = false;
                     foreach ($old['communication'] as $old_communication) {
                         if ($old_communication['communication_id'] == $new_communication['communication_id']) {
                             $has_changed = false;
                             if (!$this->ContactCommunication->update($new_communication, $old_communication, $new_communication['communication_id'], $has_changed)) {
-                                self::$message = $this->ContactCommunication->getMessage();
                                 // rollback
                                 $this->app['db']->rollback();
                                 return false;
@@ -783,8 +754,19 @@ class Contact extends ContactParent
                             if ($has_changed) {
                                 $data_changed = true;
                             }
+                            $processed = true;
                             break;
                         }
+                    }
+                    if (!$processed) {
+                        // the communication entry was not processed!
+                        $this->setMessage("The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!",
+                            array(
+                                '%id%' => $new_communication['communication_id'],
+                                '%entry%' => 'communication'
+                            ));
+                        $this->addError("The communication ID {$new_communication['communication_id']} was not updated because it was not found in the table!",
+                            array(__METHOD__, __LINE__));
                     }
                 }
             }
@@ -798,15 +780,18 @@ class Contact extends ContactParent
                     if ($new_address['address_id'] < 1) {
                         // insert a new address
                         $address_id = -1;
-                        $this->ContactAddress->insert($new_address, $contact_id, $address_id);
-                        $data_changed = true;
+                        $has_inserted = false;
+                        $this->ContactAddress->insert($new_address, $contact_id, $address_id, $has_inserted);
+                        if ($has_inserted) {
+                            $data_changed = true;
+                        }
                         continue;
                     }
+                    $processed = false;
                     foreach ($old['address'] as $old_address) {
                         if ($old_address['address_id'] == $new_address['address_id']) {
                             $has_changed = false;
                             if (!$this->ContactAddress->update($new_address, $old_address, $new_address['address_id'], $has_changed)) {
-                                self::$message = $this->ContactAddress->getMessage();
                                 // rollback
                                 $this->app['db']->rollback();
                                 return false;
@@ -814,12 +799,22 @@ class Contact extends ContactParent
                             if ($has_changed) {
                                 $data_changed = true;
                             }
+                            $processed = true;
                             break;
                         }
                     }
+                    if (!$processed) {
+                        // the address entry was not processed!
+                        $this->setMessage("The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!",
+                            array(
+                                '%id%' => $new_address['address_id'],
+                                '%entry%' => 'address'
+                            ));
+                        $this->addError("The address ID {$new_address['address_id']} was not updated because it was not found in the table!",
+                            array(__METHOD__, __LINE__));
+                    }
                 }
             }
-
 
             if (isset($data['note'])) {
                 foreach ($data['note'] as $new_note) {
@@ -829,14 +824,43 @@ class Contact extends ContactParent
                     }
                     if ($new_note['note_id'] < 1) {
                         // insert a new note
-                        $this->ContactNote->insert($new_note, $contact_id);
-                        $data_changed = true;
+                        $note_id = -1;
+                        $has_inserted = false;
+                        $this->ContactNote->insert($new_note, $contact_id, $note_id, $has_inserted);
+                        if ($has_inserted) {
+                            $data_changed = true;
+                        }
                         continue;
                     }
-
+                    $processed = false;
+                    foreach ($old['note'] as $old_note) {
+                        if ($old_note['note_id'] == $new_note['note_id']) {
+                            $has_changed = false;
+                            if (!$this->ContactNote->update($new_note, $old_note, $new_note['note_id'], $has_changed)) {
+                                // rollback
+                                $this->app['db']->rollback();
+                                return false;
+                            }
+                            if ($has_changed) {
+                                $data_changed = true;
+                            }
+                            $processed = true;
+                            break;
+                        }
+                    }
+                    if (!$processed) {
+                        // the address entry was not processed!
+                        $this->setMessage("The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!",
+                            array(
+                                '%id%' => $new_note['note_id'],
+                                '%entry%' => 'note'
+                            ));
+                        $this->addError("The note ID {$new_note['note_id']} was not updated because it was not found in the table!",
+                        array(__METHOD__, __LINE__));
+                    }
                 }
             }
-*/
+
             // commit transaction
             $this->app['db']->commit();
 
