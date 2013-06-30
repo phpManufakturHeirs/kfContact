@@ -10,7 +10,8 @@
  */
 
 use phpManufaktur\Contact\Data\Setup\Setup;
-use phpManufaktur\Contact\Control\Dialog\Simple\Contact as SimpleContact;
+use phpManufaktur\Contact\Control\Dialog\Simple\SimpleContact;
+use phpManufaktur\Contact\Control\Dialog\Simple\SimpleList;
 
 // scan the /Locale directory and add all available languages
 $app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale');
@@ -30,6 +31,11 @@ $app->match('/admin/contact/simple/contact/{contact_id}', function($contact_id) 
     $contact = new SimpleContact($app);
     $contact->setContactID($contact_id);
     return $contact->exec();
+});
+
+$app->match('/admin/contact/simple/list', function() use ($app) {
+    $list = new SimpleList($app);
+    return $list->exec();
 });
 
 $app->match('/admin/contact/test', function() use($app) {

@@ -16,14 +16,7 @@
   {% if message|length > 0 %}
     <div class="message">{{ message }}</div>
   {% endif %}
-  <div class="address_form">
-    <form action="{{ FRAMEWORK_URL }}/admin/contact/simple/contact" method="post">
-      {{ form_widget(form) }}
-      <div>
-        <label for="submit">&nbsp;</label>
-        <input type="submit" name="submit" />
-      </div>
-      <div class="clear"></div>  
-    </form>
+  <div id="contact_list">
+    <p>dd</p>
   </div>
 {% endblock content %}
