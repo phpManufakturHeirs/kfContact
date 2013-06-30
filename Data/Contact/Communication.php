@@ -215,58 +215,5 @@ EOD;
         }
     }
 
-    /**
-     * Check if the desired communication ID is used as primary connection
-     *
-     * @param integer $communication_id
-     * @param integer $contact_id
-     * @param string $communication_type
-     * @param string $contact_type
-     * @throws \Exception
-     * @return boolean
-     */
-    public function isUsedAsPrimaryConnection($communication_id, $contact_id, $communication_type, $contact_type='PERSON')
-    {
-        try {
-
-            switch ($communication_type) {
-                case 'EMAIL':
-                    if ($contact_type == 'COMPANY') {
-                        $SQL = "SELECT `company_primary_email_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_company` WHERE ".
-                            "`contact_id`='$contact_id' AND `company_primary_email_id`='$communication_id' AND `company_status`!='DELETED'";
-                        if ($communication_id === ($check = $this->app['db']->fetchColumn($SQL))) {
-                            return true;
-                        }
-                    }
-                    else {
-                        $SQL = "SELECT `person_primary_email_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
-                            "`contact_id`='$contact_id' AND `person_primary_email_id`='$communication_id' AND `person_status`!='DELETED'";
-                        if ($communication_id === ($check = $this->app['db']->fetchColumn($SQL))) {
-                            return true;
-                        }
-                    }
-                    break;
-                case 'PHONE':
-                    if ($contact_type == 'COMPANY') {
-                        $SQL = "SELECT `company_primary_phone_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_company` WHERE ".
-                            "`contact_id`='$contact_id' AND `company_primary_phone_id`='$communication_id' AND `company_status`!='DELETED'";
-                        if ($communication_id === ($check = $this->app['db']->fetchColumn($SQL))) {
-                            return true;
-                        }
-                    }
-                    else {
-                        $SQL = "SELECT `person_primary_phone_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
-                            "`contact_id`='$contact_id' AND `person_primary_phone_id`='$communication_id' AND `person_status`!='DELETED'";
-                        if ($communication_id === ($check = $this->app['db']->fetchColumn($SQL))) {
-                            return true;
-                        }
-                    }
-                    break;
-            }
-            return false;
-        } catch (\Doctrine\DBAL\DBALException $e) {
-            throw new \Exception($e);
-        }
-    }
 
 }

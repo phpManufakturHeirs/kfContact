@@ -143,16 +143,20 @@ class ContactCommunication extends ContactParent
      * @param array $data
      * @param integer $contact_id
      * @param reference integer $communication_id
+     * @param reference boolean $has_inserted
      * @return boolean
      */
-    public function insert($data, $contact_id, &$communication_id=-1)
+    public function insert($data, $contact_id, &$communication_id=-1, &$has_inserted=null)
     {
         // enshure that the contact_id isset
         $data['contact_id'] = $contact_id;
 
+        $has_inserted = false;
+
         if (empty($data['communication_value'])) {
             // skip empty value
             $this->app['monolog']->addDebug("Skipped empty communication entry type {$data['communication_type']} for contact ID {$data['contact_id']}.");
+            // no error - return TRUE!
             return true;
         }
         // validate the entry
@@ -161,6 +165,7 @@ class ContactCommunication extends ContactParent
         }
         // insert the new communication entry
         $this->Communication->insert($data, $communication_id);
+
         if ($data['communication_type'] == 'EMAIL') {
             // check primary ID for EMAIL
             if ($this->ContactData->getPrimaryEmailID($contact_id) < 1) {
@@ -175,6 +180,8 @@ class ContactCommunication extends ContactParent
                 $this->app['monolog']->addDebug("Set communication ID $communication_id as primary phone for contact ID $contact_id.");
             }
         }
+
+        $has_inserted = true;
         return true;
     }
 
@@ -190,11 +197,11 @@ class ContactCommunication extends ContactParent
     public function update($new_data, $old_data, $communication_id, &$has_changed=false)
     {
         $has_changed = false;
+
         if (empty($new_data['communication_value'])) {
             // check if this entry can be deleted
-            $contact_type = $this->ContactData->getContactType($old_data['contact_id']);
-            if ($this->Communication->isUsedAsPrimaryConnection($communication_id,
-                $old_data['contact_id'], $old_data['communication_type'], $contact_type)) {
+            if (($this->ContactData->getPrimaryEmailID($old_data['contact_id']) == $communication_id) ||
+                ($this->ContactData->getPrimaryPhoneID($old_data['contact_id']) == $communication_id)) {
                 // entry is marked for primary communication and can not deleted!
                 $this->setMessage("The %type% entry %value% is marked for primary communication and can not removed!",
                     array('%type%' => $old_data['communication_type'], '%value%' => $old_data['communication_value']));
