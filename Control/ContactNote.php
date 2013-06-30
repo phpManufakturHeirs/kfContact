@@ -118,6 +118,15 @@ class ContactNote extends ContactParent
         return true;
     }
 
+    /**
+     * Process the update for the given note record
+     *
+     * @param array $new_data the note record to update
+     * @param array $old_data the existing note record from database
+     * @param integer $note_id
+     * @param reference boolean $has_changed is set to true if the not was updated
+     * @return boolean
+     */
     public function update($new_data, $old_data, $note_id, &$has_changed)
     {
         $has_changed = false;

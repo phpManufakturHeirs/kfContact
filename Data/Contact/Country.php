@@ -89,6 +89,13 @@ EOD;
         }
     }
 
+    /**
+     * Check if the given country code exists
+     *
+     * @param string $country_code
+     * @throws \Exception
+     * @return boolean
+     */
     public function existsCountryCode($country_code)
     {
         try {
@@ -100,6 +107,12 @@ EOD;
         }
     }
 
+    /**
+     * Select the full country name by the given country code
+     *
+     * @param string $country_code
+     * @throws \Exception
+     */
     public function selectCountry($country_code) {
         try {
             $SQL = "SELECT `country_name` FROM `".self::$table_name."` WHERE `country_code`='$country_code'";

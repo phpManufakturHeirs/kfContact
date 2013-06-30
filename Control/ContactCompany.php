@@ -14,6 +14,15 @@ namespace phpManufaktur\Contact\Control;
 class ContactCompany extends ContactParent
 {
 
+    /**
+     * Validate the given company record
+     *
+     * @param array $company_data the company record to validate
+     * @param array $contact_data the complete contact record
+     * @param array $option for the validation
+     * @throws ContactException
+     * @return boolean
+     */
     public function validate(&$company_data, $contact_data=array(), $option=array())
     {
 
