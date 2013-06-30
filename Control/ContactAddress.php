@@ -38,6 +38,11 @@ class ContactAddress extends ContactParent
         $this->Person = new Person($this->app);
     }
 
+    /**
+     * Get a default (empty) address record
+     *
+     * @return array
+     */
     public function getDefaultRecord()
     {
         return $this->Address->getDefaultRecord();
@@ -113,19 +118,7 @@ class ContactAddress extends ContactParent
                     return false;
                 }
             }
-
         }
-        /*
-        elseif ($address_data['address_id'] > 0) {
-            // existing address ID, assume the record should be deleted
-            return true;
-        }
-        else {
-            // minimum requriments fail
-            $this->setMessage("At minimum you must specify a street, a city or a zip code for a valid address");
-            return false;
-        }
-        */
         return true;
     }
 
@@ -170,6 +163,15 @@ class ContactAddress extends ContactParent
         return true;
     }
 
+    /**
+     * Process the update for the given address record
+     *
+     * @param array $new_data the changed address
+     * @param array $old_data the existing address from database
+     * @param integer $address_id
+     * @param reference boolean $has_changed set to true if record has changed
+     * @return boolean
+     */
     public function update($new_data, $old_data, $address_id, &$has_changed=false)
     {
         $has_changed = false;
