@@ -23,6 +23,7 @@ use phpManufaktur\Contact\Data\Contact\CommunicationType;
 use phpManufaktur\Contact\Data\Contact\CommunicationUsage;
 use phpManufaktur\Contact\Data\Contact\AddressType;
 use phpManufaktur\Contact\Data\Contact\Note;
+use phpManufaktur\Contact\Data\Contact\Overview;
 
 class Setup
 {
@@ -79,6 +80,9 @@ class Setup
 
             $Note = new Note($this->app);
             $Note->createTable();
+
+            $Overview = new Overview($this->app);
+            $Overview->createTable();
 
         } catch (\Exception $e) {
             throw new \Exception($e);

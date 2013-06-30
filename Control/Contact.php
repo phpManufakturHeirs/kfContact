@@ -16,6 +16,7 @@ use phpManufaktur\Contact\Data\Contact\Contact as ContactData;
 use Symfony\Component\Validator\Constraints as Assert;
 use phpManufaktur\Contact\Data\Contact\Title;
 use phpManufaktur\Contact\Data\Contact\Country;
+use phpManufaktur\Contact\Data\Contact\Overview;
 
 class Contact extends ContactParent
 {
@@ -28,6 +29,7 @@ class Contact extends ContactParent
     protected $ContactCommunication = null;
     protected $ContactAddress = null;
     protected $ContactNote = null;
+    protected $Overview = null;
 
     protected static $ContactBlocks = array(
         'contact' => array(
@@ -67,6 +69,7 @@ class Contact extends ContactParent
         $this->ContactData = new ContactData($this->app);
         $this->ContactNote = new ContactNote($this->app);
         $this->ContactPerson = new ContactPerson($this->app);
+        $this->Overview = new Overview($this->app);
     }
 
     /**
@@ -609,6 +612,9 @@ class Contact extends ContactParent
                 }
             }
 
+            // all complete - now we refresh the OVERVIEW
+            $this->Overview->refresh($contact_id);
+
             // COMMIT TRANSACTION
             $this->app['db']->commit();
 
@@ -901,6 +907,11 @@ class Contact extends ContactParent
                 }
             }
 
+            if ($data_changed) {
+                // all complete - now we refresh the OVERVIEW
+                $this->Overview->refresh($contact_id);
+            }
+
             // commit transaction
             $this->app['db']->commit();
 
@@ -915,6 +926,7 @@ class Contact extends ContactParent
                     $this->setMessage("The contact record was not changed!");
                 }
             }
+
             return true;
         } catch (ContactException $e) {
             // rollback transaction
