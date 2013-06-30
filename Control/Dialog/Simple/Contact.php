@@ -9,19 +9,18 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Control\Dialog;
+namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
-use phpManufaktur\Contact\Data\Contact\Title;
-use phpManufaktur\Contact\Data\Contact\Country;
-use phpManufaktur\Contact\Control\Contact;
+use phpManufaktur\Contact\Control\Contact as ContactData;
+use Symfony\Component\Form\FormBuilder;
 
-class SimpleContact {
+class Contact {
 
     protected $app = null;
     protected static $contact_id = -1;
     protected static $message = '';
-    protected $Contact = null;
+    protected $ContactData = null;
 
     /**
      * Constructor
@@ -33,7 +32,7 @@ class SimpleContact {
         $this->app = $app;
         // set the content language
         $this->app['translator']->setLocale('de');
-        $this->Contact = new Contact($this->app);
+        $this->ContactData = new ContactData($this->app);
     }
 
     public function setContactID($contact_id)
@@ -68,13 +67,14 @@ class SimpleContact {
         return !empty(self::$message);
     }
 
-
+    /**
+     * Build the complete form with the form.factory
+     *
+     * @param array $contact flatten contact record
+     * @return FormBuilder
+     */
     protected function getForm($contact)
     {
-        // get the title array
-        $title = new Title($this->app);
-        $title_array = $title->getArrayForTwig();
-
         // create array for the birthday years
         $years = array();
         for ($i = date('Y')-18; $i > (date('Y')-100); $i--) {
@@ -94,10 +94,6 @@ class SimpleContact {
         if (isset($contact['person_0_person_birthday'])) {
             $birthday_array['data'] = new \DateTime($contact['person_0_person_birthday']);
         }
-
-        // get the country array
-        $country = new Country($this->app);
-        $country_array = $country->getArrayForTwig();
 
         return $this->app['form.factory']->createBuilder('form', $contact)
             // contact - hidden fields
@@ -129,7 +125,7 @@ class SimpleContact {
                 'label' => 'Gender'
             ))
             ->add('person_0_person_title', 'choice', array(
-                'choices' => $title_array,
+                'choices' => $this->ContactData->getTitleArrayForTwig(),
                 'empty_value' => '- please select -',
                 'expanded' => false,
                 'multiple' => false,
@@ -214,7 +210,7 @@ class SimpleContact {
                 'label' => 'City'
             ))
             ->add('address_0_address_country_code', 'choice', array(
-                'choices' => $country_array,
+                'choices' => $this->ContactData->getCountryArrayForTwig(),
                 'empty_value' => '- please select -',
                 'expanded' => false,
                 'multiple' => false,
@@ -240,9 +236,13 @@ class SimpleContact {
             ->getForm();
     }
 
+    /**
+     * Return the complete contact dialog and handle requests
+     *
+     * @return string contact dialog
+     */
     public function exec()
     {
-
         // check if a contact ID isset
         $form_request = $this->app['request']->request->get('form', array());
         if (isset($form_request['contact_id'])) {
@@ -250,19 +250,19 @@ class SimpleContact {
         }
 
         // get the contact array
-        $contact = $this->Contact->select(self::$contact_id);
+        $contact = $this->ContactData->select(self::$contact_id);
 
         if (self::$contact_id < 1) {
             unset($contact['communication']);
         }
 
         // we dont need a multilevel and nested contact array, so flatten it
-        $contact = $this->Contact->levelDownContactArray($contact);
+        $contact = $this->ContactData->levelDownContactArray($contact);
 
-        if ($this->Contact->isMessage()) {
-            self::$message = $this->Contact->getMessage();
+        if ($this->ContactData->isMessage()) {
+            self::$message = $this->ContactData->getMessage();
         }
-//echo "<pre>";print_r($contact);echo "</pre>";
+
         // get the form
         $form = $this->getForm($contact);
 
@@ -277,33 +277,32 @@ class SimpleContact {
                 $contact['person_0_person_birthday'] = (isset($contact['person_0_person_birthday']) && is_object($contact['person_0_person_birthday'])) ? date('Y-m-d', $contact['person_0_person_birthday']->getTimestamp()) : '0000-00-00';
 
                 // build a regular contact array
-                $contact = $this->Contact->levelUpContactArray($contact);
+                $contact = $this->ContactData->levelUpContactArray($contact);
 
                 if (self::$contact_id < 1) {
                     // insert a new record
-                    $this->Contact->insert($contact, self::$contact_id);
+                    $this->ContactData->insert($contact, self::$contact_id);
                 }
                 else {
                     // update the record
                     $has_changed = false; // indicate changes
-                    $this->Contact->update($contact, self::$contact_id, $has_changed);
+                    $this->ContactData->update($contact, self::$contact_id, $has_changed);
                 }
 
-                if (!$this->Contact->isMessage()) {
+                if (!$this->ContactData->isMessage()) {
                     $this->setMessage("The contact process has not returned a status message");
                 }
                 else {
                     // use the return status messages
-                    self::$message = $this->Contact->getMessage();
+                    self::$message = $this->ContactData->getMessage();
                 }
 
                 // get the values of the new or updated record
-                $contact = $this->Contact->select(self::$contact_id);
+                $contact = $this->ContactData->select(self::$contact_id);
                 // build a flatten array
-                $contact = $this->Contact->levelDownContactArray($contact);
+                $contact = $this->ContactData->levelDownContactArray($contact);
                 // get the form
                 $form = $this->getForm($contact);
-
             }
             else {
                 // general error (timeout, CSFR ...)
