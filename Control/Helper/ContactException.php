@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Control;
+namespace phpManufaktur\Contact\Control\Helper;
 
 class ContactException extends \Exception
 {

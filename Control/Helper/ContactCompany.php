@@ -9,7 +9,9 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Control;
+namespace phpManufaktur\Contact\Control\Helper;
+
+use phpManufaktur\Contact\Control\Helper\ContactParent;
 
 class ContactCompany extends ContactParent
 {

@@ -9,9 +9,10 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Control;
+namespace phpManufaktur\Contact\Control\Helper;
 
 use Silex\Application;
+use phpManufaktur\Contact\Control\Helper\ContactParent;
 use Symfony\Component\Validator\Constraints as Assert;
 use phpManufaktur\Contact\Data\Contact\Communication;
 use phpManufaktur\Contact\Data\Contact\CommunicationType;

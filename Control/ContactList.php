@@ -11,6 +11,7 @@
 
 namespace phpManufaktur\Contact\Control;
 
+use phpManufaktur\Contact\Control\Helper\ContactParent;
 use phpManufaktur\Contact\Data\Contact\Overview;
 
 class ContactList extends ContactParent

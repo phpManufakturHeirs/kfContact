@@ -12,11 +12,18 @@
 namespace phpManufaktur\Contact\Control;
 
 use Silex\Application;
+use phpManufaktur\Contact\Control\Helper\ContactParent;
+use phpManufaktur\Contact\Control\Helper\ContactException;
 use phpManufaktur\Contact\Data\Contact\Contact as ContactData;
 use Symfony\Component\Validator\Constraints as Assert;
 use phpManufaktur\Contact\Data\Contact\Title;
 use phpManufaktur\Contact\Data\Contact\Country;
 use phpManufaktur\Contact\Data\Contact\Overview;
+use phpManufaktur\Contact\Control\Helper\ContactAddress;
+use phpManufaktur\Contact\Control\Helper\ContactCommunication;
+use phpManufaktur\Contact\Control\Helper\ContactCompany;
+use phpManufaktur\Contact\Control\Helper\ContactNote;
+use phpManufaktur\Contact\Control\Helper\ContactPerson;
 
 class Contact extends ContactParent
 {
