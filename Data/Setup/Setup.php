@@ -24,6 +24,8 @@ use phpManufaktur\Contact\Data\Contact\CommunicationUsage;
 use phpManufaktur\Contact\Data\Contact\AddressType;
 use phpManufaktur\Contact\Data\Contact\Note;
 use phpManufaktur\Contact\Data\Contact\Overview;
+use phpManufaktur\Contact\Data\Contact\CategoryType;
+use phpManufaktur\Contact\Data\Contact\Category;
 
 class Setup
 {
@@ -83,6 +85,13 @@ class Setup
 
             $Overview = new Overview($this->app);
             $Overview->createTable();
+
+            $CategoryType = new CategoryType($this->app);
+            $CategoryType->createTable();
+            $CategoryType->initCategoryTypeList();
+
+            $Category = new Category($this->app);
+            $Category->createTable();
 
         } catch (\Exception $e) {
             throw new \Exception($e);

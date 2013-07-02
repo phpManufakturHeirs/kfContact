@@ -23,6 +23,7 @@ class Contact
     protected $Note = null;
     protected $Communication = null;
     protected $Address = null;
+    protected $Category = null;
 
     /**
      * Constructor
@@ -38,6 +39,7 @@ class Contact
         $this->Note = new Note($this->app);
         $this->Communication = new Communication($this->app);
         $this->Address = new Address($this->app);
+        $this->Category = new Category($this->app);
     }
 
     /**
@@ -284,6 +286,12 @@ EOD;
                     empty($contact['note'])) {
                     $contact['note'] = array();
                 }
+
+                // add the CATEGORIES
+                if ((false === ($contact['category'] = $this->Category->selectByContactID($contact_id))) || empty($contact['category'])) {
+                    $contact['category'] = array();
+                }
+
                 // return the formatted contact array
                 return $contact;
             }

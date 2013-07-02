@@ -1,0 +1,18 @@
+[
+  {
+    "type":"CUSTOMER",
+    "description":"description: customer"
+  },
+  {
+    "type":"MERCHANT",
+    "description":"description: merchant"
+  },
+  {
+    "type":"INTERN",
+    "description":"description: intern"
+  },
+  {
+    "type":"UNCHECKED",
+    "description":"description: unchecked"
+  }
+]

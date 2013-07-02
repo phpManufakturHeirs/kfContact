@@ -35,6 +35,8 @@ return array(
         => "Die Notiz mit der ID %note_id% kann nicht gelöscht werden, da sie als primäre Information für den Kontakt verwendet wird.",
     "Can't read the contact with the ID %contact_id% - it is possibly deleted."
         => 'Der Kontakt Datensatz mit der ID %contact_id% konnte nicht gelesen werden, er wurde möglicher Weise gelöscht.',
+    'Category'
+        => 'Kategorie',
     'communication_email'
         => 'E-Mail',
     'communication_phone'
@@ -55,6 +57,8 @@ return array(
         => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
     'Country'
         => 'Land',
+    'Customer'
+        => 'Kunde',
     'deleted'
         => 'Gelöscht',
     'doc'
@@ -67,10 +71,16 @@ return array(
         => 'Geschlecht',
     "Inserted the new contact with the ID %contact_id%."
         => 'Es wurde ein neuer Kontakt mit der ID %contact_id% hinzugefügt',
+    'Intern'
+        => 'Intern',
     'locked'
         => 'Gesperrt',
     'male'
         => 'Mann',
+    'Merchant'
+        => 'Händler',
+    "Missing the category name, it must always set and not empty!"
+        => 'Der Kategorie Bezeichner muss immer gesetzt und darf nicht leer sein!',
     "Missing the %identifier%! The ID should be set to -1 if you insert a new record."
         => 'Das Feld <b>%identifier%</b> fehlt! Diese ID sollte auf -1 gesetzt sein, wenn Sie einen neuen Datensatz einfügen möchten.',
     'Nick name'
@@ -141,6 +151,8 @@ return array(
         => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
     'Title'
         => 'Titel',
+    'Unchecked'
+        => '- ungeprüft -',
     'Zip'
         => 'Postleitzahl'
 );

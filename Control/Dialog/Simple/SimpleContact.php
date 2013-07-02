@@ -114,6 +114,16 @@ class SimpleContact {
                 'label' => 'Status'
             ))
 
+            // category - visible form fields
+            ->add('category_0_category_name', 'choice', array(
+                'choices' => $this->ContactData->getCategoryArrayForTwig(),
+                'empty_value' => '- please select -',
+                'expanded' => false,
+                'multiple' => false,
+                'required' => false,
+                'label' => 'Category'
+            ))
+
             // person - hidden fields
             ->add('person_0_person_id', 'hidden')
             ->add('person_0_contact_id', 'hidden')
