@@ -17,6 +17,14 @@ if ('á' != "\xc3\xa1") {
 return array(
     'active'
         => 'Aktiv',
+    'address_city'
+        => 'Stadt',
+    'address_country_code'
+        => 'Land',
+    'address_street'
+        => 'Straße',
+    'address_zip'
+        => 'PLZ',
     "At minimum you must specify a street, a city or a zip code for a valid address"
         => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
     'baron'
@@ -27,6 +35,22 @@ return array(
         => "Die Notiz mit der ID %note_id% kann nicht gelöscht werden, da sie als primäre Information für den Kontakt verwendet wird.",
     "Can't read the contact with the ID %contact_id% - it is possibly deleted."
         => 'Der Kontakt Datensatz mit der ID %contact_id% konnte nicht gelesen werden, er wurde möglicher Weise gelöscht.',
+    'communication_email'
+        => 'E-Mail',
+    'communication_phone'
+        => 'Telefon',
+    'company_department'
+        => 'Abteilung',
+    'company_name'
+        => 'Firma',
+    'contact_id'
+        => 'ID',
+    'contact_name'
+        => 'Bezeichner',
+    'contact_login'
+        => 'Login',
+    'contact_type'
+        =>'Typ',
     "Contact insert fail, but the process does not return the reason!"
         => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
     'Country'
@@ -53,6 +77,14 @@ return array(
         => 'Spitzname',
     'Note'
         => 'Notiz',
+    'person_birthday'
+        => 'Geburtstag',
+    'person_first_name'
+        => 'Vorname',
+    'person_last_name'
+        => 'Nachname',
+    'person_nick_name'
+        => 'Spitzname',
     'prof'
         => 'Prof.',
     "The Address with the ID %address_id% was successfull deleted."
