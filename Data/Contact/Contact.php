@@ -490,5 +490,13 @@ EOD;
         return $this->setPrimaryIDbyType($contact_id, 'PHONE', -1);
     }
 
+    public function selectAll()
+    {
+        try {
+            return $this->app['db']->fetchAll("SELECT * FROM `".self::$table_name."` ORDER BY `contact_id` ASC");
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 
 }
