@@ -12,14 +12,20 @@
 namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
-use phpManufaktur\Contact\Data\Contact\Contact;
+use phpManufaktur\Contact\Control\ContactList;
 
 class SimpleList {
 
     protected $app = null;
-    protected static $contact_id = -1;
+    protected $ContactList = null;
     protected static $message = '';
-    protected $ContactData = null;
+    protected static $columns = null;
+    protected static $rows_per_page = null;
+    protected static $select_status = null;
+    protected static $max_pages = null;
+    protected static $current_page = null;
+    protected static $order_by = null;
+    protected static $order_direction = null;
 
     /**
      * Constructor
@@ -31,12 +37,32 @@ class SimpleList {
         $this->app = $app;
         // set the content language
         $this->app['translator']->setLocale('de');
-        $this->ContactData = new Contact($this->app);
+        $this->ContactList = new ContactList($this->app);
+
+        $cfg_file = MANUFAKTUR_PATH.'/Contact/Control/Dialog/Simple/SimpleList.json';
+        if (file_exists($cfg_file)) {
+            // get the columns to show in the list
+            $cfg = $this->app['utils']->readJSON($cfg_file);
+            self::$columns = $cfg['columns'];
+            self::$rows_per_page = $cfg['list']['rows_per_page'];
+            self::$select_status = $cfg['list']['select_status'];
+            self::$order_by = $cfg['list']['order']['by'];
+            self::$order_direction = $cfg['list']['order']['direction'];
+        }
+        else {
+            // use all available columns
+            self::$columns = $this->ContactList->getColumns();
+            self::$rows_per_page = 100;
+            self::$select_status = array('ACTIVE', 'LOCKED');
+            self::$order_by = array('contact_id');
+            self::$order_direction = 'ASC';
+        }
+        self::$current_page = 1;
     }
 
-    public function setContactID($contact_id)
+    public function setCurrentPage($page)
     {
-        self::$contact_id = $contact_id;
+        self::$current_page = $page;
     }
 
     /**
@@ -66,17 +92,23 @@ class SimpleList {
         return !empty(self::$message);
     }
 
-
-
     public function exec()
     {
-        $list = array();
-        $this->ContactData->selectList();
+        $order_by = explode(',', $this->app['request']->get('order', implode(',', self::$order_by)));
+        $order_direction = $this->app['request']->get('direction', self::$order_direction);
+
+        $list = $this->ContactList->getList(self::$current_page, self::$rows_per_page, self::$select_status, self::$max_pages, $order_by, $order_direction);
 
         return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'simple.list.twig'),
             array(
                 'message' => $this->getMessage(),
-                'list' => $list
+                'list' => $list,
+                'columns' => self::$columns,
+                'pagination_route' => FRAMEWORK_URL.'/admin/contact/simple/list/page/',
+                'current_page' => self::$current_page,
+                'last_page' => self::$max_pages,
+                'order_by' => $order_by,
+                'order_direction' => strtolower($order_direction)
             ));
     }
 }

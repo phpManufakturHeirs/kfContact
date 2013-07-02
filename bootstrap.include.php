@@ -38,15 +38,9 @@ $app->match('/admin/contact/simple/list', function() use ($app) {
     return $list->exec();
 });
 
-$app->match('/admin/contact/test', function() use($app) {
-    $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
-        "`contact_id`='5'";
-
-    $SQL = "SELECT `person_primary_email_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE ".
-        "`contact_id`='5' AND `person_primary_email_id`='7' AND `person_status`!='DELETED'";
-
-    $check = $app['db']->fetchAssoc($SQL);
-
-    print_r($check);
-    return true;
+$app->match('/admin/contact/simple/list/page/{page}', function($page) use ($app) {
+    $list = new SimpleList($app);
+    $list->setCurrentPage($page);
+    return $list->exec();
 });
+

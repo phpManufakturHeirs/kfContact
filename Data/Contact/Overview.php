@@ -80,6 +80,13 @@ EOD;
         }
     }
 
+    /**
+     * Refresh insert and update contact records into the overview table.
+     * This function should be called each time a contact is inserted or updated.
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     */
     public function refresh($contact_id)
     {
         try {
@@ -123,7 +130,7 @@ EOD;
                 }
 
                 if ($person['person_primary_phone_id'] > 0) {
-                    $SQL = "SELECT `communication_value` FROM `".FRAMEWORK_TABLE_PREFIX."contact_communication` WHERE `communication_id`='{$person['person_primary_email_id']}'";
+                    $SQL = "SELECT `communication_value` FROM `".FRAMEWORK_TABLE_PREFIX."contact_communication` WHERE `communication_id`='{$person['person_primary_phone_id']}'";
                     $phone = $this->app['db']->fetchColumn($SQL);
                 }
             }
@@ -169,6 +176,121 @@ EOD;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
+    }
 
+    /**
+     * Select all items of the overview sorted by contact_id in ascending order
+     *
+     * @return array overview list with all items
+     * @throws \Exception
+     */
+    public function selectAll()
+    {
+        try {
+            return $this->app['db']->fetchAll("SELECT * FROM `".self::$table_name."` ORDER BY `contact_id` ASC");
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Rebuild the complete overview table
+     *
+     * @throws \Exception
+     */
+    public function rebuildOverview()
+    {
+        try {
+            $contact = new Contact($this->app);
+            $contacts = $contact->selectAll();
+            foreach ($contacts as $contact) {
+                $this->refresh($contact['contact_id']);
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Return the column names of the overview table
+     *
+     * @throws \Exception
+     * @return multitype:unknown
+     */
+    public function getColumns()
+    {
+        try {
+            $result = $this->app['db']->fetchAll("SHOW COLUMNS FROM `".self::$table_name."`");
+            $columns = array();
+            foreach ($result as $column) {
+                $columns[] = $column['Field'];
+            }
+            return $columns;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function count($status=null)
+    {
+        try {
+            $SQL = "SELECT COUNT(*) FROM `".self::$table_name."`";
+            if (is_array($status) && !empty($status)) {
+                $SQL .= " WHERE (";
+                $start = true;
+                foreach ($status as $stat) {
+                    if (!$start) {
+                        $SQL .= " OR ";
+                    }
+                    else {
+                        $start = false;
+                    }
+                    $SQL .= "`contact_status`='$stat'";
+                }
+                $SQL .= ")";
+            }
+            return $this->app['db']->fetchColumn($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function selectList($limit_from, $rows_per_page, $select_status=null, $order_by=null, $order_direction='ASC')
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."`";
+            if (is_array($select_status) && !empty($select_status)) {
+                $SQL .= " WHERE (";
+                $start = true;
+                foreach ($select_status as $status) {
+                    if (!$start) {
+                        $SQL .= " OR ";
+                    }
+                    else {
+                        $start = false;
+                    }
+                    $SQL .= "`contact_status`='$status'";
+                }
+                $SQL .= ")";
+            }
+            if (is_array($order_by) && !empty($order_by)) {
+                $SQL .= " ORDER BY ";
+                $start = true;
+                foreach ($order_by as $by) {
+                    if (!$start) {
+                        $SQL .= ", ";
+                    }
+                    else {
+                        $start = false;
+                    }
+                    $SQL .= "`$by`";
+                }
+                $SQL .= " $order_direction";
+            }
+            $SQL .= " LIMIT $limit_from, $rows_per_page";
+            return $this->app['db']->fetchAll($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
     }
 }
