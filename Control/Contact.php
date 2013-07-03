@@ -24,7 +24,6 @@ use phpManufaktur\Contact\Control\Helper\ContactCommunication;
 use phpManufaktur\Contact\Control\Helper\ContactCompany;
 use phpManufaktur\Contact\Control\Helper\ContactNote;
 use phpManufaktur\Contact\Control\Helper\ContactPerson;
-use phpManufaktur\Contact\Data\Contact\Category;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Control\Helper\ContactCategory;
 
@@ -958,7 +957,6 @@ class Contact extends ContactParent
                     }
                 }
                 foreach ($old['category'] as $old_category) {
-                    echo "check";
                     $checked = false;
                     foreach ($data['category'] as $new_category) {
                         if (!is_array($new_category)) continue;
