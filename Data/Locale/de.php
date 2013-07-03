@@ -41,6 +41,8 @@ return array(
         => 'E-Mail',
     'communication_phone'
         => 'Telefon',
+    'COMPANY'
+        => 'Firma',
     'company_department'
         => 'Abteilung',
     'company_name'
@@ -65,6 +67,8 @@ return array(
         => 'Dr.',
     'earl'
         => 'Graf',
+    'FEMALE'
+        => 'Frau',
     'female'
         => 'Frau',
     'Gender'
@@ -75,8 +79,10 @@ return array(
         => 'Intern',
     'locked'
         => 'Gesperrt',
+    'MALE'
+        => 'Herr',
     'male'
-        => 'Mann',
+        => 'Herr',
     'Merchant'
         => 'Händler',
     "Missing the category name, it must always set and not empty!"
@@ -87,6 +93,8 @@ return array(
         => 'Spitzname',
     'Note'
         => 'Notiz',
+    'PERSON'
+        => 'Person',
     'person_birthday'
         => 'Geburtstag',
     'person_first_name'
