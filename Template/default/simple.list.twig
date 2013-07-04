@@ -17,6 +17,13 @@
     <div class="message">{{ message }}</div>
   {% endif %}
   <div id="contact_list">
+    
+    {#  
+        The pagination serve a automatic 1 2 3 ... 17 18 19 pagination and 
+        navigation for the table if it contain more rows than specified in: 
+        /Contact/Control/Dialog/Simple/SimpleList.json 
+        Changes here must be also done at the footer of the table!
+     #}  
     {% include '@phpManufaktur/Contact/Template/default/pagination.twig' with {
       currentPage: current_page,
       paginationPath: pagination_route,
@@ -26,45 +33,57 @@
     } only %}
     
     <table>
-      <tr>  
-        {% set order_by_str = order_by|join(',') %}
-        {% for head in list.0|keys %}
-          {% if head in columns %}
-            {% set head_order = order_direction %}
-            {% set head_class = head %}
-            {% if (head == order_by_str) %}
-              {% if (head_order == 'asc') %}
-                {% set head_order = 'desc' %}                
-                {% set head_class = head_class ~ ' active asc' %}
-              {% else %}
-                {% set head_order = 'asc' %}
-                {% set head_class = head_class ~ ' active desc' %}
-              {% endif %}
-            {% endif %}  
-            {% set head_link = pagination_route ~ current_page ~ '?order=' ~ head ~ '&direction=' ~ head_order %}
-            <th class="{{ head_class }}"><a href="{{ head_link }}">{{ head|trans }}</a></th>  
-          {% endif %}
-        {% endfor %}
-      </tr>
-      {% set i = 0 %}
-      {% for contact in list %}
-        <tr class="{{ cycle(['flop','flip'], i) }}">
-          {% for column, value in contact %} 
-            {% if column in columns %}
-              {% if column == 'contact_id' %}
-                <td class="{{ column }}"><a href="{{ FRAMEWORK_URL }}/admin/contact/simple/contact/{{ value }}">{{ '%05d'|format(value) }}</a></td>
-              {% elseif column == 'communication_email' %}
-                <td class="{{ column }}"><a href="mailto:{{ value }}">{{ value }}</a></td>
-              {% else %}
-                <td class="{{ column }}">{{ value }}</td>
-              {% endif %}
+      <thead>
+        <tr>  
+          {# 
+              Enable an automatic ordering of the table by the columns, just
+              clicking at the head of the column. Default order is specified in:
+              /Contact/Control/Dialog/Simple/SimpleList.json
+           #}
+          {% set order_by_str = order_by|join(',') %}
+          {% for head in list.0|keys %}
+            {% if head in columns %}
+              {% set head_order = order_direction %}
+              {% set head_class = head %}
+              {% if (head == order_by_str) %}
+                {% if (head_order == 'asc') %}
+                  {% set head_order = 'desc' %}                
+                  {% set head_class = head_class ~ ' active asc' %}
+                {% else %}
+                  {% set head_order = 'asc' %}
+                  {% set head_class = head_class ~ ' active desc' %}
+                {% endif %}
+              {% endif %}  
+              {% set head_link = pagination_route ~ current_page ~ '?order=' ~ head ~ '&direction=' ~ head_order %}
+              <th class="{{ head_class }}"><a href="{{ head_link }}">{{ head|trans }}</a></th>  
             {% endif %}
           {% endfor %}
         </tr>
-        {% set i = i+1 %}
-      {% endfor %}
+      </thead>
+      <tbody>
+        {% set i = 0 %}
+        {% for contact in list %}
+          <tr class="{{ cycle(['flop','flip'], i) }}">
+            {% for column, value in contact %} 
+              {% if column in columns %}
+                {% if column == 'contact_id' %}
+                  <td class="{{ column }}"><a href="{{ FRAMEWORK_URL }}/admin/contact/simple/contact/{{ value }}">{{ '%05d'|format(value) }}</a></td>
+                {% elseif column == 'communication_email' %}
+                  <td class="{{ column }}"><a href="mailto:{{ value }}">{{ value }}</a></td>
+                {% else %}
+                  <td class="{{ column }}">{{ value }}</td>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </tr>
+          {% set i = i+1 %}
+        {% endfor %}
+      </tbody>
     </table>
-      
+    
+    {#
+        See top of the table for more information!
+     #}
     {% include '@phpManufaktur/Contact/Template/default/pagination.twig' with {
       currentPage: current_page,
       paginationPath: pagination_route,
