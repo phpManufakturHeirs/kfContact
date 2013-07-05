@@ -5,13 +5,13 @@
   "group":"phpManufaktur",
   "vendor":"phpManufaktur",
   "type":"application",
-  "path":"\/extension\/phpmanufaktur\/phpManufaktur\/FacebookGallery",
+  "path":"\/extension\/phpmanufaktur\/phpManufaktur\/Contact",
   "namespace": "phpManufaktur\\Contact",
   "link":{
     "about":"\/contact\/about"
   },
   "release": {
-    "number" : "0.10",
+    "number" : "2.0.10",
     "date" : "2013-06-21"
   },
   "description": {
