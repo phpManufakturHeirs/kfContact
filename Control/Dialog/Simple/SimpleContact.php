@@ -30,8 +30,6 @@ class SimpleContact {
     public function __construct(Application $app)
     {
         $this->app = $app;
-        // set the content language
-        $this->app['translator']->setLocale('de');
         $this->ContactData = new ContactData($this->app);
     }
 
