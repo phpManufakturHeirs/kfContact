@@ -27,8 +27,10 @@ return array(
         => 'PLZ',
     "At minimum you must specify a street, a city or a zip code for a valid address"
         => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
+
     'baron'
         => 'Baron',
+
     "Can't delete the Adress with the ID %address_id% because it is used as primary address."
         => "Die Adresse mit der ID %address_id% kann nicht gelöscht werden, da sie als primäre Adresse für diesen Kontakt verwendet wird.",
     "Can't delete the Note with the ID %note_id% because it is used as primary note for this contact."
@@ -59,26 +61,38 @@ return array(
         => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
     'Country'
         => 'Land',
+    'Create or edit a Tag'
+        => 'Eine Markierung (#tag) erstellen oder bearbeiten',
     'Customer'
         => 'Kunde',
+
+    'Delete Tag'
+        => 'Markierung (#tag) löschen',
     'deleted'
         => 'Gelöscht',
+    'Description'
+        => 'Beschreibung',
     'doc'
         => 'Dr.',
+
     'earl'
         => 'Graf',
     'FEMALE'
         => 'Frau',
     'female'
         => 'Frau',
+
     'Gender'
         => 'Geschlecht',
+
     "Inserted the new contact with the ID %contact_id%."
         => 'Es wurde ein neuer Kontakt mit der ID %contact_id% hinzugefügt',
     'Intern'
         => 'Intern',
+
     'locked'
         => 'Gesperrt',
+
     'MALE'
         => 'Herr',
     'male'
@@ -89,10 +103,15 @@ return array(
         => 'Der Kategorie Bezeichner muss immer gesetzt und darf nicht leer sein!',
     "Missing the %identifier%! The ID should be set to -1 if you insert a new record."
         => 'Das Feld <b>%identifier%</b> fehlt! Diese ID sollte auf -1 gesetzt sein, wenn Sie einen neuen Datensatz einfügen möchten.',
+
     'Nick name'
         => 'Spitzname',
     'Note'
         => 'Notiz',
+
+    'Options'
+        => 'Optionen',
+
     'PERSON'
         => 'Person',
     'person_birthday'
@@ -105,6 +124,7 @@ return array(
         => 'Spitzname',
     'prof'
         => 'Prof.',
+
     "The Address with the ID %address_id% was successfull deleted."
         => 'Die Adresse mit der ID %address_id% wurde erfolgreich gelöscht.',
     "The communication entry %communication% was successfull deleted."
@@ -159,8 +179,10 @@ return array(
         => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
     'Title'
         => 'Titel',
+
     'Unchecked'
         => '- ungeprüft -',
+
     'Zip'
         => 'Postleitzahl'
 );

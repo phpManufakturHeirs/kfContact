@@ -12,13 +12,13 @@
   width: 1px;
   height: 1px;
 }
-.address_form {
+.contact_form {
   margin: 0;
   padding: 0;
   width: auto;
   height: auto;
 }
-.address_form label {
+.contact_form label {
   clear: both;
   float: left;
   width: 100px;
@@ -29,19 +29,19 @@
 label[for=form_password_first] {
   display: none;
 }
-.address_form label.required:after {
+.contact_form label.required:after {
   content: '*';
   color: #da251d;
   background-color: transparent;
   font-weight: bold;
 }
-.address_form select,
-.address_form input {
+.contact_form select,
+.contact_form input {
   float: left;
   width: 150px;
   margin: 0 0 10px 0;
 }
-.address_form textarea {
+.contact_form textarea {
   float: left;
   width: 300px;
   height: 100px;
@@ -74,8 +74,14 @@ input#form_city {
   width: 100px;
   margin: 0 0 10px 5px;
 }
-.address_form input[type=submit] {
+.contact_form input[type=submit] {
   width: 150px;
+}
+.contact_form input[type=checkbox] {
+  float: left;
+  width: 15px;
+  padding: 0;
+  margin: 5px 10px 0 0;
 }
 select#form_person_0_person_birthday_day,
 select#form_person_0_person_birthday_month {
@@ -84,3 +90,10 @@ select#form_person_0_person_birthday_month {
 select#form_person_0_person_birthday_year {
   width: 60px;
 }
+
+#form_options label {
+  clear: none;
+  text-align: left;
+  width: 300px;
+}
+

@@ -26,6 +26,8 @@ use phpManufaktur\Contact\Data\Contact\Note;
 use phpManufaktur\Contact\Data\Contact\Overview;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Data\Contact\Category;
+use phpManufaktur\Contact\Data\Contact\TagType;
+use phpManufaktur\Contact\Data\Contact\Tag;
 
 class Setup
 {
@@ -92,6 +94,12 @@ class Setup
 
             $Category = new Category($this->app);
             $Category->createTable();
+
+            $TagType = new TagType($this->app);
+            $TagType->createTable();
+
+            $Tag = new Tag($this->app);
+            $Tag->createTable();
 
         } catch (\Exception $e) {
             throw new \Exception($e);

@@ -9,7 +9,7 @@
 {% extends template_file('@framework', 'body.twig') %}
 {% block stylesheet %}
 	{{ parent() }}
-  <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/css/simple.list.css" media="screen, projection" />
+  <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/backend/simple/css/list.css" media="screen, projection" />
 {% endblock %}
 
 {% block content %}
@@ -24,7 +24,7 @@
         /Contact/Control/Dialog/Simple/SimpleList.json 
         Changes here must be also done at the footer of the table!
      #}  
-    {% include '@phpManufaktur/Contact/Template/default/pagination.twig' with {
+    {% include '@phpManufaktur/Contact/Template/default/backend/simple/pagination.twig' with {
       currentPage: current_page,
       paginationPath: pagination_route,
       lastPage: last_page,
@@ -84,7 +84,7 @@
     {#
         See top of the table for more information!
      #}
-    {% include '@phpManufaktur/Contact/Template/default/pagination.twig' with {
+    {% include '@phpManufaktur/Contact/Template/default/backend/simple/pagination.twig' with {
       currentPage: current_page,
       paginationPath: pagination_route,
       lastPage: last_page,

@@ -62,6 +62,7 @@ class Overview
         `address_zip` VARCHAR(32) NOT NULL DEFAULT '',
         `address_city` VARCHAR(128) NOT NULL DEFAULT '',
         `address_country_code` VARCHAR(8) NOT NULL DEFAULT '',
+        `tags` VARCHAR(512) NOT NULL DEFAULT '',
         `timestamp` TIMESTAMP,
         PRIMARY KEY (`id`),
         UNIQUE (`contact_id`)
@@ -135,6 +136,14 @@ EOD;
                 }
             }
 
+            // select the TAGS
+            $SQL = "SELECT `tag_name` FROM `".FRAMEWORK_TABLE_PREFIX."contact_tag` WHERE `contact_id`='$contact_id'";
+            $tags = array();
+            $tags_result = $this->app['db']->fetchAll($SQL);
+            foreach ($tags_result as $key => $value) {
+                $tags[] = $value;
+            }
+
             $record = array(
                 'contact_id' => $contact_id,
                 'contact_name' => $contact['contact_name'],
@@ -155,7 +164,8 @@ EOD;
                 'address_street' => isset($address['address_street']) ? $address['address_street'] : '',
                 'address_city' => isset($address['address_city']) ? $address['address_city'] : '',
                 'address_zip' => isset($address['address_zip']) ? $address['address_zip'] : '',
-                'address_country_code' => isset($address['address_country_code']) ? $address['address_country_code'] : ''
+                'address_country_code' => isset($address['address_country_code']) ? $address['address_country_code'] : '',
+                'tags' => implode(',', $tags)
             );
 
             // prepare the data record

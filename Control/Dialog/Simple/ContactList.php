@@ -12,12 +12,12 @@
 namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
-use phpManufaktur\Contact\Control\ContactList;
+use phpManufaktur\Contact\Control\ContactList as ContactListControl;
 
-class SimpleList {
+class ContactList {
 
     protected $app = null;
-    protected $ContactList = null;
+    protected $ContactListControl = null;
     protected static $message = '';
     protected static $columns = null;
     protected static $rows_per_page = null;
@@ -35,12 +35,11 @@ class SimpleList {
     public function __construct(Application $app)
     {
         $this->app = $app;
-        // set the content language
-        $this->app['translator']->setLocale('de');
-        $this->ContactList = new ContactList($this->app);
+        $this->ContactListControl = new ContactListControl($this->app);
 
-        $cfg_file = MANUFAKTUR_PATH.'/Contact/Control/Dialog/Simple/SimpleList.json';
-        if (file_exists($cfg_file)) {
+        try {
+            // search for the config file in the template directory
+            $cfg_file = $this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/simple/list.json', '', true);
             // get the columns to show in the list
             $cfg = $this->app['utils']->readJSON($cfg_file);
             self::$columns = $cfg['columns'];
@@ -48,9 +47,8 @@ class SimpleList {
             self::$select_status = $cfg['list']['select_status'];
             self::$order_by = $cfg['list']['order']['by'];
             self::$order_direction = $cfg['list']['order']['direction'];
-        }
-        else {
-            // use all available columns
+        } catch (\Exception $e) {
+            // the config file does not exists - use all available columns
             self::$columns = $this->ContactList->getColumns();
             self::$rows_per_page = 100;
             self::$select_status = array('ACTIVE', 'LOCKED');
@@ -78,7 +76,7 @@ class SimpleList {
      */
     public function setMessage($message, $params=array())
     {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'message.twig'),
+        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/message.twig'),
             array('message' => $this->app['translator']->trans($message, $params)));
     }
 
@@ -97,9 +95,9 @@ class SimpleList {
         $order_by = explode(',', $this->app['request']->get('order', implode(',', self::$order_by)));
         $order_direction = $this->app['request']->get('direction', self::$order_direction);
 
-        $list = $this->ContactList->getList(self::$current_page, self::$rows_per_page, self::$select_status, self::$max_pages, $order_by, $order_direction);
+        $list = $this->ContactListControl->getList(self::$current_page, self::$rows_per_page, self::$select_status, self::$max_pages, $order_by, $order_direction);
 
-        return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'simple.list.twig'),
+        return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/simple/list.twig'),
             array(
                 'message' => $this->getMessage(),
                 'list' => $list,

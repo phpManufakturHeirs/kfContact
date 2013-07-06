@@ -15,7 +15,7 @@ use Silex\Application;
 use phpManufaktur\Contact\Control\Contact as ContactData;
 use Symfony\Component\Form\FormBuilder;
 
-class SimpleContact {
+class Contact {
 
     protected $app = null;
     protected static $contact_id = -1;
@@ -318,7 +318,7 @@ class SimpleContact {
             }
         }
 
-        return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'simple.contact.twig'),
+        return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/simple/contact.twig'),
             array(
                 'message' => $this->getMessage(),
                 'form' => $form->createView()
