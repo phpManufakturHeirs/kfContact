@@ -67,7 +67,7 @@
             {% for column, value in contact %} 
               {% if column in columns %}
                 {% if column == 'contact_id' %}
-                  <td class="{{ column }}"><a href="{{ FRAMEWORK_URL }}/admin/contact/simple/contact/{{ value }}">{{ '%05d'|format(value) }}</a></td>
+                  <td class="{{ column }}"><a href="{{ contact_route }}{{ value }}">{{ '%05d'|format(value) }}</a></td>
                 {% elseif column == 'communication_email' %}
                   <td class="{{ column }}"><a href="mailto:{{ value }}">{{ value }}</a></td>
                 {% else %}
