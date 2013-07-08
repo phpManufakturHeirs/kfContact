@@ -14,11 +14,9 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 use Silex\Application;
 use phpManufaktur\Contact\Control\ContactList as ContactListControl;
 
-class ContactList {
+class ContactList extends Dialog {
 
-    protected $app = null;
     protected $ContactListControl = null;
-    protected static $message = '';
     protected static $columns = null;
     protected static $rows_per_page = null;
     protected static $select_status = null;
@@ -32,14 +30,28 @@ class ContactList {
      *
      * @param Application $app
      */
-    public function __construct(Application $app)
+    public function __construct(Application $app, $options=null)
     {
-        $this->app = $app;
+        parent::__construct($app);
+
         $this->ContactListControl = new ContactListControl($this->app);
+
+        $this->setOptions(array(
+            'template' => array(
+                'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
+                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'backend/simple/list.json',
+                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/list.twig'
+            ),
+            'route' => array(
+                'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/simple/list/page/',
+                'contact' => isset($options['route']['contact']) ? $options['route']['contact'] : '/admin/contact/simple/contact/'
+            )
+        ));
 
         try {
             // search for the config file in the template directory
-            $cfg_file = $this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/simple/list.json', '', true);
+            $cfg_file = $this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['settings'], '', true);
             // get the columns to show in the list
             $cfg = $this->app['utils']->readJSON($cfg_file);
             self::$columns = $cfg['columns'];
@@ -63,50 +75,25 @@ class ContactList {
         self::$current_page = $page;
     }
 
-    /**
-     * @return the $message
-     */
-    public function getMessage()
-    {
-        return self::$message;
-    }
-
-    /**
-     * @param string $message
-     */
-    public function setMessage($message, $params=array())
-    {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/message.twig'),
-            array('message' => $this->app['translator']->trans($message, $params)));
-    }
-
-    /**
-     * Check if a message is active
-     *
-     * @return boolean
-     */
-    public function isMessage()
-    {
-        return !empty(self::$message);
-    }
-
-    public function exec()
+    public function exec($extra=null)
     {
         $order_by = explode(',', $this->app['request']->get('order', implode(',', self::$order_by)));
         $order_direction = $this->app['request']->get('direction', self::$order_direction);
 
         $list = $this->ContactListControl->getList(self::$current_page, self::$rows_per_page, self::$select_status, self::$max_pages, $order_by, $order_direction);
 
-        return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/simple/list.twig'),
+        return $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['list']),
             array(
                 'message' => $this->getMessage(),
                 'list' => $list,
                 'columns' => self::$columns,
-                'pagination_route' => FRAMEWORK_URL.'/admin/contact/simple/list/page/',
+                'pagination_route' => FRAMEWORK_URL.self::$options['route']['pagination'],
+                'contact_route' => FRAMEWORK_URL.self::$options['route']['contact'],
                 'current_page' => self::$current_page,
                 'last_page' => self::$max_pages,
                 'order_by' => $order_by,
-                'order_direction' => strtolower($order_direction)
+                'order_direction' => strtolower($order_direction),
+                'extra' => $extra
             ));
     }
 }

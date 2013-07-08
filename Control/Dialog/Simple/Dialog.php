@@ -17,6 +17,7 @@ class Dialog {
 
     protected $app = null;
     protected static $message = '';
+    protected static $options = array();
 
     /**
      * Constructor
@@ -53,6 +54,26 @@ class Dialog {
     public function isMessage()
     {
         return !empty(self::$message);
+    }
+
+	  /**
+     * @return the $options
+     */
+    public static function getOptions()
+    {
+        return self::$options;
+    }
+
+	  /**
+     * @param field_type $options
+     */
+    public static function setOptions($options)
+    {
+        if (is_array($options)) {
+            foreach ($options as $key => $value) {
+                self::$options[$key] = $value;
+            }
+        }
     }
 
 }

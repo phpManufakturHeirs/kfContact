@@ -15,11 +15,9 @@ use Silex\Application;
 use phpManufaktur\Contact\Control\Contact as ContactData;
 use Symfony\Component\Form\FormBuilder;
 
-class Contact {
+class Contact extends Dialog {
 
-    protected $app = null;
     protected static $contact_id = -1;
-    protected static $message = '';
     protected $ContactData = null;
 
     /**
@@ -27,42 +25,23 @@ class Contact {
      *
      * @param Application $app
      */
-    public function __construct(Application $app)
+    public function __construct(Application $app, $options=null)
     {
-        $this->app = $app;
+        parent::__construct($app);
+
+        $this->setOptions(array(
+            'template' => array(
+                'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
+                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
+                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'backend/simple/contact.twig'
+            )
+        ));
         $this->ContactData = new ContactData($this->app);
     }
 
     public function setContactID($contact_id)
     {
         self::$contact_id = $contact_id;
-    }
-
-    /**
-     * @return the $message
-     */
-    public function getMessage()
-    {
-        return self::$message;
-    }
-
-    /**
-     * @param string $message
-     */
-    public function setMessage($message, $params=array())
-    {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'message.twig'),
-            array('message' => $this->app['translator']->trans($message, $params)));
-    }
-
-    /**
-     * Check if a message is active
-     *
-     * @return boolean
-     */
-    public function isMessage()
-    {
-        return !empty(self::$message);
     }
 
     /**
@@ -249,7 +228,7 @@ class Contact {
      *
      * @return string contact dialog
      */
-    public function exec()
+    public function exec($extra=null)
     {
         // check if a contact ID isset
         $form_request = $this->app['request']->request->get('form', array());
@@ -318,10 +297,11 @@ class Contact {
             }
         }
 
-        return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/simple/contact.twig'),
+        return $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['contact']),
             array(
                 'message' => $this->getMessage(),
-                'form' => $form->createView()
+                'form' => $form->createView(),
+                'extra' => $extra
             ));
     }
 }
