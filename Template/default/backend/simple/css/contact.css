@@ -81,7 +81,7 @@ input#form_city {
   float: left;
   width: 15px;
   padding: 0;
-  margin: 5px 10px 0 0;
+  margin: 0 10px 0 0;
 }
 select#form_person_0_person_birthday_day,
 select#form_person_0_person_birthday_month {

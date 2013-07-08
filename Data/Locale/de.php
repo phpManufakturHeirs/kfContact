@@ -61,13 +61,15 @@ return array(
         => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
     'Country'
         => 'Land',
-    'Create or edit a Tag'
-        => 'Eine Markierung (#tag) erstellen oder bearbeiten',
+    'Create a new Tag <i>#tag</i>'
+        => 'Eine neue Markierung (#tag) erstellen',
     'Customer'
         => 'Kunde',
 
     'Delete Tag'
         => 'Markierung (#tag) löschen',
+    'delete the #tag <b>%tag_name%</b>'
+        => 'den #tag <b>%tag_name%</b> löschen',
     'deleted'
         => 'Gelöscht',
     'Description'
@@ -77,6 +79,9 @@ return array(
 
     'earl'
         => 'Graf',
+    'Edit the <i>#tag</i> %tag_name%'
+        => 'Die Markierung #tag <i>%tag_name%</i> bearbeiten',
+
     'FEMALE'
         => 'Frau',
     'female'
@@ -171,6 +176,10 @@ return array(
         => 'Das Feld login_name oder eine E-Mail Adresse müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
     "The note with the ID %note_id% was successfull deleted."
         => 'Die Notiz mit der ID %note_id% wurde gelöscht.',
+    "The process has not returned a status message"
+        => 'Der Prozess hat keinen Status für den Vorgang gemeldet',
+    "The tag type has successfull updated."
+        => 'Die Markierung wurde erfolgreich aktualisiert.',
     "The %type% entry %value% is marked for primary communication and can not removed!"
         => 'Der Typ %type% mit dem Wert %value% ist für die primäre Kommunikation mit dem Kontakt festgelegt und kann nicht gelöscht werden!',
     "The update returned 'FALSE' but no message ..."
