@@ -17,7 +17,6 @@ use phpManufaktur\Contact\Control\Helper\ContactTagType as TagTypeControl;
 
 class TagType extends Dialog {
 
-    protected $app = null;
     protected $TagTypeControl = null;
     protected static $tag_type_id = -1;
 
@@ -134,8 +133,7 @@ class TagType extends Dialog {
         return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/simple/tag.type.twig'),
             array(
                 'message' => $this->getMessage(),
-                'form' => $form->createView(),
-                'tag_type_id' => self::$tag_type_id
+                'form' => $form->createView()
             ));
     }
 }

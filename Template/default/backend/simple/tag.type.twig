@@ -13,19 +13,23 @@
 {% endblock %}
 
 {% block content %}
-  <h1>{{ 'Create or edit a Tag'|trans }}</h1>
+  {% if form.vars.value.tag_type_id < 1 %}
+    <h1>{{ 'Create a new Tag <i>#tag</i>'|trans }}</h1>
+  {% else %}
+    <h1>{{ 'Edit the <i>#tag</i> %tag_name%'|trans({'%tag_name%':form.vars.value.tag_name}) }}</h1>
+  {% endif %}
   {% if message|length > 0 %}
     <div class="message">{{ message }}</div>
   {% endif %}
   <div class="contact_form">
     <form action="{{ FRAMEWORK_URL }}/admin/contact/simple/tag/type" method="post">
       {{ form_widget(form) }}
-      {% if tag_type_id > 0 %}
-      <div class="clear"></div>
-      <div>
-        <label for="submit">&nbsp;</label>
-        <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete this #tag'|trans }}
-      </div>
+      {% if form.vars.value.tag_type_id > 0 %}
+        <div class="clear"></div>
+        <div>
+          <label for="submit">&nbsp;</label>
+          <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the #tag <b>%tag_name%</b>'|trans({'%tag_name%':form.vars.value.tag_name}) }}
+        </div>
       {% endif %}
       <div class="clear"></div>
       <div>

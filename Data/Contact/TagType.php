@@ -144,6 +144,14 @@ EOD;
         }
     }
 
+    /**
+     * Delete physically the tag type with the given ID. This function also
+     * delete all tags which are used in table contact_tag.
+     *
+     * @param integer $tag_type_id
+     * @throws \Exception
+     * @return boolean
+     */
     public function delete($tag_type_id)
     {
         try {
@@ -170,4 +178,26 @@ EOD;
         }
     }
 
+    /**
+     * Update the tag type record for the given ID
+     *
+     * @param array $data
+     * @param integer $tag_id
+     * @throws \Exception
+     */
+    public function update($data, $tag_type_id)
+    {
+        try {
+            $update = array();
+            foreach ($data as $key => $value) {
+                if (($key == 'tag_type_id') || ($key == 'tag_timestamp')) continue;
+                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('tag_type_id' => $tag_type_id));
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }

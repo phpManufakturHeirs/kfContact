@@ -107,9 +107,12 @@ class ContactTagType extends ContactParent
      */
     public function update($type_data, $tag_type_id)
     {
-
-
-        return true;
+        if ($this->validate($type_data)) {
+            $this->TagTypeData->update($type_data, $tag_type_id);
+            $this->setMessage("The tag type has successfull updated.");
+            return true;
+        }
+        return false;
     }
 
     public function delete($tag_type_id)
