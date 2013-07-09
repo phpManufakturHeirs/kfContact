@@ -27,7 +27,7 @@
       {% if form.vars.value.tag_type_id > 0 %}
         <div class="clear"></div>
         <div>
-          <label for="submit">&nbsp;</label>
+          <label>&nbsp;</label>
           <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the #tag <b>%tag_name%</b>'|trans({'%tag_name%':form.vars.value.tag_name}) }}
         </div>
       {% endif %}

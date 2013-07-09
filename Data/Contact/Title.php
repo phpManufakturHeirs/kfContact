@@ -112,4 +112,53 @@ EOD;
         }
     }
 
+    /**
+     * Select all titles and return a ascending orderd list by identifier
+     *
+     * @throws \Exception
+     * @return Ambigous <multitype:, unknown>
+     */
+    public function selectAll()
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` ORDER BY `title_identifier` ASC";
+            $results = $this->app['db']->fetchAll($SQL);
+            $titles = array();
+            $level = 0;
+            foreach ($results as $result) {
+                foreach ($result as $key => $value) {
+                    $titles[$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                $level++;
+            }
+            return $titles;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Select the desired title ID and return the record
+     *
+     * @param integer $title_id
+     * @throws \Exception
+     * @return array|boolean array on success, false if ID not exists
+     */
+    public function select($title_id)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `title_id`='$title_id'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            if (is_array($result) && isset($result['title_identifier'])) {
+                $title = array();
+                foreach ($result as $key => $value) {
+                    $title[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                return $title;
+            }
+            return false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }
