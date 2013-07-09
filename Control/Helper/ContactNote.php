@@ -141,7 +141,7 @@ class ContactNote extends ContactParent
             }
             // delet the note
             $this->Note->delete($note_id);
-            $this->setMessage("The note with the ID %note_id% was successfull deleted.", array('%note_id%' => $note_id));
+            $this->setMessage('The record with the ID %id% was successfull deleted.', array('%id%' => $note_id));
             $has_changed = true;
             return true;
         }

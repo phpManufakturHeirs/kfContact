@@ -17,6 +17,8 @@ if ('á' != "\xc3\xa1") {
 return array(
     '- new category -'
         => '- neue Kategorie -',
+    '- new contact -'
+        => '- neuer Kontakt -',
     'active'
         => 'Aktiv',
     'Add a new category'
@@ -31,8 +33,8 @@ return array(
         => 'Straße',
     'address_zip'
         => 'PLZ',
-    'Allowed characters for the category name are only A-Z, 0-9 and the Underscore. The name will be always converted to uppercase.'
-        => 'Erlaubte Zeichen für den Kategorie Bezeichner sind A-Z, 0-9 und der Unterstrich. Der Bezeichner wird stets in Großbuchstaben umgewandelt.',
+    'Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.'
+        => 'Erlaubte Zeichen für den %identifier% Bezeichner sind A-Z, 0-9 und der Unterstrich. Der Bezeichner wird stets in Großbuchstaben umgewandelt.',
     "At minimum you must specify a street, a city or a zip code for a valid address"
         => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
 
@@ -87,6 +89,8 @@ return array(
         => 'Eine neue Kategorie erstellen',
     'Create a new Tag <i>#tag</i>'
         => 'Eine neue Markierung (#tag) erstellen',
+    'Create a new title'
+        => 'Einen neuen Titel erstellen',
     'Customer'
         => 'Kunde',
 
@@ -96,6 +100,8 @@ return array(
         => 'die Kategorie <b>%category_name%</b> löschen',
     'delete the #tag <b>%tag_name%</b>'
         => 'den #tag <b>%tag_name%</b> löschen',
+    'delete the title <b>%title_identifier%</b>'
+        => 'den Titel <b>%title_identifier%</b> löschen',
     'deleted'
         => 'Gelöscht',
     'Description'
@@ -111,6 +117,8 @@ return array(
         => 'Die Kategorie %category_name% bearbeiten',
     'Edit the <i>#tag</i> %tag_name%'
         => 'Die Markierung #tag <i>%tag_name%</i> bearbeiten',
+    'Edit the title %title_identifier%'
+        => 'Den Titel %title_identifier% bearbeiten',
     'Edit titles'
         => 'Titel bearbeiten',
 
@@ -165,6 +173,8 @@ return array(
         => 'Nachname',
     'person_nick_name'
         => 'Spitzname',
+    'Please define a short name for the title!'
+        => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
     'prof'
         => 'Prof.',
 
@@ -225,12 +235,14 @@ return array(
         => "Der Login <b>%login%</b> wird bereits verwendet, bitte legen Sie einen anderen Login fest!",
     "The login_name or a email address must be always set, can't insert the record!"
         => 'Das Feld login_name oder eine E-Mail Adresse müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
-    "The note with the ID %note_id% was successfull deleted."
-        => 'Die Notiz mit der ID %note_id% wurde gelöscht.',
     "The process has not returned a status message"
         => 'Der Prozess hat keinen Status für den Vorgang gemeldet',
-    "The tag type has successfull updated."
-        => 'Die Markierung wurde erfolgreich aktualisiert.',
+    'The record with the ID %id% was successfull inserted.'
+        => 'Der Datensatz mit der ID %id% wurde erfolgreich eingefügt.',
+    'The record with the ID %id% was successfull updated.'
+        => 'Der Datensatz mit der ID %id% wurde erfolgreich aktualisiert.',
+    'The record with the ID %id% was successfull deleted.'
+        => 'Der Datensatz mit der ID %id% wurde erfolgreich gelöscht.',
     "The %type% entry %value% is marked for primary communication and can not removed!"
         => 'Der Typ %type% mit dem Wert %value% ist für die primäre Kommunikation mit dem Kontakt festgelegt und kann nicht gelöscht werden!',
     "The update returned 'FALSE' but no message ..."
@@ -239,6 +251,10 @@ return array(
         => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
     'Title'
         => 'Titel',
+    'title_id'
+        => 'ID',
+    'Title list'
+        => 'Titel Übersicht',
 
     'Unchecked'
         => '- ungeprüft -',
