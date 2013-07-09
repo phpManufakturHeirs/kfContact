@@ -161,4 +161,88 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Delete the title ID from the definition table and also the title
+     * identifier from all PERSON records!
+     *
+     * @param integer $title_id
+     * @throws \Exception
+     * @return boolean
+     */
+    public function delete($title_id)
+    {
+        try {
+            // begin transaction
+            $this->app['db']->beginTransaction();
+
+            if (false === ($title = $this->select($title_id))) {
+                // title ID does not exists, rollback ...
+                $this->app['db']->rollback();
+                return false;
+            }
+
+            // remove the title from all person records
+            $Person = new Person($this->app);
+            $Person->replaceTitle($title['title_identifier'], '');
+
+            // delete the title
+            $this->app['db']->delete(self::$table_name, array('title_id' => $title_id));
+
+            // commit transaction
+            $this->app['db']->commit();
+
+            return true;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            // rollback ...
+            $this->app['db']->rollback();
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Insert a new TITLE record
+     *
+     * @param array $data
+     * @param reference integer $title_id
+     * @throws \Exception
+     */
+    public function insert($data, &$title_id=null)
+    {
+        try {
+            $insert = array();
+            foreach ($data as $key => $value) {
+                if ($key == 'title_id') continue;
+                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            $this->app['db']->insert(self::$table_name, $insert);
+            $title_id = $this->app['db']->lastInsertId();
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Update the TITLE for the given ID
+     *
+     * @param array $data
+     * @param integer $title_id
+     * @throws \Exception
+     */
+    public function update($data, $title_id)
+    {
+        try {
+            $update = array();
+            foreach ($data as $key => $value) {
+                if (($key == 'title_id') || ($key == 'title_identifier')) continue;
+                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('title_id' => $title_id));
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }

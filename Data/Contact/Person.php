@@ -237,6 +237,21 @@ EOD;
         }
     }
 
-
+    /**
+     * Replace the given title identifier with a new optional identifier or an
+     * empty string. Changes all person records!
+     *
+     * @param string $title_identifier
+     * @param string $new_identifier
+     * @throws \Exception
+     */
+    public function replaceTitle($title_identifier, $new_identifier='')
+    {
+        try {
+            $this->app['db']->update(self::$table_name, array('person_title' => $new_identifier), array('person_title' => $title_identifier));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 
 }

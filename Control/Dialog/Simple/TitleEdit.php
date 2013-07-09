@@ -127,38 +127,53 @@ class TitleEdit extends Dialog {
                 }
                 else {
                     // insert or edit a title
-                    /*
-                    if ($category['category_type_id'] > 0) {
+                    if ($title['title_id'] > 0) {
                         // update the record
-                        $data = array(
-                            'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : ''
-                        );
-                        $this->CategoryTypeData->update($data, self::$category_id);
-                        $this->setMessage('The category %category_name% was successfull updated',
-                            array('%category_name%' => $category['category_type_name']));
+                        if (empty($title['title_short']) || (strlen($title['title_short']) < 2)) {
+                            // missing the short title!
+                            $this->setMessage('Please define a short name for the title!');
+                        }
+                        else {
+                            if (empty($title['title_long'])) {
+                                $title['title_long'] = $title['title_short'];
+                            }
+                            $data = array(
+                                'title_short' => $title['title_short'],
+                                'title_long' => $title['title_long']
+                            );
+                            $this->TitleData->update($data, $title['title_id']);
+                            $this->setMessage('The record with the ID %id% was successfull updated.',
+                                array('%id%' => $title['title_id']));
+                        }
                     }
                     else {
-                        /*
                         // insert a new record
-                        $category_name = str_replace(' ', '_', strtoupper(trim($category['category_type_name'])));
+                        $title_identifier = str_replace(' ', '_', strtoupper(trim($title['title_identifier'])));
                         $matches = array();
-                        if (preg_match_all('/[^A-Z0-9_$]/', $category_name, $matches)) {
+                        if (preg_match_all('/[^A-Z0-9_$]/', $title_identifier, $matches)) {
                             // name check fail
-                            $this->setMessage('Allowed characters for the category name are only A-Z, 0-9 and the Underscore. The name will be always converted to uppercase.');
+                            $this->setMessage('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
+                                array('%identifier%' => 'Title'));
+                        }
+                        elseif (empty($title['title_short']) || (strlen($title['title_short']) < 2)) {
+                            // missing the short title!
+                            $this->setMessage('Please define a short name for the title!');
                         }
                         else {
                             // insert the record
+                            if (empty($title['title_long'])) {
+                                $title['title_long'] = $title['title_short'];
+                            }
                             $data = array(
-                                'category_type_name' => $category_name,
-                                'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : ''
+                                'title_identifier' => $title_identifier,
+                                'title_short' => $title['title_short'],
+                                'title_long' => $title['title_long']
                             );
-                            $this->CategoryTypeData->insert($data, self::$category_id);
-                            $this->setMessage('The category %category_name% was successfull inserted.',
-                                array('%category_name%' => $category_name));
+                            $this->TitleData->insert($data, self::$title_id);
+                            $this->setMessage('The title %title_identifier% was successfull inserted.',
+                                array('%title_identifier%' => $title_identifier));
                         }
-
                     }
-                    */
                 }
                 // get the form with the actual category ID
                 $form = $this->getForm($this->getTitle());
