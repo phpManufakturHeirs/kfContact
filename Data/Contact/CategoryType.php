@@ -102,7 +102,7 @@ EOD;
             $categories = $this->app['db']->fetchAll($SQL);
             $result = array();
             foreach ($categories as $category) {
-                $result[$category['category_type_name']] = ucfirst(strtolower($category['category_type_name']));
+                $result[$category['category_type_name']] = ucfirst($category['category_type_name']);
             }
             return $result;
         } catch (\Doctrine\DBAL\DBALException $e) {
@@ -194,6 +194,8 @@ EOD;
 
             // first we need the tag name
             if (false === ($category_type = $this->select($category_type_id))) {
+                // category ID does not exists, rollback ...
+                $this->app['db']->rollback();
                 return false;
             }
             $Category = new Category($this->app);
@@ -205,6 +207,7 @@ EOD;
 
             // commit transaction
             $this->app['db']->commit();
+            return true;
         } catch (\Doctrine\DBAL\DBALException $e) {
             // rollback ...
             $this->app['db']->rollback();

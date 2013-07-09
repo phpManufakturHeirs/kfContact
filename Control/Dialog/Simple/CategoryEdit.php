@@ -149,7 +149,8 @@ class CategoryEdit extends Dialog {
                         $matches = array();
                         if (preg_match_all('/[^A-Z0-9_$]/', $category_name, $matches)) {
                             // name check fail
-                            $this->setMessage('Allowed characters for the category name are only A-Z, 0-9 and the Underscore. The name will be always converted to uppercase.');
+                            $this->setMessage('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
+                                array('%identifier%' => 'Category'));
                         }
                         else {
                             // insert the record
