@@ -39,13 +39,13 @@ class ContactList extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'backend/simple/list.json',
+                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'backend/simple/contact.list.json',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/list.twig'
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/contact.list.twig'
             ),
             'route' => array(
-                'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/simple/list/page/',
-                'contact' => isset($options['route']['contact']) ? $options['route']['contact'] : '/admin/contact/simple/contact/'
+                'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/simple/list/page/{page}?order={order}&direction={direction}',
+                'contact' => isset($options['route']['contact']) ? $options['route']['contact'] : '/admin/contact/simple/contact/{contact_id}'
             )
         ));
 
@@ -70,11 +70,22 @@ class ContactList extends Dialog {
         self::$current_page = 1;
     }
 
+    /**
+     * Set the current page for the table
+     *
+     * @param integer $page
+     */
     public function setCurrentPage($page)
     {
         self::$current_page = $page;
     }
 
+    /**
+     * Return the complete contact list
+     *
+     * @param null|array $extra additional parameters for the template
+     * @return string contact list
+     */
     public function exec($extra=null)
     {
         $order_by = explode(',', $this->app['request']->get('order', implode(',', self::$order_by)));

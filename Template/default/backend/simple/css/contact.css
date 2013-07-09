@@ -21,7 +21,7 @@
 .contact_form label {
   clear: both;
   float: left;
-  width: 100px;
+  width: 200px;
   text-align: right;
   margin: 0 0 10px 0;
   padding: 3px 5px 0 0;
@@ -96,4 +96,18 @@ select#form_person_0_person_birthday_year {
   text-align: left;
   width: 300px;
 }
+.edit_button {
+  float: left;
+  width: 20px;
+  padding: 0;
+  margin: 0 0 0 3px;
+}
+.edit_button input {
+  width: 23px;
+}
 
+.value {
+  float: left;
+  width: 300px;
+  padding: 3px 0;
+}

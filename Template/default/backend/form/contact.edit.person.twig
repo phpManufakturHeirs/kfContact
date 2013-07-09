@@ -1,0 +1,46 @@
+{#
+  Contact
+
+  @author Team phpManufaktur <team@phpmanufaktur.de>
+  @link https://kit2.phpmanufaktur.de/FacebookGallery
+  @copyright 2013 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+  @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+#}
+<div class="contact_form">
+  <form action="{{ FRAMEWORK_URL }}{{ route.action }}" method="post" {{ form_enctype(form) }}>
+    {{ form_errors(form) }}
+
+    {{ form_row(form.contact_type) }}   
+    {{ form_row(form.contact_id) }}
+    <div>
+      <label>{{ 'contact_id'|trans }}</label>
+      <div class="value">
+        {% if form.vars.value.contact_id > 0 %}
+          {{ form.vars.value.contact_id }}
+        {% else %}
+          {{ '- new contact -'|trans }}
+        {% endif %}
+     </div>
+    </div>
+    {{ form_row(form.contact_status) }}
+
+    {{ form_row(form.category_0_category_name) }}
+    <div class="edit_button">
+      <input type="button" value=".." title="{{ 'Edit categories'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL }}{{ route.category }}';return false;" />
+    </div>
+
+    {{ form_row(form.person_0_person_gender) }}
+      
+    {{ form_row(form.person_0_person_title) }}
+    <div class="edit_button">
+      <input type="button" value=".." title="{{ 'Edit titles'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL }}{{ route.title }}';return false;" />
+    </div>  
+      
+    {{ form_rest(form) }}  
+    <div>
+      <label for="submit">&nbsp;</label>
+      <input type="submit" name="submit" />
+    </div>
+    <div class="clear"></div>  
+  </form>
+</div>
