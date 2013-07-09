@@ -33,12 +33,22 @@ class Contact extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'backend/simple/contact.twig'
+                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'backend/simple/contact.edit.twig'
+            ),
+            'route' => array(
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact',
+                'category' => isset($options['route']['category']) ? $options['route']['category'] : '/admin/contact/simple/category/list',
+                'title' => isset($options['route']['title']) ? $options['route']['title'] : '/admin/contact/simple/title/list'
             )
         ));
         $this->ContactData = new ContactData($this->app);
     }
 
+    /**
+     * Set the contact ID
+     *
+     * @param integer $contact_id
+     */
     public function setContactID($contact_id)
     {
         self::$contact_id = $contact_id;
@@ -77,11 +87,9 @@ class Contact extends Dialog {
             ->add('contact_type', 'hidden', array(
                 'data' => 'PERSON'
             ))
+            ->add('contact_id', 'hidden')
 
             // contact visible form fields
-            ->add('contact_id', 'text', array(
-                'read_only' => true
-            ))
             ->add('contact_status', 'choice', array(
                 'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'DELETED' => 'deleted'),
                 'empty_value' => false,
@@ -301,6 +309,7 @@ class Contact extends Dialog {
             array(
                 'message' => $this->getMessage(),
                 'form' => $form->createView(),
+                'route' => self::$options['route'],
                 'extra' => $extra
             ));
     }
