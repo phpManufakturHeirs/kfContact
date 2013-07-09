@@ -200,4 +200,26 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Return a array with all tags, prepared for usage with TWIG
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getArrayForTwig()
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` ORDER BY `tag_name` ASC";
+            $results = $this->app['db']->fetchAll($SQL);
+            $tags = array();
+            foreach ($results as $tag) {
+                $tags[$tag['tag_name']] = ucfirst($title['tag_name']);
+            }
+            return $result;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }

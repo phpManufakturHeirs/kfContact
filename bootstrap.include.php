@@ -12,7 +12,7 @@
 use phpManufaktur\Contact\Data\Setup\Setup;
 use phpManufaktur\Contact\Control\Dialog\Simple\Contact as SimpleContact;
 use phpManufaktur\Contact\Control\Dialog\Simple\ContactList as SimpleContactList;
-use phpManufaktur\Contact\Control\Dialog\Simple\TagType as SimpleTagType;
+use phpManufaktur\Contact\Control\Dialog\Simple\TagEdit as SimpleTagEdit;
 use phpManufaktur\Contact\Control\Dialog\Simple\CategoryList as SimpleCategoryList;
 use phpManufaktur\Contact\Control\Dialog\Simple\CategoryEdit as SimpleCategoryEdit;
 use phpManufaktur\Contact\Control\Dialog\Simple\TitleList as SimpleTitleList;
@@ -49,15 +49,15 @@ $app->match('/admin/contact/simple/list/page/{page}', function($page) use ($app)
     return $list->exec();
 });
 
-$app->match('/admin/contact/simple/tag/type', function() use($app) {
-    $TagType = new SimpleTagType($app);
-    return $TagType->exec();
+$app->match('/admin/contact/simple/tag/edit', function() use($app) {
+    $TagEdit = new SimpleTagEdit($app);
+    return $TagEdit->exec();
 });
 
-$app->match('/admin/contact/simple/tag/type/{type_id}', function($type_id) use($app) {
-    $TagType = new SimpleTagType($app);
-    $TagType->setTagTypeID($type_id);
-    return $TagType->exec();
+$app->match('/admin/contact/simple/tag/edit/id/{tag_id}', function($tag_id) use($app) {
+    $TagEdit = new SimpleTagEdit($app);
+    $TagEdit->setTagTypeID($tag_id);
+    return $TagEdit->exec();
 });
 
 $app->match('/admin/contact/simple/category/list', function() use($app) {

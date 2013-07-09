@@ -1,0 +1,27 @@
+{#
+  Contact
+
+  @author Team phpManufaktur <team@phpmanufaktur.de>
+  @link https://kit2.phpmanufaktur.de/FacebookGallery
+  @copyright 2013 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+  @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+#}
+
+<div class="contact_form">
+  <form action="{{ FRAMEWORK_URL }}{{ route.action }}" method="post">
+    {{ form_widget(form) }}
+    {% if form.vars.value.tag_type_id > 0 %}
+      <div class="clear"></div>
+      <div>
+        <label>&nbsp;</label>
+        <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the #tag <b>%tag_name%</b>'|trans({'%tag_name%':form.vars.value.tag_name}) }}
+      </div>
+    {% endif %}
+    <div class="clear"></div>
+    <div>
+      <label for="submit">&nbsp;</label>
+      <input type="submit" name="submit" />
+    </div>
+    <div class="clear"></div>  
+  </form>
+</div>

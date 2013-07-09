@@ -21,22 +21,7 @@
   {% if message|length > 0 %}
     <div class="message">{{ message }}</div>
   {% endif %}
-  <div class="contact_form">
-    <form action="{{ FRAMEWORK_URL }}/admin/contact/simple/tag/type" method="post">
-      {{ form_widget(form) }}
-      {% if form.vars.value.tag_type_id > 0 %}
-        <div class="clear"></div>
-        <div>
-          <label>&nbsp;</label>
-          <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the #tag <b>%tag_name%</b>'|trans({'%tag_name%':form.vars.value.tag_name}) }}
-        </div>
-      {% endif %}
-      <div class="clear"></div>
-      <div>
-        <label for="submit">&nbsp;</label>
-        <input type="submit" name="submit" />
-      </div>
-      <div class="clear"></div>  
-    </form>
-  </div>
+    
+  {% include '@phpManufaktur/Contact/Template/default/backend/form/tag.edit.twig' %}
+    
 {% endblock content %}
