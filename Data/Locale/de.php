@@ -15,8 +15,14 @@ if ('á' != "\xc3\xa1") {
 }
 
 return array(
+    '- new category -'
+        => '- neue Kategorie -',
     'active'
         => 'Aktiv',
+    'Add a new category'
+        => 'Eine neue Kategorie hinzufügen',
+    'Add a new title'
+        => 'Einen neuen Titel hinzufügen',
     'address_city'
         => 'Stadt',
     'address_country_code'
@@ -25,6 +31,8 @@ return array(
         => 'Straße',
     'address_zip'
         => 'PLZ',
+    'Allowed characters for the category name are only A-Z, 0-9 and the Underscore. The name will be always converted to uppercase.'
+        => 'Erlaubte Zeichen für den Kategorie Bezeichner sind A-Z, 0-9 und der Unterstrich. Der Bezeichner wird stets in Großbuchstaben umgewandelt.',
     "At minimum you must specify a street, a city or a zip code for a valid address"
         => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
 
@@ -37,8 +45,22 @@ return array(
         => "Die Notiz mit der ID %note_id% kann nicht gelöscht werden, da sie als primäre Information für den Kontakt verwendet wird.",
     "Can't read the contact with the ID %contact_id% - it is possibly deleted."
         => 'Der Kontakt Datensatz mit der ID %contact_id% konnte nicht gelesen werden, er wurde möglicher Weise gelöscht.',
+    'category_type_id'
+        => 'Kategorie ID',
     'Category'
         => 'Kategorie',
+    'Category description'
+        => 'Kategorie Beschreibung',
+    'Category description (translated)'
+        => 'Kategorie Beschreibung (Übersetzung)',
+    'Category name'
+        => 'Kategorie Bezeichner',
+    'Category name (translated)'
+        => 'Kategorie Bezeichner (Übersetzung)',
+    'Category type list'
+        => 'Übersicht über die Kategorien',
+    'Change to the overview'
+        => 'Zur Übersicht wechseln',
     'communication_email'
         => 'E-Mail',
     'communication_phone'
@@ -61,6 +83,8 @@ return array(
         => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
     'Country'
         => 'Land',
+    'Create a new category'
+        => 'Eine neue Kategorie erstellen',
     'Create a new Tag <i>#tag</i>'
         => 'Eine neue Markierung (#tag) erstellen',
     'Customer'
@@ -68,6 +92,8 @@ return array(
 
     'Delete Tag'
         => 'Markierung (#tag) löschen',
+    'delete the category <b>%category_name%</b>'
+        => 'die Kategorie <b>%category_name%</b> löschen',
     'delete the #tag <b>%tag_name%</b>'
         => 'den #tag <b>%tag_name%</b> löschen',
     'deleted'
@@ -79,8 +105,14 @@ return array(
 
     'earl'
         => 'Graf',
+    'Edit categories'
+        => 'Kategorien bearbeiten',
+    'Edit the category %category_name%'
+        => 'Die Kategorie %category_name% bearbeiten',
     'Edit the <i>#tag</i> %tag_name%'
         => 'Die Markierung #tag <i>%tag_name%</i> bearbeiten',
+    'Edit titles'
+        => 'Titel bearbeiten',
 
     'FEMALE'
         => 'Frau',
@@ -90,6 +122,8 @@ return array(
     'Gender'
         => 'Geschlecht',
 
+    'Identifier'
+        => 'Bezeichner',
     "Inserted the new contact with the ID %contact_id%."
         => 'Es wurde ein neuer Kontakt mit der ID %contact_id% hinzugefügt',
     'Intern'
@@ -97,6 +131,10 @@ return array(
 
     'locked'
         => 'Gesperrt',
+    'Long name'
+        => 'Langbezeichnung',
+    'Long name (translated)'
+        => 'Langbezeichnung (Übersetzung)',
 
     'MALE'
         => 'Herr',
@@ -130,8 +168,21 @@ return array(
     'prof'
         => 'Prof.',
 
+    'Short name'
+        => 'Kurzbezeichnung',
+    'Short name (translated)'
+        => 'Kurzbezeichnung (Übersetzung)',
+
     "The Address with the ID %address_id% was successfull deleted."
         => 'Die Adresse mit der ID %address_id% wurde erfolgreich gelöscht.',
+    'The category %category_name% was successfull deleted.'
+        => 'Die Kategorie %category_name% wurde erfolgreich gelöscht.',
+    'The category %category_name% was successfull inserted.'
+        => 'Die Kategorie %category_name% wurde erfolgreich eingefügt.',
+    'The category %category_name% was successfull updated'
+        => 'Die Kategorie %category_name% wurde erfolgreich aktualisiert.',
+    'The category type with the ID %category_id% does not exists!'
+        => 'Die Kategorie mit der ID %category_id% existiert nicht!',
     "The communication entry %communication% was successfull deleted."
         => 'Der Kommunikationseintrag <b>%communication%</b> wurde gelöscht.',
     "The COMMUNICATION TYPE %type% does not exists!"
