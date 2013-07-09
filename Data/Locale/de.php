@@ -243,6 +243,8 @@ return array(
         => 'Der Datensatz mit der ID %id% wurde erfolgreich aktualisiert.',
     'The record with the ID %id% was successfull deleted.'
         => 'Der Datensatz mit der ID %id% wurde erfolgreich gelöscht.',
+    'The tag type %tag_name% already exists!'
+        => 'Die Markierung %tag_name% existiert bereits und kann nicht erneut eingefügt werden!',
     "The %type% entry %value% is marked for primary communication and can not removed!"
         => 'Der Typ %type% mit dem Wert %value% ist für die primäre Kommunikation mit dem Kontakt festgelegt und kann nicht gelöscht werden!',
     "The update returned 'FALSE' but no message ..."

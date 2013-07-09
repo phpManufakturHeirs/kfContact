@@ -21,6 +21,9 @@ use phpManufaktur\Contact\Control\Dialog\Simple\TitleEdit as SimpleTitleEdit;
 // scan the /Locale directory and add all available languages
 $app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale');
 
+// scan the /Locale/Custom directory and add all available languages
+$app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale/Custom');
+
 $app->get('/admin/contact/setup', function() use($app) {
     $Setup = new Setup($app);
     $Setup->exec();
