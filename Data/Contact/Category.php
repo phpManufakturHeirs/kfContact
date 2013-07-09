@@ -45,7 +45,7 @@ class Category
         `category_name` VARCHAR(64) NOT NULL DEFAULT '',
         `category_timestamp` TIMESTAMP,
         PRIMARY KEY (`category_id`),
-        INDEX (`contact_id`)
+        INDEX (`contact_id`,`category_name`)
         )
     COMMENT='The category table for the contacts'
     ENGINE=InnoDB
@@ -126,10 +126,10 @@ EOD;
         }
     }
 
-    public function delete($category_id)
+    public function delete($category_name)
     {
         try {
-            $this->app['db']->delete(self::$table_name, array('category_id' => $category_id));
+            $this->app['db']->delete(self::$table_name, array('category_name' => $category_name));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

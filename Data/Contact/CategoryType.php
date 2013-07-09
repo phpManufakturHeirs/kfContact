@@ -127,4 +127,134 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Select all category types and return an ascending ordered array
+     *
+     * @throws \Exception
+     * @return Ambigous <multitype:, unknown>
+     */
+    public function selectAll()
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` ORDER BY `category_type_name` ASC";
+            $results = $this->app['db']->fetchAll($SQL);
+            $categories = array();
+            $level = 0;
+            foreach ($results as $result) {
+                foreach ($result as $key => $value) {
+                    $categories[$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                $level++;
+            }
+            return $categories;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Select the desired category type by ID
+     *
+     * @param integer $category_type_id
+     * @throws \Exception
+     * @return array|boolean associated array or false
+     */
+    public function select($category_type_id)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `category_type_id`='$category_type_id'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            if (is_array($result) && isset($result['category_type_name'])) {
+                $category = array();
+                foreach ($result as $key => $value) {
+                    $category[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                return $category;
+            }
+            return false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Delete the desired category type ID and all associated category names from
+     * the category table. Use transaction.
+     *
+     * @param integer $category_type_id
+     * @throws \Exception
+     * @return boolean
+     */
+    public function delete($category_type_id)
+    {
+        try {
+            // begin transaction
+            $this->app['db']->beginTransaction();
+
+            // first we need the tag name
+            if (false === ($category_type = $this->select($category_type_id))) {
+                return false;
+            }
+            $Category = new Category($this->app);
+            // delete all categories assigned to contacts
+            $Category->delete($category_type['category_type_name']);
+
+            // delete the category type
+            $this->app['db']->delete(self::$table_name, array('category_type_id' => $category_type_id));
+
+            // commit transaction
+            $this->app['db']->commit();
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            // rollback ...
+            $this->app['db']->rollback();
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Insert a new CATEGORY TYPE record
+     *
+     * @param array $data
+     * @param reference integer $category_id
+     * @throws \Exception
+     */
+    public function insert($data, &$category_type_id=null)
+    {
+        try {
+            $insert = array();
+            foreach ($data as $key => $value) {
+                if ($key == 'category_type_id') continue;
+                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            $this->app['db']->insert(self::$table_name, $insert);
+            $category_type_id = $this->app['db']->lastInsertId();
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Update the CATEGORY TYPE for the given ID
+     *
+     * @param array $data
+     * @param integer $category_type_id
+     * @throws \Exception
+     */
+    public function update($data, $category_type_id)
+    {
+        try {
+            $update = array();
+            foreach ($data as $key => $value) {
+                if (($key == 'category_type_id') || ($key == 'category_type_name')) continue;
+                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('category_type_id' => $category_type_id));
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }
