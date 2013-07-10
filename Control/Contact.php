@@ -26,6 +26,8 @@ use phpManufaktur\Contact\Control\Helper\ContactNote;
 use phpManufaktur\Contact\Control\Helper\ContactPerson;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Control\Helper\ContactCategory;
+use phpManufaktur\Contact\Control\Helper\ContactTag;
+use phpManufaktur\Contact\Data\Contact\TagType;
 
 class Contact extends ContactParent
 {
@@ -40,6 +42,7 @@ class Contact extends ContactParent
     protected $ContactNote = null;
     protected $Overview = null;
     protected $ContactCategory = null;
+    protected $ContactTag = null;
 
     protected static $ContactBlocks = array(
         'contact' => array(
@@ -61,7 +64,9 @@ class Contact extends ContactParent
                 )
             ),
         'address',
-        'note'
+        'note',
+        'category',
+        'tag'
     );
 
     /**
@@ -81,6 +86,7 @@ class Contact extends ContactParent
         $this->ContactPerson = new ContactPerson($this->app);
         $this->Overview = new Overview($this->app);
         $this->ContactCategory = new ContactCategory($this->app);
+        $this->ContactTag = new ContactTag($this->app);
     }
 
     /**
@@ -128,6 +134,12 @@ class Contact extends ContactParent
         return $categoryType->getArrayForTwig();
     }
 
+    public function getTagArrayForTwig()
+    {
+        $tagType = new TagType($this->app);
+        return $tagType->getArrayForTwig();
+    }
+
     /**
      * Get the contact record for this contact_id
      */
@@ -170,6 +182,11 @@ class Contact extends ContactParent
         // default category entry
         $data['category'] = array(
             $this->ContactCategory->getDefaultRecord()
+        );
+
+        // default tag entry
+        $data['tag'] = array(
+            $this->ContactTag->getDefaultRecord()
         );
 
         return $data;
@@ -491,6 +508,17 @@ class Contact extends ContactParent
                             $level++;
                         }
                     }
+                case 'tag':
+                    if (isset($contact_data[$block]) && is_array($contact_data[$block])) {
+                        $level = 0;
+                        foreach ($contact_data[$block] as $tag_data) {
+                            if (!$this->ContactTag->validate($tag_data, $contact_data, $validate_options)) {
+                                $check = false;
+                            }
+                            $contact_data[$block][$level] = $tag_data;
+                            $level++;
+                        }
+                    }
                 default:
                     // ContactBlock does not exists
                     throw new \Exception("The ContactBlock $block does not exists!");
@@ -633,6 +661,28 @@ class Contact extends ContactParent
                 foreach ($data['note'] as $note) {
                     if (!is_array($note)) continue;
                     if (!$this->ContactNote->insert($note, self::$contact_id)) {
+                        // something went wrong, rollback
+                        $this->app['db']->rollback();
+                        return false;
+                    }
+                }
+            }
+
+            if (isset($data['category'])) {
+                foreach ($data['category'] as $category) {
+                    if (!is_array($category)) continue;
+                    if (!$this->ContactCategory->insert($category, self::$contact_id)) {
+                        // something went wrong, rollback
+                        $this->app['db']->rollback();
+                        return false;
+                    }
+                }
+            }
+
+            if (isset($data['tag'])) {
+                foreach ($data['tag'] as $tag) {
+                    if (!is_array($tag)) continue;
+                    if (!$this->ContactTag->insert($tag, self::$contact_id)) {
                         // something went wrong, rollback
                         $this->app['db']->rollback();
                         return false;
@@ -968,6 +1018,35 @@ class Contact extends ContactParent
                     if (!$checked) {
                         // delete the category
                         $this->ContactCategory->delete($old_category['category_id']);
+                        $data_changed = true;
+                    }
+                }
+            }
+
+            if (isset($data['tag'])) {
+                // insert new tags if needed
+                foreach ($data['tag'] as $new_tag) {
+                    if (!is_array($new_tag)) continue;
+                    $tag_id = -1;
+                    $has_inserted = false;
+                    $this->ContactTag->insert($new_tag, $contact_id, $tag_id, $has_inserted);
+                    if ($has_inserted) {
+                        $data_changed = true;
+                    }
+                }
+                // delete no longer needed tags
+                foreach ($old['tag'] as $old_tag) {
+                    $checked = false;
+                    foreach ($data['tag'] as $new_tag) {
+                        if (!is_array($new_tag)) continue;
+                        if ($new_tag['tag_name'] == $old_tag['tag_name']) {
+                            $checked = true;
+                            break;
+                        }
+                    }
+                    if (!$checked) {
+                        // delete the tag
+                        $this->ContactTag->delete($old_tag['tag_name']);
                         $data_changed = true;
                     }
                 }

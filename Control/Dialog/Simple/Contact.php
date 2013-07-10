@@ -38,7 +38,8 @@ class Contact extends Dialog {
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact',
                 'category' => isset($options['route']['category']) ? $options['route']['category'] : '/admin/contact/simple/category/list',
-                'title' => isset($options['route']['title']) ? $options['route']['title'] : '/admin/contact/simple/title/list'
+                'title' => isset($options['route']['title']) ? $options['route']['title'] : '/admin/contact/simple/title/list',
+                'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/simple/tag/list'
             )
         ));
         $this->ContactData = new ContactData($this->app);
@@ -108,6 +109,16 @@ class Contact extends Dialog {
                 'required' => false,
                 'label' => 'Category'
             ))
+
+            ->add('tag_0_tags', 'choice', array(
+                'choices' => $this->ContactData->getTagArrayForTwig(),
+               // 'empty_value' => '- please select -',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => false,
+                'label' => 'Tags'
+            ))
+
 
             // person - hidden fields
             ->add('person_0_person_id', 'hidden')
@@ -247,12 +258,19 @@ class Contact extends Dialog {
         // get the contact array
         $contact = $this->ContactData->select(self::$contact_id);
 
+        // we need the Tag's as a simple array!
+        $tags = array();
+        foreach ($contact['tag'] as $tag) {
+            $tags[] = $tag['tag_name'];
+        }
+
         if (self::$contact_id < 1) {
             unset($contact['communication']);
         }
 
         // we dont need a multilevel and nested contact array, so flatten it
         $contact = $this->ContactData->levelDownContactArray($contact);
+        $contact['tag_0_tags'] = $tags;
 
         if ($this->ContactData->isMessage()) {
             self::$message = $this->ContactData->getMessage();
@@ -271,8 +289,19 @@ class Contact extends Dialog {
                 // the form submit a datetime object but we need a string
                 $contact['person_0_person_birthday'] = (isset($contact['person_0_person_birthday']) && is_object($contact['person_0_person_birthday'])) ? date('Y-m-d', $contact['person_0_person_birthday']->getTimestamp()) : '0000-00-00';
 
+                // the form submit the TAGs as simpel array, we have to translate it
+                $tags = array();
+                foreach ($contact['tag_0_tags'] as $tag_name) {
+                    $tags[] = array(
+                        'tag_id' => -1,
+                        'contact_id' => $contact['contact_id'],
+                        'tag_name' => $tag_name
+                    );
+                }
+
                 // build a regular contact array
                 $contact = $this->ContactData->levelUpContactArray($contact);
+                $contact['tag'] = $tags;
 
                 if (self::$contact_id < 1) {
                     // insert a new record
@@ -294,8 +323,14 @@ class Contact extends Dialog {
 
                 // get the values of the new or updated record
                 $contact = $this->ContactData->select(self::$contact_id);
+                // we need the Tag's as a simple array!
+                $tags = array();
+                foreach ($contact['tag'] as $tag) {
+                    $tags[] = $tag['tag_name'];
+                }
                 // build a flatten array
                 $contact = $this->ContactData->levelDownContactArray($contact);
+                $contact['tag_0_tags'] = $tags;
                 // get the form
                 $form = $this->getForm($contact);
             }

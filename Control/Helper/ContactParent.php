@@ -41,7 +41,7 @@ class ContactParent
      */
     public function setMessage($message, $params=array())
     {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'message.twig'),
+        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/message.twig'),
             array('message' => $this->app['translator']->trans($message, $params)));
     }
 

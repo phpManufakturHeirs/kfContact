@@ -75,8 +75,6 @@ EOD;
      * Return all CATEGORIES for the given Contact ID
      *
      * @param integer $contact_id
-     * @param string $status
-     * @param string $status_operator
      * @throws \Exception
      * @return array|boolean
      */

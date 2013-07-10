@@ -111,3 +111,32 @@ select#form_person_0_person_birthday_year {
   width: 300px;
   padding: 3px 0;
 }
+
+#form_tag_0_tags {
+  width: 150px;
+  margin: 0;
+  padding: 0;
+  float: left;
+}
+#form_tag_0_tags input {
+  float: left;
+  width: 15px;
+  padding: 0;
+  margin: 3px 10px 2px 0;
+}
+#form_tag_0_tags label {
+  clear: none;
+  float: left;
+  text-align: left;
+  width: 125px;
+  margin: 1px 0 2px 0;
+  padding: 0;
+}
+
+.extra_space {
+  clear: both;
+  width: 1px;
+  height: 10px;
+  margin: 0;
+  padding: 0;
+}

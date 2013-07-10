@@ -61,7 +61,7 @@ class TagEdit extends Dialog {
             ->add('tag_name', 'text', array(
                 'required' => true,
                 'read_only' => (isset($tag_type['tag_name']) && !empty($tag_type['tag_name'])) ? true : false,
-                'label' => 'Name'
+                'label' => 'Tag'
             ))
             ->add('tag_description', 'textarea', array(
                 'required' => false,
@@ -99,7 +99,7 @@ class TagEdit extends Dialog {
                 $this->setMessage('The record with the ID %id% was successfull deleted.',
                     array('%id%' => self::$tag_type_id));
                 self::$tag_type_id = -1;
-                $tag_type = $this->TagTypeControl->getDefaultRecord();
+                $tag_type = $this->TagTypeData->getDefaultRecord();
                 $form = $this->getForm($tag_type);
             }
             else {

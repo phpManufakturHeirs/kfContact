@@ -214,9 +214,34 @@ EOD;
             $results = $this->app['db']->fetchAll($SQL);
             $tags = array();
             foreach ($results as $tag) {
-                $tags[$tag['tag_name']] = ucfirst($title['tag_name']);
+                $tags[$tag['tag_name']] = ucfirst(strtolower($tag['tag_name']));
             }
-            return $result;
+            return $tags;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Select all TAGS and return a ascending orderd list by identifier
+     *
+     * @throws \Exception
+     * @return Ambigous <multitype:, unknown>
+     */
+    public function selectAll()
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` ORDER BY `tag_name` ASC";
+            $results = $this->app['db']->fetchAll($SQL);
+            $tags = array();
+            $level = 0;
+            foreach ($results as $result) {
+                foreach ($result as $key => $value) {
+                    $tags[$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                $level++;
+            }
+            return $tags;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

@@ -61,6 +61,16 @@ EOD;
         }
     }
 
+    public function getDefaultRecord()
+    {
+        return array(
+            'tag_id' => -1,
+            'contact_id' => -1,
+            'tag_name' => '',
+            'tag_timestamp' => '0000-00-00 00:00:00'
+        );
+    }
+
     /**
      * Select a TAG record by the given tag_id
      * Return FALSE if the record does not exists
@@ -97,4 +107,71 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Return all TAGS for the given Contact ID
+     *
+     * @param integer $contact_id
+     * @param string $status
+     * @param string $status_operator
+     * @throws \Exception
+     * @return array|boolean
+     */
+    public function selectByContactID($contact_id)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='$contact_id'";
+            $results = $this->app['db']->fetchAll($SQL);
+            if (is_array($results)) {
+                $tags = array();
+                $level = 0;
+                foreach ($results as $result) {
+                    foreach ($result as $key => $value) {
+                        $tags[$level][$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                    }
+                    $level++;
+                }
+                return $tags;
+            }
+            else {
+                return false;
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function isTagAlreadySet($tag_name, $contact_id)
+    {
+        try {
+            $SQL = "SELECT `tag_name` FROM `".self::$table_name."` WHERE `contact_id`='$contact_id' && `tag_name`='$tag_name'";
+            $result = $this->app['db']->fetchcolumn($SQL);
+            return ($tag_name == $result) ? true : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Insert a new TAG record
+     *
+     * @param array $data
+     * @param reference integer $tag_id
+     * @throws \Exception
+     */
+    public function insert($data, &$tag_id=null)
+    {
+        try {
+            $insert = array();
+            foreach ($data as $key => $value) {
+                if (($key == 'tag_id') || ($key == 'tag_timestamp')) continue;
+                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            $this->app['db']->insert(self::$table_name, $insert);
+            $tag_id = $this->app['db']->lastInsertId();
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }

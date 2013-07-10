@@ -28,7 +28,14 @@
     <div class="edit_button">
       <input type="button" value=".." title="{{ 'Edit categories'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL }}{{ route.category }}';return false;" />
     </div>
-
+    
+    {{ form_row(form.tag_0_tags) }}
+    <div class="edit_button">
+      <input type="button" value=".." title="{{ 'Edit tags'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL }}{{ route.tag }}';return false;" />
+    </div>  
+    
+    <div class="extra_space"></div>
+    
     {{ form_row(form.person_0_person_gender) }}
       
     {{ form_row(form.person_0_person_title) }}
@@ -37,6 +44,7 @@
     </div>  
       
     {{ form_rest(form) }}  
+      
     <div>
       <label for="submit">&nbsp;</label>
       <input type="submit" name="submit" />

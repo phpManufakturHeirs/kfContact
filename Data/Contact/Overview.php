@@ -140,8 +140,8 @@ EOD;
             $SQL = "SELECT `tag_name` FROM `".FRAMEWORK_TABLE_PREFIX."contact_tag` WHERE `contact_id`='$contact_id'";
             $tags = array();
             $tags_result = $this->app['db']->fetchAll($SQL);
-            foreach ($tags_result as $key => $value) {
-                $tags[] = $value;
+            foreach ($tags_result as $tag) {
+                $tags[] = $tag['tag_name'];
             }
 
             $record = array(

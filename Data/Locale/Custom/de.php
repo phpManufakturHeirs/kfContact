@@ -17,4 +17,6 @@ if ('á' != "\xc3\xa1") {
 return array(
     "I'm a sample text!"
         => 'Ich bin ein Beispiel Text!',
+    'Newsletter'
+        => 'Newsletter (Allgemein)'
     );

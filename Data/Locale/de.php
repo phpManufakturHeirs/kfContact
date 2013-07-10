@@ -19,10 +19,14 @@ return array(
         => '- neue Kategorie -',
     '- new contact -'
         => '- neuer Kontakt -',
+    '- new tag -'
+        => '- neue Markierung -',
     'active'
         => 'Aktiv',
     'Add a new category'
         => 'Eine neue Kategorie hinzufügen',
+    'Add a new tag'
+        => 'Eine neue Markierung hinzufügen',
     'Add a new title'
         => 'Einen neuen Titel hinzufügen',
     'address_city'
@@ -106,6 +110,8 @@ return array(
         => 'Gelöscht',
     'Description'
         => 'Beschreibung',
+    'Description (translated)'
+        => 'Beschreibung (Übersetzung)',
     'doc'
         => 'Dr.',
 
@@ -150,10 +156,10 @@ return array(
         => 'Herr',
     'Merchant'
         => 'Händler',
-    "Missing the category name, it must always set and not empty!"
-        => 'Der Kategorie Bezeichner muss immer gesetzt und darf nicht leer sein!',
     "Missing the %identifier%! The ID should be set to -1 if you insert a new record."
         => 'Das Feld <b>%identifier%</b> fehlt! Diese ID sollte auf -1 gesetzt sein, wenn Sie einen neuen Datensatz einfügen möchten.',
+    'Missing the key %field_name%, it must always set and not empty!'
+        => 'Der Schlüssel %field_name% muss immer gesetzt werden und darf nicht leer sein!',
 
     'Nick name'
         => 'Spitzname',
@@ -183,6 +189,14 @@ return array(
     'Short name (translated)'
         => 'Kurzbezeichnung (Übersetzung)',
 
+    'Tag'
+        => 'Markierung',
+    'Tag (translated)'
+        => 'Markierung (Übersetzung)',
+    'Tag list'
+        => 'Markierungen (#tags) Übersicht',
+    'Tags'
+        => 'Markierungen',
     "The Address with the ID %address_id% was successfull deleted."
         => 'Die Adresse mit der ID %address_id% wurde erfolgreich gelöscht.',
     'The category %category_name% was successfull deleted.'

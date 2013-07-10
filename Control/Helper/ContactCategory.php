@@ -42,7 +42,8 @@ class ContactCategory extends ContactParent
     public function validate(&$category_data, $contact_data=array(), $option=array())
     {
         if (!isset($category_data['category_name']) || empty($category_data['category_name'])) {
-            $this->setMessage("Missing the category name, it must always set and not empty!");
+            $this->setMessage('Missing the key %field_name%, it must always set and not empty!',
+                array('%field_name%' => 'category_name'));
             return false;
         }
 
