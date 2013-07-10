@@ -39,9 +39,9 @@ class ContactList extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'backend/simple/contact.list.json',
+                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'backend/simple/list.contact.json',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/contact.list.twig'
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/list.contact.twig'
             ),
             'route' => array(
                 'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/simple/list/page/{page}?order={order}&direction={direction}',

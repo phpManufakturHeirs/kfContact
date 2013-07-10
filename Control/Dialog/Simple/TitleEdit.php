@@ -32,7 +32,7 @@ class TitleEdit extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/title.edit.twig'
+                'edit' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/edit.title.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/title/edit'

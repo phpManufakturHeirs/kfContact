@@ -13,18 +13,18 @@
 {% endblock %}
 
 {% block content %}
-  {% if form.vars.value.category_type_id > 0 %}
-    <h1>{{ 'Edit the category %category_name%'|trans({'%category_name%':form.vars.value.category_type_name}) }}</h1>
+  {% if form.vars.value.tag_type_id < 1 %}
+    <h1>{{ 'Create a new Tag <i>#tag</i>'|trans }}</h1>
   {% else %}
-    <h1>{{ 'Create a new category'|trans }}</h1>
+    <h1>{{ 'Edit the <i>#tag</i> %tag_name%'|trans({'%tag_name%':form.vars.value.tag_name}) }}</h1>
   {% endif %}
   {% if message|length > 0 %}
     <div class="message">{{ message }}</div>
   {% endif %}
     
-  {% include '@phpManufaktur/Contact/Template/default/backend/form/category.edit.twig' %}
+  {% include '@phpManufaktur/Contact/Template/default/backend/form/edit.tag.twig' %}
     
   <div>
-    <p><a href="{{ FRAMEWORK_URL }}/admin/contact/simple/category/list">{{ 'Change to the overview'|trans }}</a></p>
-  </div>
+    <p><a href="{{ FRAMEWORK_URL }}/admin/contact/simple/tag/list">{{ 'Change to the overview'|trans }}</a></p>
+  </div>  
 {% endblock content %}

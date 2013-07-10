@@ -31,7 +31,7 @@ class TitleList extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/title.list.twig'
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/list.title.twig'
             ),
             'route' => array(
                 'edit' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/title/edit/id/{title_id}'

@@ -33,7 +33,7 @@ class TagEdit extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/category.edit.twig'
+                'edit' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/edit.tag.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/tag/edit'
@@ -150,7 +150,7 @@ class TagEdit extends Dialog {
             }
         }
 
-        return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/simple/tag.edit.twig'),
+        return $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['edit']),
             array(
                 'message' => $this->getMessage(),
                 'form' => $form->createView(),

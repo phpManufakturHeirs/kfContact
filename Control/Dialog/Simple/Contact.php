@@ -33,7 +33,7 @@ class Contact extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'backend/simple/contact.edit.twig'
+                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'backend/simple/edit.person.contact.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact',

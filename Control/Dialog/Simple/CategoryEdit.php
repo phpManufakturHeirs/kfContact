@@ -32,7 +32,7 @@ class CategoryEdit extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/category.edit.twig'
+                'edit' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/edit.category.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/category/edit'
