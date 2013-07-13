@@ -17,7 +17,7 @@
    #}  
   {% include '@phpManufaktur/Contact/Template/default/backend/form/pagination.twig' with {
     currentPage: current_page,
-    paginationPath: pagination_route|replace({'{order}':order_by|join(','), '{direction}':order_direction}),
+    paginationPath: FRAMEWORK_URL ~ route.pagination|replace({'{order}':order_by|join(','), '{direction}':order_direction}),
     lastPage: last_page,
     showAlwaysFirstAndLast: true
   } only %}
@@ -44,7 +44,7 @@
                 {% set head_class = head_class ~ ' active desc' %}
               {% endif %}
             {% endif %}  
-            <th class="{{ head_class }}"><a href="{{ pagination_route|replace({'{page}':current_page, '{order}':head, '{direction}':head_order}) }}">{{ head|trans }}</a></th>  
+            <th class="{{ head_class }}"><a href="{{ route.pagination|replace({'{page}':current_page, '{order}':head, '{direction}':head_order}) }}">{{ head|trans }}</a></th>  
           {% endif %}
         {% endfor %}
       </tr>
@@ -56,7 +56,13 @@
           {% for column, value in contact %} 
             {% if column in columns %}
               {% if column == 'contact_id' %}
-                <td class="{{ column }}"><a href="{{ contact_route|replace({'{contact_id}':value}) }}">{{ '%05d'|format(value) }}</a></td>
+                <td class="{{ column }}">
+                  {% if contact.contact_type == 'PERSON' %}
+                    <a href="{{ FRAMEWORK_URL ~ route.contact.person|replace({'{contact_id}':value}) }}">{{ '%05d'|format(value) }}</a>
+                  {% else %}
+                    <a href="{{ FRAMEWORK_URL ~ route.contact.company|replace({'{contact_id}':value}) }}">{{ '%05d'|format(value) }}</a>
+                  {% endif %}
+                </td>
               {% elseif column == 'communication_email' %}
                 <td class="{{ column }}"><a href="mailto:{{ value }}">{{ value }}</a></td>
               {% else %}
@@ -75,7 +81,7 @@
    #}
   {% include '@phpManufaktur/Contact/Template/default/backend/form/pagination.twig' with {
     currentPage: current_page,
-    paginationPath: pagination_route|replace({'{order}':order_by|join(','), '{direction}':order_direction}),
+    paginationPath: FRAMEWORK_URL ~ route.pagination|replace({'{order}':order_by|join(','), '{direction}':order_direction}),
     lastPage: last_page,
     showAlwaysFirstAndLast: true
   } only %}

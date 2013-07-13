@@ -15,7 +15,7 @@ use Silex\Application;
 use phpManufaktur\Contact\Control\Contact as ContactData;
 use Symfony\Component\Form\FormBuilder;
 
-class Contact extends Dialog {
+class ContactPerson extends Dialog {
 
     protected static $contact_id = -1;
     protected $ContactData = null;
@@ -36,7 +36,7 @@ class Contact extends Dialog {
                 'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'backend/simple/edit.person.contact.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact',
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact/person',
                 'category' => isset($options['route']['category']) ? $options['route']['category'] : '/admin/contact/simple/category/list',
                 'title' => isset($options['route']['title']) ? $options['route']['title'] : '/admin/contact/simple/title/list',
                 'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/simple/tag/list'

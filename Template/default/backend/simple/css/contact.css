@@ -7,6 +7,18 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 */
 
+.intro
+{
+  border: none;
+  color: #333;
+  background-color: transparent;
+  margin: 20px 0 20px 0;
+  padding: 0;
+  font-size: 13px;
+  text-align: left;
+  font-style: italic;
+}
+
 .clear {
   clear: both;
   width: 1px;
@@ -47,6 +59,8 @@ label[for=form_password_first] {
   height: 100px;
   margin: 0 0 10px 0;
 }
+
+/* select GENDER */
 #form_person_0_person_gender {
   float: left;
   width: 250px;

@@ -1,0 +1,47 @@
+{#
+  Contact
+
+  @author Team phpManufaktur <team@phpmanufaktur.de>
+  @link https://kit2.phpmanufaktur.de/FacebookGallery
+  @copyright 2013 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+  @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+#}
+
+<div class="contact_form">
+  <form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }}>
+    {{ form_errors(form) }}
+      
+    {{ form_row(form.contact_type) }}
+     
+    {{ form_row(form.contact_id) }}
+    <div>
+      <label>{{ 'contact_id'|trans }}</label>
+      <div class="value">
+        {% if form.contact_id.vars.value > 0 %}
+          {{ form.contact_id.vars.value }}
+        {% else %}
+          {{ '- new contact -'|trans }}
+        {% endif %}
+      </div>
+    </div>
+    {{ form_row(form.contact_status) }}
+    {{ form_row(form.category) }}
+    {{ form_row(form.tags) }}
+      
+    {{ form_row(form.contact_name) }}
+    {{ form_row(form.contact_login) }}
+      
+    {{ form_row(form.company_name) }}
+    {{ form_row(form.company_department) }}
+    {{ form_row(form.company_additional) }}
+    {{ form_row(form.company_additional_2) }}
+    {{ form_row(form.company_additional_3) }}
+      
+    {{ form_rest(form) }}  
+    <div>
+      <label for="submit">&nbsp;</label>
+      <input type="submit" name="submit" />
+    </div>
+    <div class="clear"></div>  
+  </form>
+</div>

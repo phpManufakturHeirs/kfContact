@@ -44,8 +44,11 @@ class ContactList extends Dialog {
                 'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/list.contact.twig'
             ),
             'route' => array(
-                'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/simple/list/page/{page}?order={order}&direction={direction}',
-                'contact' => isset($options['route']['contact']) ? $options['route']['contact'] : '/admin/contact/simple/contact/{contact_id}'
+                'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/simple/contact/list/page/{page}?order={order}&direction={direction}',
+                'contact' => array(
+                    'person' => isset($options['route']['contact']['person']) ? $options['route']['contact']['person'] : '/admin/contact/simple/contact/person/id/{contact_id}',
+                    'company' => isset($options['route']['contact']['company']) ? $options['route']['contact']['company'] : '/admin/contact/simple/contact/company/id/{contact_id}'
+                    )
             )
         ));
 
@@ -98,8 +101,11 @@ class ContactList extends Dialog {
                 'message' => $this->getMessage(),
                 'list' => $list,
                 'columns' => self::$columns,
+                /*
                 'pagination_route' => FRAMEWORK_URL.self::$options['route']['pagination'],
                 'contact_route' => FRAMEWORK_URL.self::$options['route']['contact'],
+                */
+                'route' => self::$options['route'],
                 'current_page' => self::$current_page,
                 'last_page' => self::$max_pages,
                 'order_by' => $order_by,

@@ -320,7 +320,8 @@ EOD;
     {
         try {
             $SQL = "SELECT `contact_type` FROM `".self::$table_name."` WHERE `contact_id`='$contact_id'";
-            return $this->app['db']->fetchColumn($SQL);
+            $result = $this->app['db']->fetchColumn($SQL);
+            return (!empty($result)) ? $result : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

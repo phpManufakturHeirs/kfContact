@@ -143,25 +143,24 @@ class Contact extends ContactParent
     /**
      * Get the contact record for this contact_id
      */
-    public function getDefaultRecord()
+    public function getDefaultRecord($contact_type='PERSON')
     {
         $data = array(
             'contact' => array(
                 'contact_id' => -1,
                 'contact_name' => '',
                 'contact_login' => '',
-                'contact_type' => 'PERSON',
+                'contact_type' => $contact_type,
                 'contact_status' => 'ACTIVE',
                 'contact_timestamp' => '0000-00-00 00:00:00',
             )
         );
 
         if ($data['contact']['contact_type'] === 'PERSON') {
-            $ContactPerson = new ContactPerson($this->app);
-            $data['person'] = array($ContactPerson->getDefaultRecord());
+            $data['person'] = array($this->ContactPerson->getDefaultRecord());
         }
         else {
-            throw ContactException::contactTypeNotSupported(self::$contact_type);
+            $data['company'] = array($this->ContactCompany->getDefaultRecord());
         }
 
         // default communication entry
@@ -190,6 +189,11 @@ class Contact extends ContactParent
         );
 
         return $data;
+    }
+
+    public function getContactType($contact_id)
+    {
+        return $this->ContactData->getContactType($contact_id);
     }
 
     /**

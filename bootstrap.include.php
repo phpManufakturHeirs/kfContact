@@ -10,7 +10,7 @@
  */
 
 use phpManufaktur\Contact\Data\Setup\Setup;
-use phpManufaktur\Contact\Control\Dialog\Simple\Contact as SimpleContact;
+use phpManufaktur\Contact\Control\Dialog\Simple\ContactPerson as SimpleContactPerson;
 use phpManufaktur\Contact\Control\Dialog\Simple\ContactList as SimpleContactList;
 use phpManufaktur\Contact\Control\Dialog\Simple\TagEdit as SimpleTagEdit;
 use phpManufaktur\Contact\Control\Dialog\Simple\TagList as SimpleTagList;
@@ -18,6 +18,8 @@ use phpManufaktur\Contact\Control\Dialog\Simple\CategoryList as SimpleCategoryLi
 use phpManufaktur\Contact\Control\Dialog\Simple\CategoryEdit as SimpleCategoryEdit;
 use phpManufaktur\Contact\Control\Dialog\Simple\TitleList as SimpleTitleList;
 use phpManufaktur\Contact\Control\Dialog\Simple\TitleEdit as SimpleTitleEdit;
+use phpManufaktur\Contact\Control\Dialog\Simple\ContactSelect as SimpleContactSelect;
+use phpManufaktur\Contact\Control\Dialog\Simple\ContactCompany as SimpleContactCompany;
 
 // scan the /Locale directory and add all available languages
 $app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale');
@@ -32,22 +34,38 @@ $app->get('/admin/contact/setup', function() use($app) {
 });
 
 $app->match('/admin/contact/simple/contact', function() use($app) {
-    $contact = new SimpleContact($app);
+    $contact = new SimpleContactSelect($app);
     return $contact->exec();
 });
 
-$app->match('/admin/contact/simple/contact/{contact_id}', function($contact_id) use($app) {
-    $contact = new SimpleContact($app);
+$app->match('/admin/contact/simple/contact/id/{contact_id}', function($contact_id) use($app) {
+    $contact = new SimpleContactSelect($app);
     $contact->setContactID($contact_id);
     return $contact->exec();
 });
 
-$app->match('/admin/contact/simple/list', function() use ($app) {
+$app->match('/admin/contact/simple/contact/person', function() use($app) {
+    $contact = new SimpleContactPerson($app);
+    return $contact->exec();
+});
+
+$app->match('/admin/contact/simple/contact/person/id/{contact_id}', function($contact_id) use($app) {
+    $contact = new SimpleContactPerson($app);
+    $contact->setContactID($contact_id);
+    return $contact->exec();
+});
+
+$app->match('/admin/contact/simple/contact/company', function() use($app) {
+    $contact = new SimpleContactCompany($app);
+    return $contact->exec();
+});
+
+$app->match('/admin/contact/simple/contact/list', function() use ($app) {
     $list = new SimpleContactList($app);
     return $list->exec();
 });
 
-$app->match('/admin/contact/simple/list/page/{page}', function($page) use ($app) {
+$app->match('/admin/contact/simple/contact/list/page/{page}', function($page) use ($app) {
     $list = new SimpleContactList($app);
     $list->setCurrentPage($page);
     return $list->exec();

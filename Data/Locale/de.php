@@ -29,6 +29,8 @@ return array(
         => 'Eine neue Markierung hinzufügen',
     'Add a new title'
         => 'Einen neuen Titel hinzufügen',
+    'Additional'
+        => 'Zusatz',
     'address_city'
         => 'Stadt',
     'address_country_code'
@@ -73,14 +75,22 @@ return array(
         => 'Telefon',
     'COMPANY'
         => 'Firma',
+    'Company department'
+        => 'Abteilung',
     'company_department'
         => 'Abteilung',
+    'Company name'
+        => 'Firma',
     'company_name'
         => 'Firma',
     'contact_id'
         => 'ID',
+    'Contact name'
+        => 'Kontakt Bezeichner',
     'contact_name'
         => 'Bezeichner',
+    'Contact login'
+        => 'Kontakt Anmeldename',
     'contact_login'
         => 'Login',
     'contact_type'
@@ -181,9 +191,13 @@ return array(
         => 'Spitzname',
     'Please define a short name for the title!'
         => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
+    'Please select the contact type you want to create.'
+        => 'Bitte wählen Sie den Kontakt Typ aus, den Sie erstellen möchten.',
     'prof'
         => 'Prof.',
 
+    'Select contact type'
+        => 'Kontakt Typ',
     'Short name'
         => 'Kurzbezeichnung',
     'Short name (translated)'

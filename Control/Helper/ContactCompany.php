@@ -12,9 +12,29 @@
 namespace phpManufaktur\Contact\Control\Helper;
 
 use phpManufaktur\Contact\Control\Helper\ContactParent;
+use Silex\Application;
+use phpManufaktur\Contact\Data\Contact\Company;
 
 class ContactCompany extends ContactParent
 {
+
+    protected $CompanyData = null;
+
+    public function __construct(Application $app)
+    {
+        parent::__construct($app);
+        $this->CompanyData = new Company($this->app);
+    }
+
+    /**
+     * Return a default (empty) COMPANY contact record.
+     *
+     * @return array
+     */
+    public function getDefaultRecord()
+    {
+        return $this->CompanyData->getDefaultRecord();
+    }
 
     /**
      * Validate the given company record
