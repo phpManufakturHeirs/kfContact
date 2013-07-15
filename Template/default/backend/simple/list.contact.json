@@ -15,6 +15,10 @@
       "ACTIVE",
       "LOCKED"
     ],
+    "select_type":[
+      "PERSON",
+      "COMPANY"
+    ],
     "order":{
       "by":[
         "person_last_name",
