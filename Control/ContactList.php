@@ -34,10 +34,13 @@ class ContactList extends ContactParent
     }
 
 
-    public function getList(&$list_page, $rows_per_page, $select_status=null, &$max_pages=null, $order_by=null, $order_direction='ASC')
+    public function getList(&$list_page, $rows_per_page, $select_status=null, &$max_pages=null, $order_by=null, $order_direction='ASC', $select_type=null)
     {
         // count rows
-        $count_rows = $this->Overview->count($select_status);
+        $count_rows = $this->Overview->count($select_status, $select_type);
+        if ($count_rows < 1) {
+            return null;
+        }
         $max_pages = ceil($count_rows/$rows_per_page);
         if ($list_page < 1) {
             $list_page = 1;
@@ -47,7 +50,7 @@ class ContactList extends ContactParent
         }
         $limit_from = ($list_page * $rows_per_page) - $rows_per_page;
 
-        return $this->Overview->selectList($limit_from, $rows_per_page, $select_status, $order_by, $order_direction);
+        return $this->Overview->selectList($limit_from, $rows_per_page, $select_status, $order_by, $order_direction, $select_type);
     }
 
     public function rebuildList()
