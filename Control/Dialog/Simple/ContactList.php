@@ -20,6 +20,7 @@ class ContactList extends Dialog {
     protected static $columns = null;
     protected static $rows_per_page = null;
     protected static $select_status = null;
+    protected static $select_type = null;
     protected static $max_pages = null;
     protected static $current_page = null;
     protected static $order_by = null;
@@ -57,16 +58,18 @@ class ContactList extends Dialog {
             $cfg_file = $this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['settings'], '', true);
             // get the columns to show in the list
             $cfg = $this->app['utils']->readJSON($cfg_file);
-            self::$columns = $cfg['columns'];
-            self::$rows_per_page = $cfg['list']['rows_per_page'];
-            self::$select_status = $cfg['list']['select_status'];
-            self::$order_by = $cfg['list']['order']['by'];
-            self::$order_direction = $cfg['list']['order']['direction'];
+            self::$columns = isset($cfg['columns']) ? $cfg['columns'] : $this->ContactListControl->getColumns();
+            self::$rows_per_page = isset($cfg['list']['rows_per_page']) ? $cfg['list']['rows_per_page'] : 100;
+            self::$select_status = isset($cfg['list']['select_status']) ? $cfg['list']['select_status'] : array('ACTIVE', 'LOCKED');
+            self::$select_type = isset($cfg['list']['select_type']) ? $cfg['list']['select_type'] : array('PERSON', 'COMPANY');
+            self::$order_by = isset($cfg['list']['order']['by']) ? $cfg['list']['order']['by'] : array('contact_id');
+            self::$order_direction = isset($cfg['list']['order']['direction']) ? $cfg['list']['order']['direction'] : 'ASC';
         } catch (\Exception $e) {
             // the config file does not exists - use all available columns
-            self::$columns = $this->ContactList->getColumns();
+            self::$columns = $this->ContactListControl->getColumns();
             self::$rows_per_page = 100;
             self::$select_status = array('ACTIVE', 'LOCKED');
+            self::$select_type = array('PERSON', 'COMPANY');
             self::$order_by = array('contact_id');
             self::$order_direction = 'ASC';
         }
@@ -94,17 +97,13 @@ class ContactList extends Dialog {
         $order_by = explode(',', $this->app['request']->get('order', implode(',', self::$order_by)));
         $order_direction = $this->app['request']->get('direction', self::$order_direction);
 
-        $list = $this->ContactListControl->getList(self::$current_page, self::$rows_per_page, self::$select_status, self::$max_pages, $order_by, $order_direction);
+        $list = $this->ContactListControl->getList(self::$current_page, self::$rows_per_page, self::$select_status, self::$max_pages, $order_by, $order_direction, self::$select_type);
 
         return $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['list']),
             array(
                 'message' => $this->getMessage(),
                 'list' => $list,
                 'columns' => self::$columns,
-                /*
-                'pagination_route' => FRAMEWORK_URL.self::$options['route']['pagination'],
-                'contact_route' => FRAMEWORK_URL.self::$options['route']['contact'],
-                */
                 'route' => self::$options['route'],
                 'current_page' => self::$current_page,
                 'last_page' => self::$max_pages,
