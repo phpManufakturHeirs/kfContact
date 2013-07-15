@@ -12,13 +12,13 @@
 namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
-use phpManufaktur\Contact\Control\Contact as ContactData;
+use phpManufaktur\Contact\Control\Contact as ContactControl;
 use Symfony\Component\Form\FormBuilder;
 
 class ContactPerson extends Dialog {
 
     protected static $contact_id = -1;
-    protected $ContactData = null;
+    protected $ContactControl = null;
 
     /**
      * Constructor
@@ -42,7 +42,7 @@ class ContactPerson extends Dialog {
                 'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/simple/tag/list'
             )
         ));
-        $this->ContactData = new ContactData($this->app);
+        $this->ContactControl = new ContactControl($this->app);
     }
 
     /**
@@ -56,13 +56,19 @@ class ContactPerson extends Dialog {
     }
 
     /**
-     * Build the complete form with the form.factory
+     * Build the form with the form.factory
      *
-     * @param array $contact flatten contact record
-     * @return FormBuilder
+     * @param array $contact record
+     * @return $form form fields
      */
-    protected function getForm($contact)
+    public function getFormFields($contact)
     {
+        // we need the Tag's as a simple array!
+        $tags = array();
+        foreach ($contact['tag'] as $tag) {
+            $tags[] = $tag['tag_name'];
+        }
+
         // create array for the birthday years
         $years = array();
         for ($i = date('Y')-18; $i > (date('Y')-100); $i--) {
@@ -73,173 +79,283 @@ class ContactPerson extends Dialog {
             'format' => 'ddMMyyyy',
             'years' => $years,
             'empty_value' => '',
-            'required' => false
+            'required' => false,
+            'data' => (!empty($contact['person'][0]['person_birthday']) && ($contact['person'][0]['person_birthday'] != '0000-00-00')) ? new \DateTime($contact['person'][0]['person_birthday']) : null
         );
 
-        if (!isset($contact['person_0_person_birthday']) || ($contact['person_0_person_birthday'] === '0000-00-00')) {
-            $contact['person_0_person_birthday'] = null;
+        // get the communication types and values
+        $email = $this->ContactControl->getDefaultCommunicationRecord();
+        $phone = $this->ContactControl->getDefaultCommunicationRecord();
+        $fax = $this->ContactControl->getDefaultCommunicationRecord();
+        $cell = $this->ContactControl->getDefaultCommunicationRecord();
+
+        foreach ($contact['communication'] as $communication) {
+            switch ($communication['communication_type']) {
+                case 'EMAIL' :
+                    $email = $communication;
+                    break;
+                case 'PHONE' :
+                    $phone = $communication;
+                    break;
+                case 'FAX':
+                    $fax = $communication;
+                    break;
+                case 'CELL':
+                    $cell = $communication;
+                    break;
+            }
         }
-        if (isset($contact['person_0_person_birthday'])) {
-            $birthday_array['data'] = new \DateTime($contact['person_0_person_birthday']);
+
+        // private (default) address
+        $address_private = $this->ContactControl->getDefaultAddressRecord();
+
+        foreach ($contact['address'] as $address) {
+            switch ($address['address_type']) {
+                case 'PRIVATE':
+                    $address_private = $address;
+                    break;
+            }
         }
 
-        return $this->app['form.factory']->createBuilder('form', $contact)
-            // contact - hidden fields
-            ->add('contact_type', 'hidden', array(
-                'data' => 'PERSON'
-            ))
-            ->add('contact_id', 'hidden')
+        $form = $this->app['form.factory']->createBuilder('form')
+        // contact - hidden fields
+        ->add('contact_type', 'hidden', array(
+            'data' => $contact['contact']['contact_type']
+        ))
+        ->add('contact_id', 'hidden', array(
+            'data' => $contact['contact']['contact_id']
+        ))
 
-            // contact visible form fields
-            ->add('contact_status', 'choice', array(
-                'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'DELETED' => 'deleted'),
-                'empty_value' => false,
-                'expanded' => false,
-                'multiple' => false,
-                'required' => false,
-                'label' => 'Status'
-            ))
+        // contact visible form fields
+        ->add('contact_status', 'choice', array(
+            'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'DELETED' => 'deleted'),
+            'empty_value' => false,
+            'expanded' => false,
+            'multiple' => false,
+            'required' => false,
+            'label' => 'Status',
+            'data' => $contact['contact']['contact_status']
+        ))
 
-            // category - visible form fields
-            ->add('category_0_category_name', 'choice', array(
-                'choices' => $this->ContactData->getCategoryArrayForTwig(),
-                'empty_value' => '- please select -',
-                'expanded' => false,
-                'multiple' => false,
-                'required' => false,
-                'label' => 'Category'
-            ))
+        // category - visible form fields
+        ->add('category', 'choice', array(
+            'choices' => $this->ContactControl->getCategoryArrayForTwig(),
+            'empty_value' => '- please select -',
+            'expanded' => false,
+            'multiple' => false,
+            'required' => false,
+            'label' => 'Category',
+            'data' => isset($contact['category'][0]['category_name']) ? $contact['category'][0]['category_name'] : ''
+        ))
 
-            ->add('tag_0_tags', 'choice', array(
-                'choices' => $this->ContactData->getTagArrayForTwig(),
-               // 'empty_value' => '- please select -',
-                'expanded' => true,
-                'multiple' => true,
-                'required' => false,
-                'label' => 'Tags'
-            ))
+        ->add('tags', 'choice', array(
+            'choices' => $this->ContactControl->getTagArrayForTwig(),
+            'expanded' => true,
+            'multiple' => true,
+            'required' => false,
+            'label' => 'Tags',
+            'data' => $tags
+        ))
 
+        // person - hidden fields
+        ->add('person_id', 'hidden', array(
+            'data' => $contact['person'][0]['person_id']
+        ))
 
-            // person - hidden fields
-            ->add('person_0_person_id', 'hidden')
-            ->add('person_0_contact_id', 'hidden')
+        // person - visible form fields
+        ->add('person_gender', 'choice', array(
+            'choices' => array('MALE' => 'male', 'FEMALE' => 'female'),
+            'expanded' => true,
+            'label' => 'Gender',
+            'data' => $contact['person'][0]['person_gender']
+        ))
+        ->add('person_title', 'choice', array(
+            'choices' => $this->ContactControl->getTitleArrayForTwig(),
+            'empty_value' => '- please select -',
+            'expanded' => false,
+            'multiple' => false,
+            'required' => false,
+            'label' => 'Title',
+            'data' => $contact['person'][0]['person_title']
+        ))
+        ->add('person_first_name', 'text', array(
+            'required' => false,
+            'label' => 'First name',
+            'data' => $contact['person'][0]['person_first_name']
+        ))
+        ->add('person_last_name', 'text', array(
+            'required' => false,
+            'label' => 'Last name',
+            'data' => $contact['person'][0]['person_last_name']
+        ))
+        ->add('person_birthday', 'date', $birthday_array)
 
-            // person - visible form fields
-            ->add('person_0_person_gender', 'choice', array(
-                'choices' => array('MALE' => 'male', 'FEMALE' => 'female'),
-                'expanded' => true,
-                'label' => 'Gender'
-            ))
-            ->add('person_0_person_title', 'choice', array(
-                'choices' => $this->ContactData->getTitleArrayForTwig(),
-                'empty_value' => '- please select -',
-                'expanded' => false,
-                'multiple' => false,
-                'required' => false,
-                'label' => 'Title',
-            ))
-            ->add('person_0_person_first_name', 'text', array(
-                'required' => false,
-                'label' => 'First name'
-            ))
-            ->add('person_0_person_last_name', 'text', array(
-                'required' => false,
-                'label' => 'Last name'
-            ))
-            ->add('person_0_person_birthday', 'date', $birthday_array)
+        // communication
+        ->add('email_id', 'hidden', array(
+            'data' => $email['communication_id']
+        ))
+        ->add('email', 'email', array(
+            'label' => 'E-Mail',
+            'data' => $email['communication_value']
+        ))
+        ->add('phone_id', 'hidden', array(
+            'data' => $phone['communication_id']
+        ))
+        ->add('phone', 'text', array(
+            'required' => false,
+            'label' => 'Phone',
+            'data' => $phone['communication_value']
+        ))
+        ->add('cell_id', 'hidden', array(
+            'data' => $cell['communication_id']
+        ))
+        ->add('cell', 'text', array(
+            'required' => false,
+            'label' => 'Cell',
+            'data' => $cell['communication_value']
+        ))
+        ->add('fax_id', 'hidden', array(
+            'data' => $fax['communication_id']
+        ))
+        ->add('fax', 'text', array(
+            'required' => false,
+            'label' => 'Fax',
+            'data' => $fax['communication_value']
+        ))
 
-            // communication - hidden fields
-            ->add('communication_email_communication_id', 'hidden', array(
-                'data' => (!empty($contact['communication_email_communication_id'])) ? $contact['communication_email_communication_id'] : -1
-            ))
-            ->add('communication_email_contact_id', 'hidden')
-            ->add('communication_email_communication_type', 'hidden', array(
-                'data' => 'EMAIL'
-            ))
-            ->add('communication_email_communication_usage', 'hidden', array(
-                'data' => 'PRIVATE'
-            ))
+        // business address
+        ->add('address_id', 'hidden', array(
+            'data' => $address_private['address_id']
+        ))
+        ->add('address_street', 'text', array(
+            'required' => false,
+            'label' => 'Street',
+            'data' => $address_private['address_street']
+        ))
+        ->add('address_zip', 'text', array(
+            'required' => false,
+            'label' => 'Zip',
+            'data' => $address_private['address_zip']
+        ))
+        ->add('address_city', 'text', array(
+            'required' => false,
+            'label' => 'City',
+            'data' => $address_private['address_city']
+        ))
+        ->add('address_country', 'choice', array(
+            'choices' => $this->ContactControl->getCountryArrayForTwig(),
+            'empty_value' => '- please select -',
+            'expanded' => false,
+            'multiple' => false,
+            'required' => false,
+            'label' => 'Country',
+            'data' => $address_private['address_country_code']
+        ))
 
-            ->add('communication_phone_communication_id', 'hidden', array(
-                'data' => (!empty($contact['communication_phone_communication_id'])) ? $contact['communication_phone_communication_id'] : -1
-            ))
-            ->add('communication_phone_contact_id', 'hidden')
-            ->add('communication_phone_communication_type', 'hidden', array(
-                'data' => 'PHONE'
-            ))
-            ->add('communication_phone_communication_usage', 'hidden', array(
-                'data' => 'PRIVATE'
-            ))
+        ->add('note_id', 'hidden', array(
+            'data' => isset($contact['note'][0]['note_id']) ? $contact['note'][0]['note_id'] : -1
+        ))
+        ->add('note', 'textarea', array(
+            'required' => false,
+            'label' => 'Note',
+            'data' => isset($contact['note'][0]['note_content']) ? $contact['note'][0]['note_content'] : ''
+        ));
 
-            ->add('communication_fax_communication_id', 'hidden', array(
-                'data' => (!empty($contact['communication_fax_communication_id'])) ? $contact['communication_fax_communication_id'] : -1
-            ))
-            ->add('communication_fax_contact_id', 'hidden')
-            ->add('communication_fax_communication_type', 'hidden', array(
-                'data' => 'FAX'
-            ))
-            ->add('communication_fax_communication_usage', 'hidden', array(
-                'data' => 'PRIVATE'
-            ))
+        return $form;
+    }
 
-            // communication - visible form fields
-            ->add('communication_phone_communication_value', 'text', array(
-                'label' => 'Phone',
-                'required' => false
-            ))
-            ->add('communication_fax_communication_value', 'text', array(
-                'label' => 'Fax',
-                'required' => false
-            ))
-            ->add('communication_email_communication_value', 'text', array(
-                'label' => 'Email'
-            ))
-
-            // address - hidden fields
-            ->add('address_0_address_id', 'hidden')
-            ->add('address_0_contact_id', 'hidden')
-            ->add('address_0_address_type', 'hidden', array(
-                'data' => 'PRIVATE'
-            ))
-
-            // address - visible form fields
-            ->add('address_0_address_street', 'text', array(
-                'required' => false,
-                'label' => 'Street'
-            ))
-            ->add('address_0_address_zip', 'text', array(
-                'required' => false,
-                'label' => 'Zip'
-            ))
-            ->add('address_0_address_city', 'text', array(
-                'required' => false,
-                'label' => 'City'
-            ))
-            ->add('address_0_address_country_code', 'choice', array(
-                'choices' => $this->ContactData->getCountryArrayForTwig(),
-                'empty_value' => '- please select -',
-                'expanded' => false,
-                'multiple' => false,
-                'required' => false,
-                'label' => 'Country'
-            ))
-
-            // note - hidden fields
-            ->add('note_0_note_id', 'hidden', array(
-                'data' => (!empty($contact['note_0_note_id'])) ? $contact['note_0_note_id'] : -1
-            ))
-            ->add('note_0_contact_id', 'hidden')
-            ->add('note_0_note_title', 'hidden', array(
-                'data' => 'Account note'
-            ))
-            ->add('note_0_note_type', 'hidden')
-
-            // note - visible form fields
-            ->add('note_0_note_content', 'textarea', array(
-                'label' => 'Note',
-                'required' => false
-            ))
-            ->getForm();
+    public function getFormData($data)
+    {
+        $tags = array();
+        if (isset($data['tags'])) {
+            foreach ($data['tags'] as $tag) {
+                $tags[] = array(
+                    'contact_id' => $data['contact_id'],
+                    'tag_name' => $tag
+                );
+            }
+        }
+        return array(
+            'contact' => array(
+                'contact_id' => $data['contact_id'],
+                'contact_type' => $data['contact_type'],
+                'contact_status' => $data['contact_status'],
+            ),
+            'category' => array(
+                array(
+                    'contact_id' => $data['contact_id'],
+                    'category_name' => isset($data['category']) ? $data['category'] : ''
+                )
+            ),
+            'tags' => array(
+                $tags
+            ),
+            'person' => array(
+                array(
+                    'person_id' => $data['person_id'],
+                    'contact_id' => $data['contact_id'],
+                    'person_gender' => $data['person_gender'],
+                    'person_title' => $data['person_title'],
+                    'person_first_name' => $data['person_first_name'],
+                    'person_last_name' => $data['person_last_name'],
+                    'person_birthday' => (isset($data['person_birthday']) && is_object($data['person_birthday'])) ? date('Y-m-d', $data['person_birthday']->getTimestamp()) : '0000-00-00',
+                )
+            ),
+            'communication' => array(
+                array(
+                    // email
+                    'communication_id' => $data['email_id'],
+                    'contact_id' => $data['contact_id'],
+                    'communication_type' => 'EMAIL',
+                    'communication_usage' => 'PRIMARY',
+                    'communication_value' => $data['email']
+                ),
+                array(
+                    // phone
+                    'communication_id' => $data['phone_id'],
+                    'contact_id' => $data['contact_id'],
+                    'communication_type' => 'PHONE',
+                    'communication_usage' => 'PRIMARY',
+                    'communication_value' => $data['phone']
+                ),
+                array(
+                    // cell
+                    'communication_id' => $data['cell_id'],
+                    'contact_id' => $data['contact_id'],
+                    'communication_type' => 'CELL',
+                    'communication_usage' => 'PRIVATE',
+                    'communication_value' => $data['cell']
+                ),
+                array(
+                    // fax
+                    'communication_id' => $data['fax_id'],
+                    'contact_id' => $data['contact_id'],
+                    'communication_type' => 'FAX',
+                    'communication_usage' => 'PRIVATE',
+                    'communication_value' => $data['fax']
+                ),
+            ),
+            'address' => array(
+                array(
+                    'address_id' => $data['address_id'],
+                    'contact_id' => $data['contact_id'],
+                    'address_type' => 'PRIVATE',
+                    'address_street' => $data['address_street'],
+                    'address_zip' => $data['address_zip'],
+                    'address_city' => $data['address_city'],
+                    'address_country_code' => $data['address_country']
+                )
+            ),
+            'note' => array(
+                array(
+                    'note_id' => $data['note_id'],
+                    'contact_id' => $data['contact_id'],
+                    'note_title' => 'Remarks',
+                    'note_type' => 'TEXT',
+                    'note_content' => $data['note']
+                )
+            )
+        );
     }
 
     /**
@@ -256,83 +372,49 @@ class ContactPerson extends Dialog {
         }
 
         // get the contact array
-        $contact = $this->ContactData->select(self::$contact_id);
+        $contact = $this->ContactControl->select(self::$contact_id);
 
-        // we need the Tag's as a simple array!
-        $tags = array();
-        foreach ($contact['tag'] as $tag) {
-            $tags[] = $tag['tag_name'];
+        if ($this->ContactControl->isMessage()) {
+            self::$message = $this->ContactControl->getMessage();
         }
 
-        if (self::$contact_id < 1) {
-            unset($contact['communication']);
-        }
-
-        // we dont need a multilevel and nested contact array, so flatten it
-        $contact = $this->ContactData->levelDownContactArray($contact);
-        $contact['tag_0_tags'] = $tags;
-
-        if ($this->ContactData->isMessage()) {
-            self::$message = $this->ContactData->getMessage();
-        }
-
+        // get the form fields
+        $contact_form = $this->getFormFields($contact);
         // get the form
-        $form = $this->getForm($contact);
+        $form = $contact_form->getForm();
 
         if ('POST' == $this->app['request']->getMethod()) {
             // the form was submitted, bind the request
             $form->bind($this->app['request']);
             if ($form->isValid()) {
                 // get the form data
-                $contact = $form->getData();
-
-                // the form submit a datetime object but we need a string
-                $contact['person_0_person_birthday'] = (isset($contact['person_0_person_birthday']) && is_object($contact['person_0_person_birthday'])) ? date('Y-m-d', $contact['person_0_person_birthday']->getTimestamp()) : '0000-00-00';
-
-                // the form submit the TAGs as simpel array, we have to translate it
-                $tags = array();
-                foreach ($contact['tag_0_tags'] as $tag_name) {
-                    $tags[] = array(
-                        'tag_id' => -1,
-                        'contact_id' => $contact['contact_id'],
-                        'tag_name' => $tag_name
-                    );
-                }
-
-                // build a regular contact array
-                $contact = $this->ContactData->levelUpContactArray($contact);
-                $contact['tag'] = $tags;
+                $data = $form->getData();
+                $contact = $this->getFormData($data);
 
                 if (self::$contact_id < 1) {
                     // insert a new record
-                    $this->ContactData->insert($contact, self::$contact_id);
+                    $this->ContactControl->insert($contact, self::$contact_id);
                 }
                 else {
                     // update the record
                     $has_changed = false; // indicate changes
-                    $this->ContactData->update($contact, self::$contact_id, $has_changed);
+                    $this->ContactControl->update($contact, self::$contact_id, $has_changed);
                 }
 
-                if (!$this->ContactData->isMessage()) {
+                if (!$this->ContactControl->isMessage()) {
                     $this->setMessage("The contact process has not returned a status message");
                 }
                 else {
                     // use the return status messages
-                    self::$message = $this->ContactData->getMessage();
+                    self::$message = $this->ContactControl->getMessage();
                 }
 
                 // get the values of the new or updated record
-                $contact = $this->ContactData->select(self::$contact_id);
-                // we need the Tag's as a simple array!
-                $tags = array();
-                foreach ($contact['tag'] as $tag) {
-                    $tags[] = $tag['tag_name'];
-                }
-                // build a flatten array
-                $contact = $this->ContactData->levelDownContactArray($contact);
-                $contact['tag_0_tags'] = $tags;
+                $contact = $this->ContactControl->select(self::$contact_id);
+                // get the form fields
+                $contact_form = $this->getFormFields($contact);
                 // get the form
-                $form = $this->getForm($contact);
+                $form = $contact_form->getForm();
             }
             else {
                 // general error (timeout, CSFR ...)

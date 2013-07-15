@@ -7,42 +7,74 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 #}
 <div class="contact_form">
-  <form action="{{ FRAMEWORK_URL }}{{ route.action }}" method="post" {{ form_enctype(form) }}>
+  <form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }}>
     {{ form_errors(form) }}
 
-    {{ form_row(form.contact_type) }}   
-    {{ form_row(form.contact_id) }}
-    <div>
-      <label>{{ 'contact_id'|trans }}</label>
-      <div class="value">
-        {% if form.vars.value.contact_id > 0 %}
-          {{ form.vars.value.contact_id }}
-        {% else %}
-          {{ '- new contact -'|trans }}
-        {% endif %}
-     </div>
-    </div>
-    {{ form_row(form.contact_status) }}
-
-    {{ form_row(form.category_0_category_name) }}
-    <div class="edit_button">
-      <input type="button" value=".." title="{{ 'Edit categories'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL }}{{ route.category }}';return false;" />
-    </div>
-    
-    {{ form_row(form.tag_0_tags) }}
-    <div class="edit_button">
-      <input type="button" value=".." title="{{ 'Edit tags'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL }}{{ route.tag }}';return false;" />
-    </div>  
-    
-    <div class="extra_space"></div>
-    
-    {{ form_row(form.person_0_person_gender) }}
+    <fieldset>
+      <legend>{{ 'Contact'|trans }}</legend>
+      {{ form_row(form.contact_type) }}   
+      {{ form_row(form.contact_id) }}
+      <div>
+        <label>{{ 'contact_id'|trans }}</label>
+        <div class="value">
+          {% if form.contact_id.vars.value > 0 %}
+            {{ form.contact_id.vars.value }}
+          {% else %}
+            {{ '- new contact -'|trans }}
+          {% endif %}
+       </div>
+      </div>
+      {{ form_row(form.contact_status) }}
+      {{ form_row(form.category) }}
+      <div class="edit_button">
+        <input type="button" value=".." title="{{ 'Edit categories'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.category }}';return false;" />
+      </div>
+      {{ form_row(form.tags) }}
+      <div class="edit_button">
+        <input type="button" value=".." title="{{ 'Edit tags'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.tag }}';return false;" />
+      </div>  
+    </fieldset>
+        
+    <fieldset>
+      <legend>{{ 'Person'|trans }}</legend>
+      {{ form_row(form.person_id) }}
+      {{ form_row(form.person_gender) }}    
+      {{ form_row(form.person_title) }}
+      <div class="edit_button">
+        <input type="button" value=".." title="{{ 'Edit titles'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.title }}';return false;" />
+      </div>  
+      {{ form_row(form.person_first_name) }}
+      {{ form_row(form.person_last_name) }}
+      {{ form_row(form.person_birthday) }}  
+    </fieldset>
       
-    {{ form_row(form.person_0_person_title) }}
-    <div class="edit_button">
-      <input type="button" value=".." title="{{ 'Edit titles'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL }}{{ route.title }}';return false;" />
-    </div>  
-      
+    <fieldset>
+      <legend>{{ 'Communication'|trans }}</legend>
+      {{ form_row(form.email_id) }}
+      {{ form_row(form.email) }}
+      {{ form_row(form.phone_id) }}
+      {{ form_row(form.phone) }}
+      {{ form_row(form.cell_id) }}
+      {{ form_row(form.cell) }}
+      {{ form_row(form.fax_id) }}
+      {{ form_row(form.fax) }}
+    </fieldset>
+    
+    <fieldset>
+      <legend>{{ 'Address'|trans }}</legend>
+      {{ form_row(form.address_id) }}
+      {{ form_row(form.address_street) }}
+      {{ form_row(form.address_zip) }}
+      {{ form_row(form.address_city) }}
+      {{ form_row(form.address_country) }}
+    </fieldset>
+    
+    <fieldset>
+      <legend>{{ 'Note'|trans }}</legend>
+      {{ form_row(form.note_id) }}
+      {{ form_row(form.note) }}
+    </fieldset>
+    
     {{ form_rest(form) }}  
       
     <div>

@@ -60,27 +60,6 @@ label[for=form_password_first] {
   margin: 0 0 10px 0;
 }
 
-/* select GENDER */
-#form_person_0_person_gender {
-  float: left;
-  width: 250px;
-}
-#form_person_0_person_gender input {
-  clear: left;
-  float:left;
-  width: 15px;
-  margin: 5px 10px 0 0;
-  padding: 0;
-}
-#form_person_0_person_gender label {
-  clear: none;
-  float: left;
-  width: 50px;
-  text-align: left;
-}
-#form_person_0_person_gender label.required:after {
-  content: none;
-}
 input#form_zip {
   width: 40px;
 }
@@ -96,13 +75,6 @@ input#form_city {
   width: 15px;
   padding: 0;
   margin: 0 10px 0 0;
-}
-select#form_person_0_person_birthday_day,
-select#form_person_0_person_birthday_month {
-  width: 40px;
-}
-select#form_person_0_person_birthday_year {
-  width: 60px;
 }
 
 #form_options label {
@@ -124,27 +96,6 @@ select#form_person_0_person_birthday_year {
   float: left;
   width: 300px;
   padding: 3px 0;
-}
-
-#form_tag_0_tags {
-  width: 150px;
-  margin: 0;
-  padding: 0;
-  float: left;
-}
-#form_tag_0_tags input {
-  float: left;
-  width: 15px;
-  padding: 0;
-  margin: 3px 10px 2px 0;
-}
-#form_tag_0_tags label {
-  clear: none;
-  float: left;
-  text-align: left;
-  width: 125px;
-  margin: 1px 0 2px 0;
-  padding: 0;
 }
 
 .extra_space {
