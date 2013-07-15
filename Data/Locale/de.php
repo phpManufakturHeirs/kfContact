@@ -69,6 +69,8 @@ return array(
         => 'Übersicht über die Kategorien',
     'Change to the overview'
         => 'Zur Übersicht wechseln',
+    'Cell'
+        => 'Mobilfunk',
     'communication_email'
         => 'E-Mail',
     'communication_phone'
