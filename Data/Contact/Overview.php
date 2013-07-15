@@ -241,21 +241,44 @@ EOD;
         }
     }
 
-    public function count($status=null)
+    public function count($status=null, $type=null)
     {
         try {
             $SQL = "SELECT COUNT(*) FROM `".self::$table_name."`";
-            if (is_array($status) && !empty($status)) {
+            if ((is_array($status) && !empty($status)) || (is_array($type) && !empty($type))) {
                 $SQL .= " WHERE (";
-                $start = true;
-                foreach ($status as $stat) {
-                    if (!$start) {
-                        $SQL .= " OR ";
+                $use_status = false;
+                if (is_array($status) && !empty($status)) {
+                    $use_status = true;
+                    $SQL .= '(';
+                    $start = true;
+                    foreach ($status as $stat) {
+                        if (!$start) {
+                            $SQL .= " OR ";
+                        }
+                        else {
+                            $start = false;
+                        }
+                        $SQL .= "`contact_status`='$stat'";
                     }
-                    else {
-                        $start = false;
+                    $SQL .= ')';
+                }
+                if (is_array($type) && !empty($type)) {
+                    if ($use_status) {
+                        $SQL .= ' AND ';
                     }
-                    $SQL .= "`contact_status`='$stat'";
+                    $SQL .= '(';
+                    $start = true;
+                    foreach ($type as $typ) {
+                        if (!$start) {
+                            $SQL .= " OR ";
+                        }
+                        else {
+                            $start = false;
+                        }
+                        $SQL .= "`contact_type`='$typ'";
+                    }
+                    $SQL .= ')';
                 }
                 $SQL .= ")";
             }
@@ -265,11 +288,47 @@ EOD;
         }
     }
 
-    public function selectList($limit_from, $rows_per_page, $select_status=null, $order_by=null, $order_direction='ASC')
+    public function selectList($limit_from, $rows_per_page, $select_status=null, $order_by=null, $order_direction='ASC', $select_type=null)
     {
         try {
             $SQL = "SELECT * FROM `".self::$table_name."`";
-            if (is_array($select_status) && !empty($select_status)) {
+            if ((is_array($select_status) && !empty($select_status)) || (is_array($select_type) && !empty($select_type))) {
+                $SQL .= " WHERE (";
+                $use_status = false;
+                if (is_array($select_status) && !empty($select_status)) {
+                    $use_status = true;
+                    $SQL .= '(';
+                    $start = true;
+                    foreach ($select_status as $stat) {
+                        if (!$start) {
+                            $SQL .= " OR ";
+                        }
+                        else {
+                            $start = false;
+                        }
+                        $SQL .= "`contact_status`='$stat'";
+                    }
+                    $SQL .= ')';
+                }
+                if (is_array($select_type) && !empty($select_type)) {
+                    if ($use_status) {
+                        $SQL .= ' AND ';
+                    }
+                    $SQL .= '(';
+                    $start = true;
+                    foreach ($select_type as $typ) {
+                        if (!$start) {
+                            $SQL .= " OR ";
+                        }
+                        else {
+                            $start = false;
+                        }
+                        $SQL .= "`contact_type`='$typ'";
+                    }
+                    $SQL .= ')';
+                }
+                $SQL .= ")";
+                /*
                 $SQL .= " WHERE (";
                 $start = true;
                 foreach ($select_status as $status) {
@@ -282,6 +341,7 @@ EOD;
                     $SQL .= "`contact_status`='$status'";
                 }
                 $SQL .= ")";
+                */
             }
             if (is_array($order_by) && !empty($order_by)) {
                 $SQL .= " ORDER BY ";
