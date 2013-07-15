@@ -191,6 +191,16 @@ class Contact extends ContactParent
         return $data;
     }
 
+    public function getDefaultAddressRecord()
+    {
+        return $this->ContactAddress->getDefaultRecord();
+    }
+
+    public function getDefaultCommunicationRecord()
+    {
+        return $this->ContactCommunication->getDefaultRecord();
+    }
+
     public function getContactType($contact_id)
     {
         return $this->ContactData->getContactType($contact_id);
