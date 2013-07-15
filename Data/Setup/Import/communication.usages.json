@@ -10,17 +10,5 @@
   {
     "usage":"PRIMARY",
     "description":"description: primary"
-  },
-  {
-    "usage":"POBOX",
-    "description":"description: P.O. Box"
-  },
-  {
-    "usage":"DELIVERY",
-    "description":"description: delivery"
-  },
-  {
-    "usage":"BILLING",
-    "description":"description: billing"
   }
 ]
