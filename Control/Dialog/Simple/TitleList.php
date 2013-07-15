@@ -40,7 +40,6 @@ class TitleList extends Dialog {
         $this->TitleData = new Title($this->app);
     }
 
-
     /**
      * Return the title list
      *

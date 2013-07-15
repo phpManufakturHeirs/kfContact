@@ -40,7 +40,6 @@ class CategoryList extends Dialog {
         $this->CategoryTypeData = new CategoryType($this->app);
     }
 
-
     /**
      * Return the Category list
      *

@@ -32,22 +32,13 @@ class TitleEdit extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/edit.title.twig'
+                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'backend/simple/edit.title.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/title/edit'
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/title/edit'
             )
         ));
         $this->TitleData = new Title($this->app);
-    }
-
-
-    /**
-     * @return the $title_id
-     */
-    public static function getTitleID()
-    {
-        return self::$title_id;
     }
 
   	/**

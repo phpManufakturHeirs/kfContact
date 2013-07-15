@@ -8,7 +8,7 @@
 #}
 
 <div class="contact_form">
-  <form action="{{ FRAMEWORK_URL }}{{ route.action }}" method="post" {{ form_enctype(form) }}>
+  <form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }}>
     {{ form_errors(form) }}
 
     {{ form_row(form.title_id) }}

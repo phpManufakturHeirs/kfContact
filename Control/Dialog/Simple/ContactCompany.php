@@ -110,7 +110,7 @@ class ContactCompany extends Dialog {
         }
 
 
-        $form = $this->app['form.factory']->createBuilder('form', array())
+        $form = $this->app['form.factory']->createBuilder('form')
         ->add('contact_id', 'hidden', array(
             'data' => $contact['contact']['contact_id']
         ))
@@ -132,7 +132,8 @@ class ContactCompany extends Dialog {
             'expanded' => false,
             'multiple' => false,
             'required' => false,
-            'label' => 'Category'
+            'label' => 'Category',
+            'data' => $contact['category'][0]['category_name']
         ))
         ->add('tags', 'choice', array(
             'choices' => $this->ContactControl->getTagArrayForTwig(),
@@ -387,7 +388,6 @@ class ContactCompany extends Dialog {
                 )
             )
         );
-        return true;
     }
 
     /**

@@ -31,6 +31,8 @@ return array(
         => 'Einen neuen Titel hinzufügen',
     'Additional'
         => 'Zusatz',
+    'Address'
+        => 'Adresse',
     'address_city'
         => 'Stadt',
     'address_country_code'
@@ -71,6 +73,8 @@ return array(
         => 'Zur Übersicht wechseln',
     'Cell'
         => 'Mobilfunk',
+    'Communication'
+        => 'Kommunikation',
     'communication_email'
         => 'E-Mail',
     'communication_phone'
@@ -235,6 +239,8 @@ return array(
         => 'Die Kommunikationsverwendung <b>%usage%</b> existiert nicht, bitte prüfen Sie Ihre Eingabe!',
     "The COMMUNICATION VALUE should not be empty!"
         => 'Der Kommunikationswert darf nicht leer oder Null sein!',
+    'The contact list is empty.'
+        => 'Die Kontaktliste enthält keine Einträge!',
     "The contact login must be set!"
         => 'Der Kontakt <b>Login</b> muss gesetzt sein!',
     "The contact name %name% already exists! The update has still executed, please check if you really want this duplicate name."

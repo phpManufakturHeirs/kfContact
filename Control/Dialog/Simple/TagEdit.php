@@ -33,19 +33,19 @@ class TagEdit extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/edit.tag.twig'
+                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'backend/simple/edit.tag.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/tag/edit'
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/tag/edit'
             )
         ));
 
         $this->TagTypeData = new TagTypeData($this->app);
     }
 
-    public function setTagTypeID($tag_type_id)
+    public function setTagID($tag_id)
     {
-        self::$tag_type_id = $tag_type_id;
+        self::$tag_type_id = $tag_id;
     }
 
     /**

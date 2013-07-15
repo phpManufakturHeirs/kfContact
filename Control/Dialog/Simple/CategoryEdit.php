@@ -32,25 +32,16 @@ class CategoryEdit extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/edit.category.twig'
+                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'backend/simple/edit.category.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/category/edit'
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/category/edit'
             )
         ));
         $this->CategoryTypeData = new CategoryType($this->app);
     }
 
-
     /**
-     * @return the $category_id
-     */
-    public static function getCategoryID()
-    {
-        return self::$category_id;
-    }
-
-  	/**
      * @param number $category_id
      */
     public static function setCategoryID($category_id)
