@@ -48,6 +48,8 @@ return array(
 
     'baron'
         => 'Baron',
+    'Business address'
+        => 'Geschäftsadresse',
 
     "Can't delete the Adress with the ID %address_id% because it is used as primary address."
         => "Die Adresse mit der ID %address_id% kann nicht gelöscht werden, da sie als primäre Adresse für diesen Kontakt verwendet wird.",

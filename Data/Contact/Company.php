@@ -188,6 +188,50 @@ EOD;
         }
     }
 
+    /**
+     * Insert a new COMPANY record
+     *
+     * @param array $data
+     * @param reference integer $company_id
+     * @throws \Exception
+     */
+    public function insert($data, &$company_id=null)
+    {
+        try {
+            $insert = array();
+            foreach ($data as $key => $value) {
+                if (($key == 'company_id') || ($key == 'company_timestamp')) continue;
+                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            $this->app['db']->insert(self::$table_name, $insert);
+            $company_id = $this->app['db']->lastInsertId();
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Update the COMPANY record for the given ID
+     *
+     * @param array $data
+     * @param integer $company_id
+     * @throws \Exception
+     */
+    public function update($data, $company_id)
+    {
+        try {
+            $update = array();
+            foreach ($data as $key => $value) {
+                if (($key == 'company_id') || ($key == 'company_timestamp')) continue;
+                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('company_id' => $company_id));
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 
 
 }

@@ -58,7 +58,7 @@ class ContactCompany extends Dialog {
      * @param array $contact data
      * @return FormBuilder
      */
-    protected function getForm($contact)
+    public function getFormFields($contact)
     {
         // we need the Tag's as a simple array!
         $tags = array();
@@ -110,7 +110,7 @@ class ContactCompany extends Dialog {
         }
 
 
-        $form = $this->app['form.factory']->createBuilder('form')
+        return $this->app['form.factory']->createBuilder('form')
         ->add('contact_id', 'hidden', array(
             'data' => $contact['contact']['contact_id']
         ))
@@ -133,9 +133,9 @@ class ContactCompany extends Dialog {
             'multiple' => false,
             'required' => false,
             'label' => 'Category',
-            'data' => $contact['category'][0]['category_name']
+            'data' => isset($contact['category'][0]['category_name']) ? $contact['category'][0]['category_name'] : ''
         ))
-        ->add('tags', 'choice', array(
+        ->add('tag', 'choice', array(
             'choices' => $this->ContactControl->getTagArrayForTwig(),
             'expanded' => true,
             'multiple' => true,
@@ -218,7 +218,7 @@ class ContactCompany extends Dialog {
         ->add('url_id', 'hidden', array(
             'data' => $url['communication_id']
         ))
-        ->add('url', 'text', array(
+        ->add('url', 'url', array(
             'required' => false,
             'label' => 'Homepage',
             'data' => $url['communication_value']
@@ -283,21 +283,27 @@ class ContactCompany extends Dialog {
         ))
 
         ->add('note_id', 'hidden', array(
-            'data' => $contact['note'][0]['note_id']
+            'data' => isset($contact['note'][0]['note_id']) ? $contact['note'][0]['note_id'] : -1
         ))
         ->add('note', 'textarea', array(
             'required' => false,
             'label' => 'Note',
-            'data' => $contact['note'][0]['note_content']
-        ))
-
-        ;
-
-        return $form->getForm();
+            'data' => isset($contact['note'][0]['note_content']) ? $contact['note'][0]['note_content'] : ''
+        ));
     }
 
-    protected function getFormData($data)
+    public function getFormData($data)
     {
+        $tags = array();
+        if (isset($data['tag'])) {
+            foreach ($data['tag'] as $tag) {
+                $tags[] = array(
+                    'contact_id' => $data['contact_id'],
+                    'tag_name' => $tag
+                );
+            }
+        }
+
         return array(
             'contact' => array(
                 'contact_id' => $data['contact_id'],
@@ -306,6 +312,13 @@ class ContactCompany extends Dialog {
                 'contact_login' => $data['contact_login'],
                 'contact_status' => $data['contact_status'],
             ),
+            'category' => array(
+                array(
+                    'contact_id' => $data['contact_id'],
+                    'category_name' => isset($data['category']) ? $data['category'] : ''
+                )
+            ),
+            'tag' => $tags,
             'company' => array(
                 array(
                     'company_id' => $data['company_id'],
@@ -327,6 +340,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['email_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'EMAIL',
+                    'communication_usage' => 'BUSINESS',
                     'communication_value' => $data['email_value']
                 ),
                 array(
@@ -334,6 +348,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['phone_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'PHONE',
+                    'communication_usage' => 'BUSINESS',
                     'communication_value' => $data['phone']
                 ),
                 array(
@@ -341,6 +356,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['cell_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'CELL',
+                    'communication_usage' => 'BUSINESS',
                     'communication_value' => $data['cell']
                 ),
                 array(
@@ -348,6 +364,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['fax_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'FAX',
+                    'communication_usage' => 'BUSINESS',
                     'communication_value' => $data['fax']
                 ),
                 array(
@@ -355,6 +372,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['url_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'URL',
+                    'communication_usage' => 'BUSINESS',
                     'communication_value' => $data['url']
                 )
             ),
@@ -397,24 +415,44 @@ class ContactCompany extends Dialog {
      */
     public function exec($extra=null)
     {
-
-        $contact = $this->ContactControl->getDefaultRecord('COMPANY');
-        echo "<pre>";
-        print_r($contact);
-        echo "</pre>";
-        // create the form
-        $form = $this->getForm($contact);
+        $contact = $this->ContactControl->select(self::$contact_id, 'COMPANY');
+        // get the form fields
+        $contact_form = $this->getFormFields($contact);
+        // get the form
+        $form = $contact_form->getForm();
 
         if ('POST' == $this->app['request']->getMethod()) {
             // the form was submitted, bind the request
             $form->bind($this->app['request']);
             if ($form->isValid()) {
                 // get the form data
-                $data = $this->getFormData($form->getData());
-                echo "Check:<br><pre>";
-                print_r($data);
-                echo "</pre>";
+                $contact = $this->getFormData($form->getData());
+                self::$contact_id = $contact['contact']['contact_id'];
 
+                if (self::$contact_id < 1) {
+                    // insert a new record
+                    $this->ContactControl->insert($contact, self::$contact_id);
+                }
+                else {
+                    // update the record
+                    $has_changed = false; // indicate changes
+                    $this->ContactControl->update($contact, self::$contact_id, $has_changed);
+                }
+
+                if (!$this->ContactControl->isMessage()) {
+                    $this->setMessage("The contact process has not returned a status message");
+                }
+                else {
+                    // use the return status messages
+                    self::$message = $this->ContactControl->getMessage();
+                }
+
+                // get the values of the new or updated record
+                $contact = $this->ContactControl->select(self::$contact_id, 'COMPANY');
+                // get the form fields
+                $contact_form = $this->getFormFields($contact);
+                // get the form
+                $form = $contact_form->getForm();
             }
             else {
                 // general error (timeout, CSFR ...)

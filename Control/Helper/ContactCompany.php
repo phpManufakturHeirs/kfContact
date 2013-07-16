@@ -85,4 +85,55 @@ class ContactCompany extends ContactParent
         }
         return true;
     }
+
+    /**
+     * Insert a new COMPANY record. Check first for values which belong to depending
+     * contact tables
+     *
+     * @param array $data
+     * @param integer $contact_id
+     * @param reference integer $company_id
+     * @throws ContactException
+     * @return boolean
+     */
+    public function insert($data, $contact_id, &$company_id=-1)
+    {
+        // enshure that the contact_id isset
+        $data['contact_id'] = $contact_id;
+
+        if (!$this->validate($data)) {
+            return false;
+        }
+        $company_id = -1;
+        $this->CompanyData->insert($data, $company_id);
+        $this->app['monolog']->addInfo("Inserted company record for the contactID {$contact_id}", array(__METHOD__, __LINE__));
+        return true;
+    }
+
+    /**
+     * Update the given COMPANY contact block
+     *
+     * @param array $new_data
+     * @param array $old_data
+     * @param integer $company_id
+     * @param reference boolean $has_changed
+     * @return boolean
+     */
+    public function update($new_data, $old_data, $company_id, &$has_changed=false)
+    {
+        $has_changed = false;
+        $changed = array();
+
+        foreach ($new_data as $key => $value) {
+            if ($key === 'company_id') continue;
+            if (isset($old_data[$key]) && ($old_data[$key] != $value)) {
+                $changed[$key] = $value;
+            }
+        }
+        if (!empty($changed)) {
+            $this->CompanyData->update($changed, $company_id);
+            $has_changed = true;
+        }
+        return true;
+    }
 }

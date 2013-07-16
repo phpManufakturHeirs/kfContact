@@ -13,7 +13,6 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
 use phpManufaktur\Contact\Control\Contact as ContactControl;
-use Symfony\Component\Form\FormBuilder;
 
 class ContactPerson extends Dialog {
 
@@ -148,7 +147,7 @@ class ContactPerson extends Dialog {
             'data' => isset($contact['category'][0]['category_name']) ? $contact['category'][0]['category_name'] : ''
         ))
 
-        ->add('tags', 'choice', array(
+        ->add('tag', 'choice', array(
             'choices' => $this->ContactControl->getTagArrayForTwig(),
             'expanded' => true,
             'multiple' => true,
@@ -267,8 +266,8 @@ class ContactPerson extends Dialog {
     public function getFormData($data)
     {
         $tags = array();
-        if (isset($data['tags'])) {
-            foreach ($data['tags'] as $tag) {
+        if (isset($data['tag'])) {
+            foreach ($data['tag'] as $tag) {
                 $tags[] = array(
                     'contact_id' => $data['contact_id'],
                     'tag_name' => $tag
@@ -287,9 +286,7 @@ class ContactPerson extends Dialog {
                     'category_name' => isset($data['category']) ? $data['category'] : ''
                 )
             ),
-            'tags' => array(
-                $tags
-            ),
+            'tag' => $tags,
             'person' => array(
                 array(
                     'person_id' => $data['person_id'],

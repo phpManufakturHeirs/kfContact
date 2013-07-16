@@ -60,6 +60,12 @@ $app->match('/admin/contact/simple/contact/company', function() use($app) {
     return $contact->exec();
 });
 
+$app->match('/admin/contact/simple/contact/company/id/{contact_id}', function($contact_id) use($app) {
+    $contact = new SimpleContactCompany($app);
+    $contact->setContactID($contact_id);
+    return $contact->exec();
+});
+
 $app->match('/admin/contact/simple/contact/list', function() use ($app) {
     $list = new SimpleContactList($app);
     return $list->exec();
