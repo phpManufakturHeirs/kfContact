@@ -33,10 +33,12 @@ class ContactCompany extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'contact' => isset($options['template']['select']) ? $options['template']['select'] : 'backend/simple/edit.company.contact.twig'
+                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'backend/simple/edit.company.contact.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact/company',
+                'category' => isset($options['route']['category']) ? $options['route']['category'] : '/admin/contact/simple/category/list',
+                'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/simple/tag/list'
             )
         ));
         $this->ContactControl = new ContactControl($this->app);

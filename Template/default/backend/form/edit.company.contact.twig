@@ -25,9 +25,17 @@
           {% endif %}
         </div>
       </div>}
-      {{ form_row(form.contact_status) }}
+      {% if form.contact_id.vars.value > 0 %}
+        {{ form_row(form.contact_status) }}
+      {% endif %}
       {{ form_row(form.category) }}
+      <div class="edit_button">
+        <input type="button" value=".." title="{{ 'Edit categories'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.category }}';return false;" />
+      </div>
       {{ form_row(form.tag) }}
+      <div class="edit_button">
+        <input type="button" value=".." title="{{ 'Edit tags'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.tag }}';return false;" />
+      </div> 
       <div class="extra_space"></div>
       {{ form_row(form.contact_name) }}
       {{ form_row(form.contact_login) }}
