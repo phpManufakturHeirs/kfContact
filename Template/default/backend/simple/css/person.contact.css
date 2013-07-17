@@ -5,19 +5,19 @@ fieldset {
   width: 70%;
 }
 
-#form_tags {
+#form_tag {
   width: 150px;
   margin: 0;
   padding: 0;
   float: left;
 }
-#form_tags input {
+#form_tag input {
   float: left;
   width: 15px;
   padding: 0;
   margin: 3px 10px 2px 0;
 }
-#form_tags label {
+#form_tag label {
   clear: none;
   float: left;
   text-align: left;

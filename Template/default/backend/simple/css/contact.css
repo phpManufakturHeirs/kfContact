@@ -24,6 +24,9 @@
   width: 1px;
   height: 1px;
 }
+.hidden {
+  display: none;
+}
 .contact_form {
   margin: 0;
   padding: 0;

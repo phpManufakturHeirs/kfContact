@@ -124,7 +124,16 @@ class ContactPerson extends Dialog {
         ->add('contact_id', 'hidden', array(
             'data' => $contact['contact']['contact_id']
         ))
-
+        ->add('contact_name', 'text', array(
+            'required' => false,
+            'label' => 'Contact name',
+            'data' => $contact['contact']['contact_name']
+        ))
+        ->add('contact_login', 'text', array(
+            'required' => false,
+            'label' => 'Contact login',
+            'data' => $contact['contact']['contact_login']
+        ))
         // contact visible form fields
         ->add('contact_status', 'choice', array(
             'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'DELETED' => 'deleted'),
@@ -278,7 +287,9 @@ class ContactPerson extends Dialog {
             'contact' => array(
                 'contact_id' => $data['contact_id'],
                 'contact_type' => $data['contact_type'],
-                'contact_status' => $data['contact_status'],
+                'contact_status' => isset($data['contact_status']) ? $data['contact_status'] : null,
+                'contact_name' => isset($data['contact_name']) ? $data['contact_name'] : null,
+                'contact_login' => isset($data['contact_login']) ? $data['contact_login'] : null
             ),
             'category' => array(
                 array(
@@ -387,7 +398,6 @@ class ContactPerson extends Dialog {
                 // get the form data
                 $data = $form->getData();
                 $contact = $this->getFormData($data);
-
                 if (self::$contact_id < 1) {
                     // insert a new record
                     $this->ContactControl->insert($contact, self::$contact_id);
