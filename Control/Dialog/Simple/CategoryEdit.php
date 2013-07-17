@@ -44,7 +44,7 @@ class CategoryEdit extends Dialog {
     /**
      * @param number $category_id
      */
-    public static function setCategoryID($category_id)
+    public function setCategoryID($category_id)
     {
         self::$category_id = $category_id;
     }

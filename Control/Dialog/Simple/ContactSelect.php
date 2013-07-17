@@ -31,6 +31,7 @@ class ContactSelect extends Dialog {
     {
         parent::__construct($app);
         // set the form options
+
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
@@ -51,6 +52,7 @@ class ContactSelect extends Dialog {
                 )
             )
         ));
+
         $this->ContactControl = new ContactControl($this->app);
     }
 

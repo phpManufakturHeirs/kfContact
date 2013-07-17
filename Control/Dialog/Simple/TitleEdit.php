@@ -44,7 +44,7 @@ class TitleEdit extends Dialog {
   	/**
      * @param number $title_id
      */
-    public static function setTitleID($title_id)
+    public function setTitleID($title_id)
     {
         self::$title_id = $title_id;
     }
