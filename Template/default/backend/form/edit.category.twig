@@ -15,8 +15,8 @@
     <div>
       <label>{{ 'category_type_id'|trans }}</label>
       <div class="value">
-        {% if form.vars.value.category_type_id > 0 %}
-          {{ '%03d'|format(form.vars.value.category_type_id) }}
+        {% if form.category_type_id.vars.value > 0 %}
+          {{ '%03d'|format(form.category_type_id.vars.value) }}
         {% else %}
           {{ '- new category -'|trans }}
         {% endif %}
@@ -32,10 +32,10 @@
     {% endif %}
       
     {{ form_row(form.category_type_description) }}
-    {% if form.vars.value.category_type_id > 0 %}
+    {% if form.category_type_id.vars.value > 0 %}
       <div>
         <label>{{ 'Category description (translated)'|trans }}</label>
-        <div class="value">{{ form.vars.value.category_type_description|trans }}</div>
+        <div class="value">{{ form.category_type_description.vars.value|trans }}</div>
       </div>
     {% endif %}  
       
@@ -45,7 +45,7 @@
       <div class="clear"></div>
       <div>
         <label>&nbsp;</label>
-        <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the category <b>%category_name%</b>'|trans({'%category_name%':form.vars.value.category_type_name}) }}
+        <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the category <b>%category_name%</b>'|trans({'%category_name%':form.category_type_name.vars.value}) }}
       </div>
     {% endif %}
 
