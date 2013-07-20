@@ -81,6 +81,8 @@ return array(
         => 'E-Mail',
     'communication_phone'
         => 'Telefon',
+    'Company'
+        => 'Firma',
     'COMPANY'
         => 'Firma',
     'Company department'
