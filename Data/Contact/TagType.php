@@ -135,10 +135,10 @@ EOD;
         try {
             $SQL = "SELECT `tag_name` FROM `".self::$table_name."` WHERE `tag_name`='$tag_name'";
             if (is_numeric($exclude_tag_id)) {
-                $SQL .= " AND `tag_name` != '$exclude_tag_id'";
+                $SQL .= " AND `tag_id` != '$exclude_tag_id'";
             }
             $result = $this->app['db']->fetchColumn($SQL);
-            return ($result == $tag_name) ? true : false;
+            return (strtoupper($result) == strtoupper($tag_name)) ? true : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
