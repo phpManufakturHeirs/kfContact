@@ -9,6 +9,7 @@
 <div class="contact_form">
   <form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }}>
     {{ form_errors(form) }}
+    {{ form_row(form._token) }}  
 
     <fieldset>
       <legend>{{ 'Contact'|trans }}</legend>
@@ -25,6 +26,10 @@
        </div>
       </div>
       
+      {% if form.contact_id.vars.value > 0 %}
+        {{ form_row(form.contact_status) }}
+      {% endif %}
+      
       {# hide the contact_name field, with form_row(form.contact_name) you can use it as regular text field #}
       {{ form_widget(form.contact_name, {'attr': {'class':'hidden'}} ) }}
       
@@ -37,11 +42,11 @@
       
       {{ form_row(form.category) }}
       <div class="edit_button">
-        <input type="button" value=".." title="{{ 'Edit categories'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.category }}';return false;" />
+        <input type="button" value=".." title="{{ 'Edit categories'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.category }}{% if '?' in route.category %}&{% else %}?{% endif %}contact_id={{ form.contact_id.vars.value }}';return false;" />
       </div>
       {{ form_row(form.tag) }}
       <div class="edit_button">
-        <input type="button" value=".." title="{{ 'Edit tags'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.tag }}';return false;" />
+        <input type="button" value=".." title="{{ 'Edit tags'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.tag }}{% if '?' in route.tag %}&{% else %}?{% endif %}contact_id={{ form.contact_id.vars.value }}';return false;" />
       </div>  
     </fieldset>
         
@@ -51,7 +56,7 @@
       {{ form_row(form.person_gender) }}    
       {{ form_row(form.person_title) }}
       <div class="edit_button">
-        <input type="button" value=".." title="{{ 'Edit titles'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.title }}';return false;" />
+        <input type="button" value=".." title="{{ 'Edit titles'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.title }}{% if '?' in route.title %}&{% else %}?{% endif %}contact_id={{ form.contact_id.vars.value }}';return false;" />
       </div>  
       {{ form_row(form.person_first_name) }}
       {{ form_row(form.person_last_name) }}
@@ -85,7 +90,7 @@
       {{ form_row(form.note) }}
     </fieldset>
     
-    {{ form_rest(form) }}  
+    {#{ form_rest(form) }#}  
       
     <div>
       <label for="submit">&nbsp;</label>

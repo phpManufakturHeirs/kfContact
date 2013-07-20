@@ -10,9 +10,10 @@
 <div class="contact_form">
   <form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }}>
     {{ form_errors(form) }}
-        
+    {{ form_row(form._token) }}
+      
     <fieldset> 
-      <legend>{{ 'Contact definition'|trans }}</legend>
+      <legend>{{ 'Contact'|trans }}</legend>
       {{ form_row(form.contact_type) }}     
       {{ form_row(form.contact_id) }}
       <div>
@@ -24,7 +25,7 @@
             {{ '- new contact -'|trans }}
           {% endif %}
         </div>
-      </div>}
+      </div>
       {% if form.contact_id.vars.value > 0 %}
         {{ form_row(form.contact_status) }}
       {% endif %}
@@ -99,7 +100,8 @@
       {{ form_row(form.note) }}
     </fieldset>
     
-    {{ form_rest(form) }}  
+    {#{ form_rest(form) }#}
+    
     <div class="extra_space"></div>
     <div>
       <label for="submit">&nbsp;</label>
