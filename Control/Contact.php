@@ -140,6 +140,11 @@ class Contact extends ContactParent
         return $tagType->getArrayForTwig();
     }
 
+    public function getContactsByTagsForTwig($tag_names, $status='ACTIVE', $status_operator='=')
+    {
+        return $this->Overview->getContactsByTagsForTwig($tag_names, $status, $status_operator);
+    }
+
     /**
      * Get the contact record for this contact_id
      */
