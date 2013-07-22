@@ -38,6 +38,8 @@ class Tag
     public function createTable()
     {
         $table = self::$table_name;
+        $table_tag_type = FRAMEWORK_TABLE_PREFIX.'contact_tag_type';
+        $table_contact = FRAMEWORK_TABLE_PREFIX.'contact_contact';
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
     		`tag_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -45,7 +47,15 @@ class Tag
         `tag_name` VARCHAR(32) NOT NULL DEFAULT '',
     		`tag_timestamp` TIMESTAMP,
         PRIMARY KEY (`tag_id`),
-        INDEX (`contact_id`,`tag_name`)
+        CONSTRAINT `tag_name`
+            FOREIGN KEY (`tag_name`)
+            REFERENCES $table_tag_type (`tag_name`)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+        CONSTRAINT `contact_id`
+            FOREIGN KEY (`contact_id`)
+            REFERENCES $table_contact (`contact_id`)
+            ON DELETE CASCADE
         )
     COMMENT='The tags for the contact table'
     ENGINE=InnoDB

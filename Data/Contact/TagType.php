@@ -155,25 +155,8 @@ EOD;
     public function delete($tag_type_id)
     {
         try {
-            // begin transaction
-            $this->app['db']->beginTransaction();
-
-            // first we need the tag name
-            if (false === ($tag_type = $this->select($tag_type_id))) {
-                return false;
-            }
-            $Tag = new Tag($this->app);
-            // delete all tags assigned to contacts
-            $Tag->delete($tag_type['tag_name']);
-
-            // delete the tag type
             $this->app['db']->delete(self::$table_name, array('tag_type_id' => $tag_type_id));
-
-            // commit transaction
-            $this->app['db']->commit();
         } catch (\Doctrine\DBAL\DBALException $e) {
-            // rollback ...
-            $this->app['db']->rollback();
             throw new \Exception($e);
         }
     }
