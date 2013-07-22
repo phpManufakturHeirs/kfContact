@@ -515,4 +515,18 @@ EOD;
         }
     }
 
+    protected function array_values_recursive($ary){
+        $lst = array();
+        foreach( array_keys($ary) as $k ){
+            $v = $ary[$k];
+            if (is_scalar($v)) {
+                $lst[] = $v;
+            } elseif (is_array($v)) {
+                $lst = array_merge($lst, $this->array_values_recursive($v));
+            }
+        }
+        return $lst;
+    }
+
+
 }
