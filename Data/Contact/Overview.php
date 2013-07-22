@@ -63,6 +63,7 @@ class Overview
         `address_city` VARCHAR(128) NOT NULL DEFAULT '',
         `address_country_code` VARCHAR(8) NOT NULL DEFAULT '',
         `tags` VARCHAR(512) NOT NULL DEFAULT '',
+        `order_name` VARCHAR(256) NOT NULL DEFAULT '',
         `timestamp` TIMESTAMP,
         PRIMARY KEY (`id`),
         UNIQUE (`contact_id`)
@@ -144,6 +145,30 @@ EOD;
                 $tags[] = $tag['tag_name'];
             }
 
+            // build a field for easy ordering the contacts, independent from type
+            if ($contact['contact_type'] == 'PERSON') {
+                if (!empty($person['person_last_name'])) {
+                    $order_name = $person['person_last_name'];
+                    if (!empty($person['person_first_name'])) {
+                        $order_name .= ', '.$person['person_first_name'];
+                    }
+                }
+                else {
+                    $order_name = $contact['contact_name'];
+                }
+            }
+            else {
+                if (!empty($company['company_name'])) {
+                    $order_name = $company['company_name'];
+                    if (!empty($company['company_department'])) {
+                        $order_name .= ', '.$company['company_department'];
+                    }
+                }
+                else {
+                    $order_name = $contact['contact_name'];
+                }
+            }
+
             $record = array(
                 'contact_id' => $contact_id,
                 'contact_name' => $contact['contact_name'],
@@ -165,6 +190,7 @@ EOD;
                 'address_city' => isset($address['address_city']) ? $address['address_city'] : '',
                 'address_zip' => isset($address['address_zip']) ? $address['address_zip'] : '',
                 'address_country_code' => isset($address['address_country_code']) ? $address['address_country_code'] : '',
+                'order_name' => $order_name,
                 'tags' => implode(',', $tags)
             );
 
@@ -328,20 +354,6 @@ EOD;
                     $SQL .= ')';
                 }
                 $SQL .= ")";
-                /*
-                $SQL .= " WHERE (";
-                $start = true;
-                foreach ($select_status as $status) {
-                    if (!$start) {
-                        $SQL .= " OR ";
-                    }
-                    else {
-                        $start = false;
-                    }
-                    $SQL .= "`contact_status`='$status'";
-                }
-                $SQL .= ")";
-                */
             }
             if (is_array($order_by) && !empty($order_by)) {
                 $SQL .= " ORDER BY ";
@@ -359,6 +371,29 @@ EOD;
             }
             $SQL .= " LIMIT $limit_from, $rows_per_page";
             return $this->app['db']->fetchAll($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getContactsByTagsForTwig($tag_names, $status='ACTIVE', $status_operator='=')
+    {
+        try {
+            $tag_string = '';
+            $start = true;
+            foreach ($tag_names as $tag_name) {
+                $start ? $start = false : $tag_string .= ' OR ';
+                $tag_string .= "`tag_name`='$tag_name'";
+            }
+            $SQL = "SELECT contact.contact_id, contact.order_name  FROM `".FRAMEWORK_TABLE_PREFIX."contact_tag` as tag, ".
+                "`".self::$table_name."` as contact WHERE contact.contact_id = tag.contact_id AND ".
+                "contact.contact_status$status_operator'$status' AND ($tag_string) GROUP BY contact.contact_id ORDER BY contact.order_name ASC";
+            $results = $this->app['db']->fetchAll($SQL);
+            $contacts = array();
+            foreach ($results as $contact) {
+                $contacts[$contact['contact_id']] = $contact['order_name'];
+            }
+            return $contacts;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
