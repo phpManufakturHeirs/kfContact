@@ -38,14 +38,31 @@ class Category
     public function createTable()
     {
         $table = self::$table_name;
+        $table_contact = FRAMEWORK_TABLE_PREFIX.'contact_contact';
+        $table_category = FRAMEWORK_TABLE_PREFIX.'contact_category_type';
+
+        $foreign_key_1 = self::$table_name.'_ibfk_1';
+        $foreign_key_2 = self::$table_name.'_ibfk_2';
+
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `category_id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
-        `category_name` VARCHAR(64) NOT NULL DEFAULT '',
+        `category_name` VARCHAR(64) NOT NULL DEFAULT 'NO_CATEGORY',
         `category_timestamp` TIMESTAMP,
         PRIMARY KEY (`category_id`),
-        INDEX (`contact_id`,`category_name`)
+        INDEX `contact_id` (`contact_id` ASC, `category_name` ASC) ,
+        INDEX `category_name_idx` (`category_name` ASC) ,
+        INDEX `contact_id_idx` (`contact_id` ASC) ,
+        CONSTRAINT `$foreign_key_1`
+            FOREIGN KEY (`contact_id` )
+            REFERENCES `$table_contact` (`contact_id` )
+            ON DELETE CASCADE,
+        CONSTRAINT `$foreign_key_2`
+            FOREIGN KEY (`category_name` )
+            REFERENCES `$table_category` (`category_type_name` )
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
         )
     COMMENT='The category table for the contacts'
     ENGINE=InnoDB
@@ -56,6 +73,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_category_type'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Drop table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_tag'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -124,10 +162,10 @@ EOD;
         }
     }
 
-    public function delete($category_name)
+    public function delete($category_id)
     {
         try {
-            $this->app['db']->delete(self::$table_name, array('category_name' => $category_name));
+            $this->app['db']->delete(self::$table_name, array('category_id' => $category_id));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
