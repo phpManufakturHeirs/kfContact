@@ -1,5 +1,9 @@
 [
   {
+    "type":"NO_CATEGORY",
+    "description":"NO_CATEGORY"
+  },
+  {
     "type":"CUSTOMER",
     "description":"description: customer"
   },
