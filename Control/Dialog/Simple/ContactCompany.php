@@ -309,10 +309,10 @@ class ContactCompany extends Dialog {
         return array(
             'contact' => array(
                 'contact_id' => $data['contact_id'],
-                'contact_type' => $data['contact_type'],
-                'contact_name' => $data['contact_name'],
-                'contact_login' => $data['contact_login'],
-                'contact_status' => $data['contact_status'],
+                'contact_type' => 'COMPANY',
+                'contact_name' => isset($data['contact_name']) ? $data['contact_name'] : null,
+                'contact_login' => isset($data['contact_login']) ? $data['contact_login'] : null,
+                'contact_status' => isset($data['contact_status']) ? $data['contact_status'] : 'ACTIVE'
             ),
             'category' => array(
                 array(
