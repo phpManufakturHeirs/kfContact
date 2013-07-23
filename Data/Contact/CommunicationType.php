@@ -44,7 +44,7 @@ class CommunicationType
         `communication_type_name` VARCHAR(32) NOT NULL DEFAULT '',
         `communication_type_description` VARCHAR(255) NOT NULL DEFAULT '',
         PRIMARY KEY (`communication_type_id`),
-        UNIQUE (`communication_type_name`)
+        UNIQUE INDEX (`communication_type_name`)
         )
     COMMENT='The communication type definition table'
     ENGINE=InnoDB
@@ -55,6 +55,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_communication_type'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Delete table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_communication_type'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

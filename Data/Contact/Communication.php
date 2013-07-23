@@ -38,19 +38,51 @@ class Communication
     public function createTable()
     {
         $table = self::$table_name;
+        $table_contact = FRAMEWORK_TABLE_PREFIX.'contact_contact';
+        $table_communication_type = FRAMEWORK_TABLE_PREFIX.'contact_communication_type';
+        $table_communication_usage = FRAMEWORK_TABLE_PREFIX.'contact_communication_usage';
+
+        $foreign_key_1 = self::$table_name.'_ibfk_1';
+        $foreign_key_2 = self::$table_name.'_ibfk_2';
+        $foreign_key_3 = self::$table_name.'_ibfk_3';
+        $foreign_key_4 = self::$table_name.'_ibfk_4';
+
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-        `communication_id` INT(11) NOT NULL AUTO_INCREMENT,
-        `contact_id` INT(11) NOT NULL DEFAULT '-1',
-        `communication_type` VARCHAR(32) NOT NULL DEFAULT 'NONE',
-        `communication_usage` VARCHAR(32) NOT NULl DEFAULT 'OTHER',
-        `communication_value` TEXT NOT NULL,
-        `communication_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
-        `communication_timestamp` TIMESTAMP,
-        PRIMARY KEY (`communication_id`),
-        INDEX (`contact_id`)
-        )
-    COMMENT='The main contact table'
+      `communication_id` INT(11) NOT NULL AUTO_INCREMENT ,
+      `contact_id` INT(11) NOT NULL DEFAULT '-1' ,
+      `communication_type` VARCHAR(32) NOT NULL DEFAULT 'NONE' ,
+      `communication_usage` VARCHAR(32) NOT NULL DEFAULT 'OTHER' ,
+      `communication_value` TEXT NOT NULL ,
+      `communication_status` ENUM('ACTIVE','LOCKED','DELETED') NOT NULL DEFAULT 'ACTIVE' ,
+      `communication_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+      PRIMARY KEY (`communication_id`) ,
+      INDEX `contact_id` (`contact_id` ASC) ,
+      INDEX `communication_status_idx` (`communication_status` ASC) ,
+      INDEX `communication_usage_idx` (`communication_usage` ASC) ,
+      INDEX `communication_type_idx` (`communication_type` ASC) ,
+      CONSTRAINT `$foreign_key_1`
+        FOREIGN KEY (`contact_id` )
+        REFERENCES `$table_contact` (`contact_id` )
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+      CONSTRAINT `$foreign_key_2`
+        FOREIGN KEY (`communication_status` )
+        REFERENCES `$table_contact` (`contact_status` )
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+      CONSTRAINT `$foreign_key_3`
+        FOREIGN KEY (`communication_usage` )
+        REFERENCES `$table_communication_usage` (`communication_usage_name` )
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+      CONSTRAINT `$foreign_key_4`
+        FOREIGN KEY (`communication_type` )
+        REFERENCES `$table_communication_type` (`communication_type_name` )
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+    )
+    COMMENT='The communication table'
     ENGINE=InnoDB
     AUTO_INCREMENT=1
     DEFAULT CHARSET=utf8
@@ -59,6 +91,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_communication'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Delete table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_communication'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
