@@ -54,14 +54,16 @@ class Contact
         $table = self::$table_name;
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-        `contact_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `contact_id` INT(11) NULL AUTO_INCREMENT,
         `contact_name` VARCHAR(128) NOT NULL DEFAULT '',
         `contact_login` VARCHAR(64) NOT NULL DEFAULT '',
         `contact_type` ENUM('PERSON', 'COMPANY') NOT NULL DEFAULT 'PERSON',
         `contact_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `contact_timestamp` TIMESTAMP,
         PRIMARY KEY (`contact_id`),
-        UNIQUE (`contact_login`)
+        UNIQUE INDEX `contact_login` (`contact_login` ASC) ,
+        INDEX `contact_name` (`contact_name` ASC) ,
+        INDEX `contact_status` (`contact_status` ASC)
         )
     COMMENT='The main contact table'
     ENGINE=InnoDB
@@ -72,6 +74,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_contact'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Drop table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_tag'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
