@@ -38,6 +38,15 @@ class Address
     public function createTable()
     {
         $table = self::$table_name;
+        $table_contact = FRAMEWORK_TABLE_PREFIX.'contact_contact';
+        $table_country = FRAMEWORK_TABLE_PREFIX.'contact_country';
+        $table_address_type = FRAMEWORK_TABLE_PREFIX.'contact_address_type';
+
+        $foreign_key_1 = self::$table_name.'_ibfk_1';
+        $foreign_key_2 = self::$table_name.'_ibfk_2';
+        $foreign_key_3 = self::$table_name.'_ibfk_3';
+        $foreign_key_4 = self::$table_name.'_ibfk_4';
+
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `address_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -56,7 +65,30 @@ class Address
         `address_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `address_timestamp` TIMESTAMP,
         PRIMARY KEY (`address_id`),
-        INDEX (`contact_id`)
+        INDEX `contact_id` (`contact_id` ASC) ,
+        INDEX `country_code_idx` (`address_country_code` ASC) ,
+        INDEX `address_type_idx` (`address_type` ASC) ,
+        INDEX `address_status_idx` (`address_status` ASC) ,
+        CONSTRAINT `$foreign_key_1`
+            FOREIGN KEY (`contact_id` )
+            REFERENCES `$table_contact` (`contact_id` )
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+        CONSTRAINT `$foreign_key_2`
+            FOREIGN KEY (`address_country_code` )
+            REFERENCES `$table_country` (`country_code` )
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+        CONSTRAINT `$foreign_key_3`
+            FOREIGN KEY (`address_type` )
+            REFERENCES `$table_address_type` (`address_type_name` )
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+        CONSTRAINT `$foreign_key_4`
+            FOREIGN KEY (`address_status` )
+            REFERENCES `$table_contact` (`contact_status` )
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
         )
     COMMENT='The contact address table'
     ENGINE=InnoDB
@@ -67,6 +99,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_address'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Delete table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_address'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
