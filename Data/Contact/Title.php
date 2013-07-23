@@ -41,11 +41,12 @@ class Title
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `title_id` INT(11) NOT NULL AUTO_INCREMENT,
-        `title_identifier` VARCHAR(32) NOT NULL DEFAULT '',
+        `title_identifier` VARCHAR(32) NOT NULL DEFAULT 'NO_TITLE',
         `title_short` VARCHAR(32) NOT NULL DEFAULT '',
         `title_long` VARCHAR(64) NOT NULL DEFAULT '',
         PRIMARY KEY (`title_id`),
-        UNIQUE (`title_identifier`)
+        UNIQUE INDEX `title_identifier` (`title_identifier` ASC) ,
+        INDEX `title_identifier` (`title_identifier` ASC)
         )
     COMMENT='The person title definition table'
     ENGINE=InnoDB
@@ -61,6 +62,26 @@ EOD;
         }
     }
 
+    /**
+     * Drop table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_tag'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
     /**
      * Initialize the title list with the defaults from /titles.json
      *
@@ -104,6 +125,10 @@ EOD;
             $titles = $this->app['db']->fetchAll($SQL);
             $result = array();
             foreach ($titles as $title) {
+                if ($title['title_identifier'] == 'NO_TITLE') {
+                    // skip the NO_TITLE entry
+                    continue;
+                }
                 $result[$title['title_identifier']] = $this->app['utils']->unsanitizeText($title['title_short']);
             }
             return $result;
@@ -173,6 +198,7 @@ EOD;
     public function delete($title_id)
     {
         try {
+            /*
             // begin transaction
             $this->app['db']->beginTransaction();
 
@@ -187,15 +213,17 @@ EOD;
             $Person->replaceTitle($title['title_identifier'], '');
 
             // delete the title
+             * *
+             */
             $this->app['db']->delete(self::$table_name, array('title_id' => $title_id));
 
             // commit transaction
-            $this->app['db']->commit();
+            //$this->app['db']->commit();
 
-            return true;
+            //return true;
         } catch (\Doctrine\DBAL\DBALException $e) {
             // rollback ...
-            $this->app['db']->rollback();
+            //$this->app['db']->rollback();
             throw new \Exception($e);
         }
     }
