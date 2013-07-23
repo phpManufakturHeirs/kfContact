@@ -139,7 +139,7 @@ class ContactPerson extends ContactParent
 
         foreach ($new_data as $key => $value) {
             if ($key === 'person_id') continue;
-            if (isset($old_data[$key]) && ($old_data[$key] != $value)) {
+            if ((is_null($old_data[$key]) && !is_null($value)) || (isset($old_data[$key]) && ($old_data[$key] != $value))) {
                 $changed[$key] = $value;
             }
         }
