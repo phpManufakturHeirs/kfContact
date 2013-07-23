@@ -10,6 +10,7 @@
  */
 
 use phpManufaktur\Contact\Data\Setup\Setup;
+use phpManufaktur\Contact\Data\Uninstall\Uninstall;
 use phpManufaktur\Contact\Control\Dialog\Simple\ContactPerson as SimpleContactPerson;
 use phpManufaktur\Contact\Control\Dialog\Simple\ContactList as SimpleContactList;
 use phpManufaktur\Contact\Control\Dialog\Simple\TagEdit as SimpleTagEdit;
@@ -31,6 +32,12 @@ $app->get('/admin/contact/setup', function() use($app) {
     $Setup = new Setup($app);
     $Setup->exec();
     return "Success!";
+});
+
+$app->get('/admin/contact/uninstall', function() use($app) {
+    $Uninstall = new Uninstall($app);
+    $Uninstall->exec();
+    return "Proceeded Uninstall";
 });
 
 $app->match('/admin/contact/simple/contact', function() use($app) {

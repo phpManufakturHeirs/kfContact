@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Data\Setup;
+namespace phpManufaktur\Contact\Data\Uninstall;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Address;
@@ -29,7 +29,7 @@ use phpManufaktur\Contact\Data\Contact\Category;
 use phpManufaktur\Contact\Data\Contact\TagType;
 use phpManufaktur\Contact\Data\Contact\Tag;
 
-class Setup
+class Uninstall
 {
 
     protected $app = null;
@@ -48,59 +48,53 @@ class Setup
     {
         try {
 
-            $Contact = new Contact($this->app);
-            $Contact->createTable();
+            $Communication = new Communication($this->app);
+            $Communication->dropTable();
 
             $CommunicationType = new CommunicationType($this->app);
-            $CommunicationType->createTable();
-            $CommunicationType->initCommunicationTypeList();
+            $CommunicationType->dropTable();
 
             $CommunicationUsage = new CommunicationUsage($this->app);
-            $CommunicationUsage->createTable();
-            $CommunicationUsage->initCommunicationUsageList();
+            $CommunicationUsage->dropTable();
 
-            $Communication = new Communication($this->app);
-            $Communication->createTable();
+            $Contact = new Contact($this->app);
+            $Contact->dropTable();
 
             $Country = new Country($this->app);
-            $Country->createTable();
-            $Country->initCountryList();
+            $Country->dropTable();
 
             $AddressType = new AddressType($this->app);
-            $AddressType->createTable();
-            $AddressType->initAddressTypeList();
+            $AddressType->dropTable();
 
             $Address = new Address($this->app);
-            $Address->createTable();
+            $Address->dropTable();
 
             $Title = new Title($this->app);
-            $Title->createTable();
-            $Title->initTitleList();
-
-            $Note = new Note($this->app);
-            $Note->createTable();
+            $Title->dropTable();
 
             $Person = new Person($this->app);
-            $Person->createTable();
+            $Person->dropTable();
 
             $Company = new Company($this->app);
-            $Company->createTable();
+            $Company->dropTable();
+
+            $Note = new Note($this->app);
+            $Note->dropTable();
 
             $Overview = new Overview($this->app);
-            $Overview->createTable();
+            $Overview->dropTable();
 
             $CategoryType = new CategoryType($this->app);
-            $CategoryType->createTable();
-            $CategoryType->initCategoryTypeList();
+            $CategoryType->dropTable();
 
             $Category = new Category($this->app);
-            $Category->createTable();
+            $Category->dropTable();
 
             $TagType = new TagType($this->app);
-            $TagType->createTable();
+            $TagType->dropTable();
 
             $Tag = new Tag($this->app);
-            $Tag->createTable();
+            $Tag->dropTable();
 
         } catch (\Exception $e) {
             throw new \Exception($e);
