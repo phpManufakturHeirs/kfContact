@@ -286,8 +286,8 @@ class ContactPerson extends Dialog {
         return array(
             'contact' => array(
                 'contact_id' => $data['contact_id'],
-                'contact_type' => $data['contact_type'],
-                'contact_status' => isset($data['contact_status']) ? $data['contact_status'] : null,
+                'contact_type' => 'PERSON',
+                'contact_status' => isset($data['contact_status']) ? $data['contact_status'] : 'ACTIVE',
                 'contact_name' => isset($data['contact_name']) ? $data['contact_name'] : null,
                 'contact_login' => isset($data['contact_login']) ? $data['contact_login'] : null
             ),
@@ -303,7 +303,7 @@ class ContactPerson extends Dialog {
                     'person_id' => $data['person_id'],
                     'contact_id' => $data['contact_id'],
                     'person_gender' => $data['person_gender'],
-                    'person_title' => $data['person_title'],
+                    'person_title' => isset($data['person_title']) && !empty($data['person_title']) ? $data['person_title'] : 'NO_TITLE',
                     'person_first_name' => $data['person_first_name'],
                     'person_last_name' => $data['person_last_name'],
                     'person_birthday' => (isset($data['person_birthday']) && is_object($data['person_birthday'])) ? date('Y-m-d', $data['person_birthday']->getTimestamp()) : '0000-00-00',
