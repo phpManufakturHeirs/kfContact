@@ -38,12 +38,21 @@ class Person
     public function createTable()
     {
         $table = self::$table_name;
+        $table_title = FRAMEWORK_TABLE_PREFIX.'contact_title';
+        $table_contact = FRAMEWORK_TABLE_PREFIX.'contact_contact';
+        $table_address = FRAMEWORK_TABLE_PREFIX.'contact_address';
+
+        $foreign_key_1 = self::$table_name.'_ibfk_1';
+        $foreign_key_2 = self::$table_name.'_ibfk_2';
+        $foreign_key_3 = self::$table_name.'_ibfk_3';
+        $foreign_key_4 = self::$table_name.'_ibfk_4';
+
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `person_id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `person_gender` ENUM('MALE','FEMALE') NOT NULL DEFAULT 'MALE',
-        `person_title` VARCHAR(32) NOT NULL DEFAULT '',
+        `person_title` VARCHAR(32) NOT NULL DEFAULT 'NO_TITLE',
         `person_first_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_last_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_nick_name` VARCHAR(128) NOT NULL DEFAULT '',
@@ -57,9 +66,26 @@ class Person
         `person_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `person_timestamp` TIMESTAMP,
         PRIMARY KEY (`person_id`),
-        UNIQUE (`contact_id`)
+        INDEX `person_title` (`person_title` ASC) ,
+        INDEX `contact_id` (`contact_id` ASC) ,
+        INDEX `contact_status_idx` (`person_status` ASC) ,
+        CONSTRAINT `$foreign_key_1`
+            FOREIGN KEY (`person_title` )
+            REFERENCES `$table_title` (`title_identifier` )
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+        CONSTRAINT `$foreign_key_2`
+            FOREIGN KEY (`contact_id` )
+            REFERENCES `$table_contact` (`contact_id` )
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+        CONSTRAINT `$foreign_key_3`
+            FOREIGN KEY (`person_status` )
+            REFERENCES `$table_contact` (`contact_status` )
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
         )
-    COMMENT='The main contact table'
+    COMMENT='The PERSON contact table'
     ENGINE=InnoDB
     AUTO_INCREMENT=1
     DEFAULT CHARSET=utf8
@@ -68,6 +94,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_person'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Drop table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_tag'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
