@@ -40,6 +40,8 @@ class Tag
         $table = self::$table_name;
         $table_tag_type = FRAMEWORK_TABLE_PREFIX.'contact_tag_type';
         $table_contact = FRAMEWORK_TABLE_PREFIX.'contact_contact';
+        $foreign_key_1 = self::$table_name.'_ibfk_1';
+        $foreign_key_2 = self::$table_name.'_ibfk_2';
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
     		`tag_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -47,14 +49,15 @@ class Tag
         `tag_name` VARCHAR(32) NOT NULL DEFAULT '',
     		`tag_timestamp` TIMESTAMP,
         PRIMARY KEY (`tag_id`),
-        CONSTRAINT `tag_name`
+        INDEX (`contact_id`, `tag_name`),
+        CONSTRAINT `$foreign_key_1`
             FOREIGN KEY (`tag_name`)
-            REFERENCES $table_tag_type (`tag_name`)
+            REFERENCES `$table_tag_type` (`tag_name`)
             ON DELETE CASCADE
             ON UPDATE CASCADE,
-        CONSTRAINT `contact_id`
+        CONSTRAINT `$foreign_key_2`
             FOREIGN KEY (`contact_id`)
-            REFERENCES $table_contact (`contact_id`)
+            REFERENCES `$table_contact` (`contact_id`)
             ON DELETE CASCADE
         )
     COMMENT='The tags for the contact table'
@@ -66,6 +69,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_tag'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Drop table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_tag'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
