@@ -38,26 +38,42 @@ class Company
     public function createTable()
     {
         $table = self::$table_name;
+        $table_contact = FRAMEWORK_TABLE_PREFIX.'contact_contact';
+
+        $foreign_key_1 = self::$table_name.'_ibfk_1';
+        $foreign_key_2 = self::$table_name.'_ibfk_2';
+
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-        `company_id` INT(11) NOT NULL AUTO_INCREMENT,
-        `contact_id` INT(11) NOT NULL DEFAULT '-1',
-        `company_name` VARCHAR(128) NOT NULL DEFAULT '',
-        `company_department` VARCHAR(128) NOT NULL DEFAULT '',
-        `company_additional` VARCHAR(128) NOT NULL DEFAULT '',
-        `company_additional_2` VARCHAR(128) NOT NULL DEFAULT '',
-        `company_additional_3` VARCHAR(128) NOT NULL DEFAULT '',
-        `company_primary_address_id` INT(11) NOT NULL DEFAULT '-1',
-        `company_primary_person_id` INT(11) NOT NULL DEFAULT '-1',
-        `company_primary_phone_id` INT(11) NOT NULL DEFAULT '-1',
-        `company_primary_email_id` INT(11) NOT NULL DEFAULT '-1',
-        `company_primary_note_id` INT(11) NOT NULL DEFAULT '-1',
-        `company_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
-        `company_timestamp` TIMESTAMP,
-        PRIMARY KEY (`company_id`),
-        UNIQUE (`contact_id`)
-        )
-    COMMENT='The main contact table'
+      `company_id` INT(11) NOT NULL AUTO_INCREMENT ,
+      `contact_id` INT(11) NOT NULL DEFAULT '-1' ,
+      `company_name` VARCHAR(128) NOT NULL DEFAULT '' ,
+      `company_department` VARCHAR(128) NOT NULL DEFAULT '' ,
+      `company_additional` VARCHAR(128) NOT NULL DEFAULT '' ,
+      `company_additional_2` VARCHAR(128) NOT NULL DEFAULT '' ,
+      `company_additional_3` VARCHAR(128) NOT NULL DEFAULT '' ,
+      `company_primary_address_id` INT(11) NOT NULL DEFAULT '-1' ,
+      `company_primary_person_id` INT(11) NOT NULL DEFAULT '-1' ,
+      `company_primary_phone_id` INT(11) NOT NULL DEFAULT '-1' ,
+      `company_primary_email_id` INT(11) NOT NULL DEFAULT '-1' ,
+      `company_primary_note_id` INT(11) NOT NULL DEFAULT '-1' ,
+      `company_status` ENUM('ACTIVE','LOCKED','DELETED') NOT NULL DEFAULT 'ACTIVE' ,
+      `company_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+      PRIMARY KEY (`company_id`) ,
+      INDEX `contact_id` (`contact_id` ASC) ,
+      INDEX `contact_status_idx` (`company_status` ASC) ,
+      CONSTRAINT `$foreign_key_1`
+        FOREIGN KEY (`company_status` )
+        REFERENCES `$table_contact` (`contact_status` )
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+      CONSTRAINT `$foreign_key_2`
+        FOREIGN KEY (`contact_id` )
+        REFERENCES `$table_contact` (`contact_id` )
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+      )
+    COMMENT='The COMPANY contact table'
     ENGINE=InnoDB
     AUTO_INCREMENT=1
     DEFAULT CHARSET=utf8
@@ -66,6 +82,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_company'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Delete table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_communication'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
