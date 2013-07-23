@@ -42,9 +42,9 @@ class Country
     CREATE TABLE IF NOT EXISTS `$table` (
         `country_id` INT(11) NOT NULL AUTO_INCREMENT,
         `country_code` VARCHAR(3) NOT NULL DEFAULT '',
-        `country_name` VARCHAR(128) NOT NULL DEFAULT '',
+        `country_name` VARCHAR(128) NOT NULL DEFAULT 'NO COUNTRY',
         PRIMARY KEY (`country_id`),
-        UNIQUE (`country_code`)
+        UNIQUE INDEX `country_code` (`country_code` ASC)
         )
     COMMENT='The country list for the contact application'
     ENGINE=InnoDB
@@ -55,6 +55,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_country'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Delete table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_country'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -131,7 +152,7 @@ EOD;
     public function getArrayForTwig()
     {
         try {
-            $SQL = "SELECT `country_code`, `country_name` FROM `".self::$table_name."` ORDER BY `country_name` ASC";
+            $SQL = "SELECT `country_code`, `country_name` FROM `".self::$table_name."` WHERE `country_code` != '' ORDER BY `country_name` ASC";
             $countries = $this->app['db']->fetchAll($SQL);
             $result = array();
             foreach ($countries as $country) {
