@@ -14,6 +14,12 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
 
+/**
+ * Dialog to create and edit categories for PERSON and COMPANY contacts
+ *
+ * @author ralf.hertsch@phpmanufaktur.de
+ *
+ */
 class CategoryEdit extends Dialog {
 
     protected $CategoryTypeData = null;

@@ -199,6 +199,8 @@ return array(
         => 'Nachname',
     'person_nick_name'
         => 'Spitzname',
+    'Person title'
+        => 'Titel',
     'Please define a short name for the title!'
         => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
     'Please select the contact type you want to create.'

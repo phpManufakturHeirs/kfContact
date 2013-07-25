@@ -183,7 +183,7 @@ class ContactPerson extends Dialog {
             'expanded' => false,
             'multiple' => false,
             'required' => false,
-            'label' => 'Title',
+            'label' => 'Person title',
             'data' => $contact['person'][0]['person_title']
         ))
         ->add('person_first_name', 'text', array(
