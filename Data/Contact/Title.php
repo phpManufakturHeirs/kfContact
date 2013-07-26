@@ -45,8 +45,7 @@ class Title
         `title_short` VARCHAR(32) NOT NULL DEFAULT '',
         `title_long` VARCHAR(64) NOT NULL DEFAULT '',
         PRIMARY KEY (`title_id`),
-        UNIQUE INDEX `title_identifier` (`title_identifier` ASC) ,
-        INDEX `title_identifier` (`title_identifier` ASC)
+        UNIQUE INDEX `title_identifier` (`title_identifier` ASC)
         )
     COMMENT='The person title definition table'
     ENGINE=InnoDB
