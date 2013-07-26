@@ -48,6 +48,8 @@ return array(
 
     'baron'
         => 'Baron',
+    'Birthday'
+        => 'Geburtstag',
     'Business address'
         => 'Geschäftsadresse',
 
@@ -75,6 +77,8 @@ return array(
         => 'Zur Übersicht wechseln',
     'Cell'
         => 'Mobilfunk',
+    'City'
+        => 'Stadt',
     'Communication'
         => 'Kommunikation',
     'communication_email'
@@ -95,6 +99,8 @@ return array(
         => 'Firma',
     'contact_id'
         => 'ID',
+    'Contact'
+        => 'Kontakt',
     'Contact name'
         => 'Kontakt Bezeichner',
     'contact_name'
@@ -128,6 +134,8 @@ return array(
         => 'den Titel <b>%title_identifier%</b> löschen',
     'deleted'
         => 'Gelöscht',
+    'Delivery address'
+        => 'Lieferadresse',
     'Description'
         => 'Beschreibung',
     'Description (translated)'
@@ -152,6 +160,8 @@ return array(
         => 'Frau',
     'female'
         => 'Frau',
+    'First name'
+        => 'Vorname',
 
     'Gender'
         => 'Geschlecht',
@@ -163,6 +173,8 @@ return array(
     'Intern'
         => 'Intern',
 
+    'Last name'
+        => 'Nachname',
     'locked'
         => 'Gesperrt',
     'Long name'
@@ -201,6 +213,8 @@ return array(
         => 'Spitzname',
     'Person title'
         => 'Titel',
+    'Phone'
+        => 'Telefon',
     'Please define a short name for the title!'
         => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
     'Please select the contact type you want to create.'
@@ -214,6 +228,8 @@ return array(
         => 'Kurzbezeichnung',
     'Short name (translated)'
         => 'Kurzbezeichnung (Übersetzung)',
+    'Street'
+        => 'Straße',
 
     'Tag'
         => 'Markierung',
