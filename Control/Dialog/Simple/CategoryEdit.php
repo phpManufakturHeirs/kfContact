@@ -108,7 +108,7 @@ class CategoryEdit extends Dialog {
      */
     public function exec($extra=null)
     {
-        // check if a contact ID isset
+        // check if a category ID isset
         $form_request = $this->app['request']->request->get('form', array());
         if (isset($form_request['category_type_id'])) {
             self::$category_id = $form_request['category_type_id'];
