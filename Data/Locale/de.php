@@ -21,6 +21,8 @@ return array(
         => '- neuer Kontakt -',
     '- new tag -'
         => '- neue Markierung -',
+    '- please select -'
+        => '- bitte auswählen -',
     'active'
         => 'Aktiv',
     'Add a new category'
