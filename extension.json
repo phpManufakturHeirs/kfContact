@@ -11,8 +11,8 @@
     "about":"\/contact\/about"
   },
   "release": {
-    "number" : "2.0.11",
-    "date" : "2013-07-25"
+    "number" : "2.0.12",
+    "date" : "2013-08-07"
   },
   "description": {
     "en": {
@@ -24,7 +24,7 @@
   },
   "require": {
     "framework": {
-      "release": "0.19"
+      "release": "0.21"
     }
   },
   "license":"MIT License",
