@@ -24,10 +24,16 @@ class TitleEdit extends Dialog {
      *
      * @param Application $app
      */
-    public function __construct(Application $app, $options=null)
+    public function __construct(Application $app=null, $options=null)
     {
         parent::__construct($app);
+        if (!is_null($app)) {
+            $this->initialize($options);
+        }
+    }
 
+    protected function initialize($options=null)
+    {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
@@ -41,7 +47,7 @@ class TitleEdit extends Dialog {
         $this->TitleData = new Title($this->app);
     }
 
-  	/**
+      /**
      * @param number $title_id
      */
     public function setTitleID($title_id)
@@ -88,7 +94,17 @@ class TitleEdit extends Dialog {
         return $title;
     }
 
-	  /**
+    public function controller(Application $app, $title_id=null)
+    {
+        $this->app = $app;
+        $this->initialize();
+        if (!is_null($title_id)) {
+            $this->setTitleID($title_id);
+        }
+        return $this->exec();
+    }
+
+    /**
      * Return the TITLE edit dialog
      *
      * @return string title dialog

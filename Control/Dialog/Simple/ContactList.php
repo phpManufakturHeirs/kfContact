@@ -31,10 +31,16 @@ class ContactList extends Dialog {
      *
      * @param Application $app
      */
-    public function __construct(Application $app, $options=null)
+    public function __construct(Application $app=null, $options=null)
     {
         parent::__construct($app);
+        if (!is_null($app)) {
+            $this->initialize($options);
+        }
+    }
 
+    protected function initialize($options=null)
+    {
         $this->ContactListControl = new ContactListControl($this->app);
 
         $this->setOptions(array(
@@ -49,7 +55,7 @@ class ContactList extends Dialog {
                 'contact' => array(
                     'person' => isset($options['route']['contact']['person']) ? $options['route']['contact']['person'] : '/admin/contact/simple/contact/person/id/{contact_id}',
                     'company' => isset($options['route']['contact']['company']) ? $options['route']['contact']['company'] : '/admin/contact/simple/contact/company/id/{contact_id}'
-                    )
+                )
             )
         ));
 
@@ -84,6 +90,23 @@ class ContactList extends Dialog {
     public function setCurrentPage($page)
     {
         self::$current_page = $page;
+    }
+
+    /**
+     * Default controller for the contact list
+     *
+     * @param Application $app
+     * @param string $page
+     * @return string
+     */
+    public function controller(Application $app, $page=null)
+    {
+        $this->app = $app;
+        $this->initialize();
+        if (!is_null($page)) {
+            $this->setCurrentPage($page);
+        }
+        return $this->exec();
     }
 
     /**

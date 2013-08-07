@@ -24,10 +24,17 @@ class ContactPerson extends Dialog {
      *
      * @param Application $app
      */
-    public function __construct(Application $app, $options=null)
+    public function __construct(Application $app=null, $options=null)
     {
         parent::__construct($app);
 
+        if (!is_null($app)) {
+            $this->initialize($options);
+        }
+    }
+
+    protected function initialize($options=null)
+    {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
@@ -364,6 +371,22 @@ class ContactPerson extends Dialog {
                 )
             )
         );
+    }
+
+    /**
+     * Default controller for the contact dialog
+     *
+     * @param Application $app
+     * @return string
+     */
+    public function controller(Application $app, $contact_id=null)
+    {
+        $this->app = $app;
+        $this->initialize();
+        if (!is_null($contact_id)) {
+            $this->setContactID($contact_id);
+        }
+        return $this->exec();
     }
 
     /**

@@ -34,19 +34,10 @@ class Uninstall
 
     protected $app = null;
 
-    /**
-     * Constructor
-     *
-     * @param Application $app
-     */
-    public function __construct(Application $app)
-    {
-        $this->app = $app;
-    }
-
-    public function exec()
+    public function exec(Application $app)
     {
         try {
+            $this->app = $app;
 
             $Communication = new Communication($this->app);
             $Communication->dropTable();
@@ -95,6 +86,8 @@ class Uninstall
 
             $Tag = new Tag($this->app);
             $Tag->dropTable();
+
+            return "The uninstall process was successfull!";
 
         } catch (\Exception $e) {
             throw new \Exception($e);

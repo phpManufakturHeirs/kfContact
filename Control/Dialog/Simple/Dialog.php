@@ -24,7 +24,7 @@ class Dialog {
      *
      * @param Application $app
      */
-    public function __construct(Application $app)
+    public function __construct(Application $app=null)
     {
         $this->app = $app;
     }
@@ -56,7 +56,7 @@ class Dialog {
         return !empty(self::$message);
     }
 
-	  /**
+      /**
      * @return the $options
      */
     public static function getOptions()
@@ -64,7 +64,7 @@ class Dialog {
         return self::$options;
     }
 
-	  /**
+      /**
      * @param field_type $options
      */
     public static function setOptions($options)

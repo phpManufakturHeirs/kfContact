@@ -34,19 +34,10 @@ class Setup
 
     protected $app = null;
 
-    /**
-     * Constructor
-     *
-     * @param Application $app
-     */
-    public function __construct(Application $app)
-    {
-        $this->app = $app;
-    }
-
-    public function exec()
+    public function exec(Application $app)
     {
         try {
+            $this->app = $app;
 
             $Contact = new Contact($this->app);
             $Contact->createTable();
@@ -101,6 +92,8 @@ class Setup
 
             $Tag = new Tag($this->app);
             $Tag->createTable();
+
+            return "The setup was successfull!";
 
         } catch (\Exception $e) {
             throw new \Exception($e);

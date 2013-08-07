@@ -30,10 +30,16 @@ class CategoryEdit extends Dialog {
      *
      * @param Application $app
      */
-    public function __construct(Application $app, $options=null)
+    public function __construct(Application $app=null, $options=null)
     {
         parent::__construct($app);
+        if (!is_null($app)) {
+            $this->initialize($options);
+        }
+    }
 
+    protected function initialize($options=null)
+    {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
@@ -101,7 +107,24 @@ class CategoryEdit extends Dialog {
         return $category;
     }
 
-	  /**
+    /**
+     * Default controller for the Categories
+     *
+     * @param Application $app
+     * @param string $category_id
+     * @return string
+     */
+    public function controller(Application $app, $category_id=null)
+    {
+        $this->app = $app;
+        $this->initialize();
+        if (!is_null($category_id)) {
+            $this->setCategoryID($category_id);
+        }
+        return $this->exec();
+    }
+
+    /**
      * Return the Categroy edit dialog
      *
      * @return string category list

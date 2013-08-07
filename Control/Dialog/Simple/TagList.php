@@ -23,10 +23,16 @@ class TagList extends Dialog {
      *
      * @param Application $app
      */
-    public function __construct(Application $app, $options=null)
+    public function __construct(Application $app=null, $options=null)
     {
         parent::__construct($app);
+        if (!is_null($app)) {
+            $this->initialize($options);
+        }
+    }
 
+    protected function initialize($options=null)
+    {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
@@ -40,6 +46,17 @@ class TagList extends Dialog {
         $this->TagTypeData = new TagType($this->app);
     }
 
+    /**
+     * Default controller for the tag list
+     *
+     * @param Application $app
+     */
+    public function controller(Application $app)
+    {
+        $this->app = $app;
+        $this->initialize();
+        return $this->exec();
+    }
 
     /**
      * Return the tag list
