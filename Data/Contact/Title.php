@@ -197,32 +197,8 @@ EOD;
     public function delete($title_id)
     {
         try {
-            /*
-            // begin transaction
-            $this->app['db']->beginTransaction();
-
-            if (false === ($title = $this->select($title_id))) {
-                // title ID does not exists, rollback ...
-                $this->app['db']->rollback();
-                return false;
-            }
-
-            // remove the title from all person records
-            $Person = new Person($this->app);
-            $Person->replaceTitle($title['title_identifier'], '');
-
-            // delete the title
-             * *
-             */
             $this->app['db']->delete(self::$table_name, array('title_id' => $title_id));
-
-            // commit transaction
-            //$this->app['db']->commit();
-
-            //return true;
         } catch (\Doctrine\DBAL\DBALException $e) {
-            // rollback ...
-            //$this->app['db']->rollback();
             throw new \Exception($e);
         }
     }
@@ -267,6 +243,23 @@ EOD;
             if (!empty($update)) {
                 $this->app['db']->update(self::$table_name, $update, array('title_id' => $title_id));
             }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Check if the given $title_identifier already exists
+     *
+     * @param string $title_identifier
+     * @throws \Exception
+     * @return boolean
+     */
+    public function existsTitle($title_identifier)
+    {
+        try {
+            $SQL = "SELECT `title_identifier` FROM `".self::$table_name."` WHERE `title_identifier`='$title_identifier'";
+            return ($title_identifier == $this->app['db']->fetchColumn($SQL));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

@@ -73,3 +73,9 @@ $app->match('/admin/contact/simple/title/edit',
     'phpManufaktur\Contact\Control\Dialog\Simple\TitleEdit:controller');
 $app->match('/admin/contact/simple/title/edit/id/{title_id}',
     'phpManufaktur\Contact\Control\Dialog\Simple\TitleEdit:controller');
+
+// Import from KeepInTouch
+$app->match('/admin/contact/import/keepintouch',
+    'phpManufaktur\Contact\Control\Import\KeepInTouch::start');
+$app->match('/admin/contact/import/keepintouch/start',
+    'phpManufaktur\Contact\Control\Import\KeepInTouch::start');

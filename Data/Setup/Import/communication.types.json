@@ -26,5 +26,13 @@
   {
     "type":"URL",
     "description":"description: url"
+  },
+  {
+    "type":"TWITTER",
+    "description":"description: twitter"
+  },
+  {
+    "type":"XING",
+    "description":"description: xing"
   }
 ]

@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Control\Dialog\Simple;
+namespace phpManufaktur\Contact\Control\Import;
 
 use Silex\Application;
 
@@ -17,7 +17,6 @@ class Dialog {
 
     protected $app = null;
     protected static $message = '';
-    protected static $options = array();
 
     /**
      * Constructor
@@ -25,6 +24,13 @@ class Dialog {
      * @param Application $app
      */
     public function __construct(Application $app=null)
+    {
+        if (!is_null($app)) {
+            $this->initialize($app);
+        }
+    }
+
+    protected function initialize(Application $app)
     {
         $this->app = $app;
     }
@@ -42,7 +48,7 @@ class Dialog {
      */
     public function setMessage($message, $params=array())
     {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['message']),
+        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', '/backend/message.twig'),
             array('message' => $this->app['translator']->trans($message, $params)));
     }
 
@@ -56,24 +62,5 @@ class Dialog {
         return !empty(self::$message);
     }
 
-    /**
-     * @return the $options
-     */
-    public static function getOptions()
-    {
-        return self::$options;
-    }
-
-    /**
-     * @param field_type $options
-     */
-    public static function setOptions($options)
-    {
-        if (is_array($options)) {
-            foreach ($options as $key => $value) {
-                self::$options[$key] = $value;
-            }
-        }
-    }
 
 }
