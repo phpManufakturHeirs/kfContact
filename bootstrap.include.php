@@ -9,16 +9,21 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
+// not really needed but make error control more easy ...
+global $app;
+
 // scan the /Locale directory and add all available languages
 $app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale');
 // scan the /Locale/Custom directory and add all available languages
 $app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale/Custom');
 
-// Setup and Uninstall
+// Setup, Upgrade and Uninstall
 $app->get('/admin/contact/setup',
     'phpManufaktur\Contact\Data\Setup\Setup::exec');
+$app->get('/admin/contact/upgrade',
+    'phpManufaktur\Contact\Data\Setup\Upgrade::exec');
 $app->get('/admin/contact/uninstall',
-    'phpManufaktur\Contact\Data\Uninstall\Uninstall::exec');
+    'phpManufaktur\Contact\Data\Setup\Uninstall::exec');
 
 // Select Contact
 $app->match('/admin/contact/simple/contact',
@@ -79,3 +84,5 @@ $app->match('/admin/contact/import/keepintouch',
     'phpManufaktur\Contact\Control\Import\KeepInTouch::start');
 $app->match('/admin/contact/import/keepintouch/start',
     'phpManufaktur\Contact\Control\Import\KeepInTouch::start');
+$app->match('/admin/contact/import/keepintouch/execute',
+    'phpManufaktur\Contact\Control\Import\KeepInTouch::execute');

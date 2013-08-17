@@ -28,73 +28,97 @@ use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Data\Contact\Category;
 use phpManufaktur\Contact\Data\Contact\TagType;
 use phpManufaktur\Contact\Data\Contact\Tag;
+use phpManufaktur\Contact\Data\Contact\Protocol;
 
 class Setup
 {
 
-    protected $app = null;
-
     public function exec(Application $app)
     {
         try {
-            $this->app = $app;
-
-            $Contact = new Contact($this->app);
+            $Contact = new Contact($app);
             $Contact->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_contact`');
 
-            $CommunicationType = new CommunicationType($this->app);
+            $CommunicationType = new CommunicationType($app);
             $CommunicationType->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_communication_type`');
             $CommunicationType->initCommunicationTypeList();
+            $app['monolog']->addInfo('[Contact Install] Import the default data for `contact_communication_type`');
 
-            $CommunicationUsage = new CommunicationUsage($this->app);
+            $CommunicationUsage = new CommunicationUsage($app);
             $CommunicationUsage->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_communication_usage`');
             $CommunicationUsage->initCommunicationUsageList();
+            $app['monolog']->addInfo('[Contact Install] Import the default data for `contact_communication_usage`');
 
-            $Communication = new Communication($this->app);
+            $Communication = new Communication($app);
             $Communication->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_communication`');
 
-            $Country = new Country($this->app);
+            $Country = new Country($app);
             $Country->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_country`');
             $Country->initCountryList();
+            $app['monolog']->addInfo('[Contact Install] Import the default data for `contact_country`');
 
-            $AddressType = new AddressType($this->app);
+            $AddressType = new AddressType($app);
             $AddressType->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_address_type`');
             $AddressType->initAddressTypeList();
+            $app['monolog']->addInfo('[Contact Install] Import the default data for `contact_address_type`');
 
-            $Address = new Address($this->app);
+            $Address = new Address($app);
             $Address->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_address`');
 
-            $Title = new Title($this->app);
+            $Title = new Title($app);
             $Title->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_title`');
             $Title->initTitleList();
+            $app['monolog']->addInfo('[Contact Install] Import the default data for `contact_title`');
 
-            $Note = new Note($this->app);
+            $Note = new Note($app);
             $Note->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_note`');
 
-            $Person = new Person($this->app);
+            $Person = new Person($app);
             $Person->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_person`');
 
-            $Company = new Company($this->app);
+            $Company = new Company($app);
             $Company->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_company`');
 
-            $Overview = new Overview($this->app);
+            $Overview = new Overview($app);
             $Overview->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_overview`');
 
-            $CategoryType = new CategoryType($this->app);
+            $CategoryType = new CategoryType($app);
             $CategoryType->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_category_type`');
             $CategoryType->initCategoryTypeList();
+            $app['monolog']->addInfo('[Contact Install] Import the default data for `contact_category_type`');
 
-            $Category = new Category($this->app);
+            $Category = new Category($app);
             $Category->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_category`');
 
-            $TagType = new TagType($this->app);
+            $TagType = new TagType($app);
             $TagType->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_tag_type`');
 
-            $Tag = new Tag($this->app);
+            $Tag = new Tag($app);
             $Tag->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_tag`');
 
+            $Protocol = new Protocol($app);
+            $Protocol->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_protocol`');
+
+            // success - return message
+            $app['monolog']->addInfo('[Contact Install] The setup process was successfull');
             return "The setup was successfull!";
-
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

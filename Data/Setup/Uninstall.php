@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Data\Uninstall;
+namespace phpManufaktur\Contact\Data\Setup;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Address;
@@ -28,65 +28,83 @@ use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Data\Contact\Category;
 use phpManufaktur\Contact\Data\Contact\TagType;
 use phpManufaktur\Contact\Data\Contact\Tag;
+use phpManufaktur\Contact\Data\Contact\Protocol;
 
 class Uninstall
 {
 
-    protected $app = null;
-
     public function exec(Application $app)
     {
         try {
-            $this->app = $app;
-
-            $Communication = new Communication($this->app);
+            $Communication = new Communication($app);
             $Communication->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_communication`');
 
-            $CommunicationType = new CommunicationType($this->app);
+            $CommunicationType = new CommunicationType($app);
             $CommunicationType->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_communication_type`');
 
-            $CommunicationUsage = new CommunicationUsage($this->app);
+            $CommunicationUsage = new CommunicationUsage($app);
             $CommunicationUsage->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_communication_usage`');
 
-            $Contact = new Contact($this->app);
+            $Contact = new Contact($app);
             $Contact->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_contact`');
 
-            $Country = new Country($this->app);
+            $Country = new Country($app);
             $Country->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_country`');
 
-            $AddressType = new AddressType($this->app);
+            $AddressType = new AddressType($app);
             $AddressType->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_address_type`');
 
-            $Address = new Address($this->app);
+            $Address = new Address($app);
             $Address->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_address`');
 
-            $Title = new Title($this->app);
+            $Title = new Title($app);
             $Title->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_title`');
 
-            $Person = new Person($this->app);
+            $Person = new Person($app);
             $Person->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_person`');
 
-            $Company = new Company($this->app);
+            $Company = new Company($app);
             $Company->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_company`');
 
-            $Note = new Note($this->app);
+            $Note = new Note($app);
             $Note->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_note`');
 
-            $Overview = new Overview($this->app);
+            $Overview = new Overview($app);
             $Overview->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_overview`');
 
-            $CategoryType = new CategoryType($this->app);
+            $CategoryType = new CategoryType($app);
             $CategoryType->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_category_type`');
 
-            $Category = new Category($this->app);
+            $Category = new Category($app);
             $Category->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_category`');
 
-            $TagType = new TagType($this->app);
+            $TagType = new TagType($app);
             $TagType->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_tag_type`');
 
-            $Tag = new Tag($this->app);
+            $Tag = new Tag($app);
             $Tag->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_tag`');
 
+            $Protocol = new Protocol($app);
+            $Protocol->dropTable();
+            $this->app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_protocol`');
+
+            $this->app['monolog']->addInfo('[Contact Uninstall] Dropped all tables successfull');
             return "The uninstall process was successfull!";
 
         } catch (\Exception $e) {
