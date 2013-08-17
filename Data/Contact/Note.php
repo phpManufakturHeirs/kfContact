@@ -44,11 +44,13 @@ class Note
 
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-            `note_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `note_id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `note_title` VARCHAR(255) NOT NULL DEFAULT '',
-            `note_type` ENUM('TEXT', 'HTML') NOT NULL DEFAULT 'TEXT',
-            `note_content` TEXT NOT NULL,
+        `note_type` ENUM('TEXT', 'HTML') NOT NULL DEFAULT 'TEXT',
+        `note_content` TEXT NOT NULL,
+        `note_originator` VARCHAR(64) NOT NULL DEFAULT 'SYSTEM',
+        `note_date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
         `note_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `note_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
         PRIMARY KEY (`note_id`) ,

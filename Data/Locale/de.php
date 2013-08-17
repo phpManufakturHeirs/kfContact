@@ -295,6 +295,8 @@ return array(
         => 'Das Feld %field% darf nicht leer sein!',
     'The form is not valid, please check your input and try again!'
         => 'Das Formular ist nicht gültig, bitte überprüfen Sie Ihre Eingabe und übermitteln Sie das Formular erneut!',
+    'The import from KeepInTouch was successfull finished.'
+        => 'Der Import aus KeepInTouch wurde erfolgreich abgeschlossen.',
     'The last name must be at least two characters long!'
         => 'Der Nachname muss aus mindestens zwei Buchstaben bestehen!',
     'The login <b>%login%</b> is already in use, please choose another one!'
@@ -325,6 +327,8 @@ return array(
         => 'ID',
     'Title list'
         => 'Titel Übersicht',
+    'To prevent a timeout of the script the import was aborted after import of %counter% records. Please reload this page to continue the import process.'
+        => 'Das Script wurde nach dem Import von %counter% Datensätzen abgebrochen, um eine Überschreitung der zulässigen Ausführungsdauer zu vermeiden. Bitte laden Sie diese Seite erneut um den Import forzusetzen.',
 
     'Unchecked'
         => '- ungeprüft -',

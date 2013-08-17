@@ -21,6 +21,8 @@ class KeepInTouch extends Dialog {
     protected static $import_is_possible = false;
     protected $KeepInTouch = null;
     protected $Contact = null;
+    protected static $script_start = null;
+    protected static $max_execution_time = 60; // 60 seconds
 
     /**
      * Initialize the class
@@ -29,6 +31,7 @@ class KeepInTouch extends Dialog {
      */
     protected function initialize(Application $app)
     {
+        self::$script_start = microtime(true);
         parent::initialize($app);
         $this->KeepInTouch = new KeepInTouchData($app);
         if ($this->KeepInTouch->existsKIT()) {
@@ -39,6 +42,8 @@ class KeepInTouch extends Dialog {
             }
         }
         $this->Contact = new Contact($app);
+        // increase the execution time to 60 seconds
+        ini_set('max_execution_time', self::$max_execution_time);
     }
 
     /**
@@ -131,6 +136,7 @@ class KeepInTouch extends Dialog {
             'communication' => $communication,
             'address' => $addresses
         );
+
         if ($contact_type == 'PERSON') {
             $data['person'] = array(
                 array(
@@ -158,7 +164,26 @@ class KeepInTouch extends Dialog {
             );
         }
 
-        $this->Contact->insert($data, $contact_id);
+        // get the KIT memos
+        $memos = $this->KeepInTouch->getMemos($kit['origin']['contact_id']);
+        $data['note'] = array();
+        foreach ($memos as $memo) {
+            $data['note'][] = array(
+                'contact_id' => -1,
+                'note_id' => -1,
+                'note_title' => 'Imported from KeepInTouch',
+                'note_type' => 'TEXT',
+                'note_content' => strip_tags($memo['memo_memo']),
+                'note_originator' => $memo['memo_update_by'],
+                'note_date' => $memo['memo_update_when']
+            );
+        }
+
+        // insert the contact data
+        if (!$this->Contact->insert($data, $contact_id)) {
+            self::$message = $this->Contact->getMessage();
+            return false;
+        }
 
         // get the KIT protocol
         $protocols = $this->KeepInTouch->getProtocol($kit['origin']['contact_id']);
@@ -181,6 +206,7 @@ class KeepInTouch extends Dialog {
 
         $this->app['monolog']->addInfo('Start Import from KeepInTouch');
         $counter = 0;
+        $prompt_success = true;
         if (self::$import_is_possible) {
             $kit_ids = $this->KeepInTouch->getAllKITids();
             foreach ($kit_ids as $kit_id) {
@@ -211,7 +237,10 @@ class KeepInTouch extends Dialog {
 
                 $person_contact_id = -1;
                 if ($add_person) {
-                    $this->addContact($kit, 'PERSON', $person_contact_id);
+                    if (!$this->addContact($kit, 'PERSON', $person_contact_id)) {
+                        // something went wrong!
+                        break;
+                    }
                 }
 
                 $company_contact_id = -1;
@@ -225,7 +254,10 @@ class KeepInTouch extends Dialog {
                         }
                         $kit['primary_person_id'] = $person_contact_id;
                     }
-                    $this->addContact($kit, 'COMPANY', $company_contact_id);
+                    if (!$this->addContact($kit, 'COMPANY', $company_contact_id)) {
+                        // something went wrong!
+                        break;
+                    }
                     if ($person_contact_id > -1) {
                         $data = array(
                             'contact' => array(
@@ -240,14 +272,29 @@ class KeepInTouch extends Dialog {
                             )
                         );
                         // update the person contact data
-                        $this->Contact->update($data, $person_contact_id);
+                        if (!$this->Contact->update($data, $person_contact_id)) {
+                            // something went wrong!
+                            self::$message = $this->Contact->getMessage();
+                            break;
+                        }
                     }
                 }
 
-
-
                 // increase counter
                 $counter++;
+
+                if (((microtime(true) - self::$script_start) + 5) > self::$max_execution_time) {
+                    // abort import to prevent timeout
+                    $this->setMessage('To prevent a timeout of the script the import was aborted after import of %counter% records. Please reload this page to continue the import process.',
+                            array('%counter%' => $counter));
+                    $this->app['monolog']->addInfo(sprintf('[Import KeepInTouch] Script aborted after %.3f seconds and %d records to prevent a timeout', microtime(true) - self::$script_start, $counter));
+                    $prompt_success = false;
+                    break;
+                }
+            }
+
+            if ($prompt_success) {
+                $this->setMessage('The import from KeepInTouch was successfull finished.');
             }
         }
         else {

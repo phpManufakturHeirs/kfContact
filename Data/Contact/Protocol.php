@@ -40,7 +40,6 @@ class Protocol
     {
         $table = self::$table_name;
         $table_contact = FRAMEWORK_TABLE_PREFIX.'contact_contact';
-        //$foreign_key_1 = self::$table_name.'_ibfk_1';
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `protocol_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -56,7 +55,7 @@ class Protocol
             REFERENCES `$table_contact` (`contact_id`)
             ON DELETE CASCADE
         )
-    COMMENT='The tags for the contact table'
+    COMMENT='The protocol for the contact table'
     ENGINE=InnoDB
     AUTO_INCREMENT=1
     DEFAULT CHARSET=utf8

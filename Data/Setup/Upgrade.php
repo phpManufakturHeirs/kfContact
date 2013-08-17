@@ -76,6 +76,20 @@ class Upgrade
                 $this->app['monolog']->addInfo('[Contact Upgrade] Deleted column `person_contact_since`');
             }
 
+            // add field `note_originator`
+            if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_originator')) {
+                $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_note` ADD `note_originator` VARCHAR(64) NOT NULL DEFAULT 'SYSTEM' AFTER `note_content`";
+                $this->app['db']->query($SQL);
+                $this->app['monolog']->addInfo('[Contact Upgrade] Add field `note_originator` to table `contact_note`');
+            }
+
+            // add field `note_date`
+            if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_date')) {
+                $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_note` ADD `note_date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `note_originator`";
+                $this->app['db']->query($SQL);
+                $this->app['monolog']->addInfo('[Contact Upgrade] Add field `note_date` to table `contact_note`');
+            }
+
 
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);

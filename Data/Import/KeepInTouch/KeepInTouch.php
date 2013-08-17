@@ -116,6 +116,14 @@ class KeepInTouch
         }
     }
 
+    /**
+     * Get the KeepInTouch record for the given KIT ID.
+     * This function preprocess the data for the later import
+     *
+     * @param integer $kit_id
+     * @throws \Exception
+     * @return boolean|Ambigous <unknown, multitype:multitype: string unknown >
+     */
     public function getKITrecord($kit_id)
     {
         try {
@@ -330,6 +338,13 @@ class KeepInTouch
         }
     }
 
+    /**
+     * Get the KeepInTouch protocol entries for the given KIT ID
+     *
+     * @param integer $kit_id
+     * @throws \Exception
+     * @return multitype:multitype:unknown
+     */
     public function getProtocol($kit_id)
     {
         try {
@@ -345,6 +360,34 @@ class KeepInTouch
                     $protocols[] = $protocol;
                 }
                 return $protocols;
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Get all KeepInTouch memos for the given KIT ID
+     *
+     * @param integer $kit_id
+     * @throws \Exception
+     * @return multitype:multitype:unknown
+     */
+    public function getMemos($kit_id)
+    {
+        try {
+            $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_kit_contact_memos` WHERE `contact_id`='$kit_id' AND `memo_status`='statusActive'";
+            $results = $this->app['db']->fetchAll($SQL);
+            $memos = array();
+            if (is_array($results)) {
+                foreach ($results as $result) {
+                    $memo = array();
+                    foreach ($result as $key => $value) {
+                        $memo[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                    }
+                    $memos[] = $memo;
+                }
+                return $memos;
             }
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
