@@ -68,26 +68,17 @@ class Address
         INDEX `contact_id` (`contact_id` ASC) ,
         INDEX `country_code_idx` (`address_country_code` ASC) ,
         INDEX `address_type_idx` (`address_type` ASC) ,
-        INDEX `address_status_idx` (`address_status` ASC) ,
-        CONSTRAINT `$foreign_key_1`
+        CONSTRAINT
             FOREIGN KEY (`contact_id` )
             REFERENCES `$table_contact` (`contact_id` )
-            ON DELETE CASCADE
-            ON UPDATE CASCADE,
-        CONSTRAINT `$foreign_key_2`
+            ON DELETE CASCADE,
+        CONSTRAINT
             FOREIGN KEY (`address_country_code` )
             REFERENCES `$table_country` (`country_code` )
-            ON DELETE CASCADE
             ON UPDATE CASCADE,
-        CONSTRAINT `$foreign_key_3`
+        CONSTRAINT
             FOREIGN KEY (`address_type` )
             REFERENCES `$table_address_type` (`address_type_name` )
-            ON DELETE CASCADE
-            ON UPDATE CASCADE,
-        CONSTRAINT `$foreign_key_4`
-            FOREIGN KEY (`address_status` )
-            REFERENCES `$table_contact` (`contact_status` )
-            ON DELETE CASCADE
             ON UPDATE CASCADE
         )
     COMMENT='The contact address table'

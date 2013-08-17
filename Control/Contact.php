@@ -28,6 +28,8 @@ use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Control\Helper\ContactCategory;
 use phpManufaktur\Contact\Control\Helper\ContactTag;
 use phpManufaktur\Contact\Data\Contact\TagType;
+use phpManufaktur\Contact\Data\Contact\Person;
+use phpManufaktur\Contact\Data\Contact\Protocol;
 
 class Contact extends ContactParent
 {
@@ -43,6 +45,8 @@ class Contact extends ContactParent
     protected $Overview = null;
     protected $ContactCategory = null;
     protected $ContactTag = null;
+    protected $PersonData = null;
+    protected $ProtocolData = null;
 
     protected static $ContactBlocks = array(
         'contact' => array(
@@ -87,6 +91,8 @@ class Contact extends ContactParent
         $this->Overview = new Overview($this->app);
         $this->ContactCategory = new ContactCategory($this->app);
         $this->ContactTag = new ContactTag($this->app);
+        $this->PersonData = new Person($this->app);
+        $this->ProtocolData = new Protocol($this->app);
     }
 
     /**
@@ -644,6 +650,9 @@ class Contact extends ContactParent
             // all complete - now we refresh the OVERVIEW
             $this->Overview->refresh($contact_id);
 
+            // contact protocol
+            $this->ProtocolData->addInfo(self::$contact_id, 'Contact successfull inserted.');
+
             // COMMIT TRANSACTION
             $this->app['db']->commit();
 
@@ -1026,6 +1035,9 @@ class Contact extends ContactParent
                 $this->Overview->refresh($contact_id);
             }
 
+            // contact protocol
+            $this->ProtocolData->addInfo($contact_id, 'Contact successfull updated.');
+
             // commit transaction
             $this->app['db']->commit();
 
@@ -1048,5 +1060,46 @@ class Contact extends ContactParent
             throw new ContactException($e);
         }
     }
+
+    /**
+     * Check if the desired contact login already existst. Optionally exclude the
+     * given contact id from the check
+     *
+     * @param integer $contact_login
+     * @param integer $exclude_contact_id
+     * @throws \Exception
+     * @return boolean
+     */
+    public function existsLogin($contact_login, $exclude_contact_id=null)
+    {
+        return $this->ContactData->existsLogin($contact_login. $exclude_contact_id);
+    }
+
+    /**
+     * Get the Person ID for the given Contact ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     * @return integer Person ID
+     */
+    public function getPersonIDbyContactID($contact_id)
+    {
+        return $this->PersonData->getPersonIDbyContactID($contact_id);
+    }
+
+    /**
+     * Insert a protocol entry. Set actual date and actual user if possible.
+     *
+     * @param integer $contact_id
+     * @param string $protocol_text
+     * @param string $protocol_date
+     * @param string $protocol_originator
+     * @param integer reference $protocol_id
+     */
+    public function addProtocolInfo($contact_id, $protocol_text, $protocol_date='0000-00-00 00:00:00', $protocol_originator='SYSTEM', &$protocol_id=-1)
+    {
+        $this->ProtocolData->addInfo($contact_id, $protocol_text, $protocol_date, $protocol_originator, $protocol_id);
+    }
+
 }
 

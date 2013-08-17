@@ -75,7 +75,6 @@ class ContactPerson extends ContactParent
                         $person_data[$key] = '';
                         break;
                     case 'person_birthday':
-                    case 'person_contact_since':
                         $person_data[$key] = '0000-00-00 00:00:00';
                         break;
                     case 'person_status':

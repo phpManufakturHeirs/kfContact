@@ -52,8 +52,6 @@ class Category
         `category_timestamp` TIMESTAMP,
         PRIMARY KEY (`category_id`),
         INDEX `contact_id` (`contact_id` ASC, `category_name` ASC) ,
-        INDEX `category_name_idx` (`category_name` ASC) ,
-        INDEX `contact_id_idx` (`contact_id` ASC) ,
         CONSTRAINT `$foreign_key_1`
             FOREIGN KEY (`contact_id` )
             REFERENCES `$table_contact` (`contact_id` )
@@ -62,7 +60,6 @@ class Category
             FOREIGN KEY (`category_name` )
             REFERENCES `$table_category` (`category_type_name` )
             ON DELETE CASCADE
-            ON UPDATE CASCADE
         )
     COMMENT='The category table for the contacts'
     ENGINE=InnoDB

@@ -142,6 +142,8 @@ return array(
         => 'Beschreibung',
     'Description (translated)'
         => 'Beschreibung (Übersetzung)',
+    'Detected a KeepInTouch installation (Release: %release%) with %count% active or locked contacts.'
+        => 'Es wurde eine KeepInTouch Installation (Release: %release%) mit %count% aktiven oder gesperrten Kontakten gefunden.',
     'doc'
         => 'Dr.',
 
@@ -170,6 +172,8 @@ return array(
 
     'Identifier'
         => 'Bezeichner',
+    'Import contacts from KeepInTouch (KIT)'
+        => 'Kontakte aus KeepInTouch (KIT) importieren',
     "Inserted the new contact with the ID %contact_id%."
         => 'Es wurde ein neuer Kontakt mit der ID %contact_id% hinzugefügt',
     'Intern'
@@ -230,6 +234,8 @@ return array(
         => 'Kurzbezeichnung',
     'Short name (translated)'
         => 'Kurzbezeichnung (Übersetzung)',
+    'Start import from KeepInTouch'
+        => 'Den Import aus KeepInTouch starten',
     'Street'
         => 'Straße',
 
@@ -311,6 +317,8 @@ return array(
         => "Die Aktualisierungsfunktion hat den Datensatz <b>nicht</b> aktualisiert und keinen Grund dafür mitgeteilt.",
     'The zip %zip% is not valid!'
         => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
+    'There exists no KeepInTouch installation at the parent CMS!'
+        => 'Es existiert keine KeepInTouch Installation auf dem übergeordneten Content Management System!',
     'Title'
         => 'Titel',
     'title_id'

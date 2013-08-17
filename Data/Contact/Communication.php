@@ -58,19 +58,12 @@ class Communication
       `communication_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
       PRIMARY KEY (`communication_id`) ,
       INDEX `contact_id` (`contact_id` ASC) ,
-      INDEX `communication_status_idx` (`communication_status` ASC) ,
       INDEX `communication_usage_idx` (`communication_usage` ASC) ,
       INDEX `communication_type_idx` (`communication_type` ASC) ,
       CONSTRAINT `$foreign_key_1`
         FOREIGN KEY (`contact_id` )
         REFERENCES `$table_contact` (`contact_id` )
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-      CONSTRAINT `$foreign_key_2`
-        FOREIGN KEY (`communication_status` )
-        REFERENCES `$table_contact` (`contact_status` )
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
+        ON DELETE CASCADE,
       CONSTRAINT `$foreign_key_3`
         FOREIGN KEY (`communication_usage` )
         REFERENCES `$table_communication_usage` (`communication_usage_name` )

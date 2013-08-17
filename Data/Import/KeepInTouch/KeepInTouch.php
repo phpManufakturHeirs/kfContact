@@ -134,6 +134,9 @@ class KeepInTouch
                 foreach ($address_ids as $address_id) {
                     $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_kit_contact_address` WHERE `address_id`='$address_id'";
                     $address = $this->app['db']->fetchAssoc($SQL);
+                    if (!isset($address['address_id'])) {
+                        continue;
+                    }
                     if (isset($origin['contact_address_standard']) && ($origin['contact_address_standard'] == $address_id)) {
                         $address['is_default'] = true;
                     }
@@ -152,6 +155,8 @@ class KeepInTouch
                     list($type, $email) = explode('|', $email_item);
                     if (isset($origin['contact_email_standard']) && ($origin['contact_email_standard'] == $i)) {
                         $usage = 'PRIMARY';
+                        // this is also the login !!!
+                        $contact['login'] = strtolower(trim($email));
                     }
                     elseif ($type == 'typeCompany') {
                         $usage = 'BUSINESS';
@@ -318,10 +323,29 @@ class KeepInTouch
                     $contact['categories'][] = $identifier;
                 }
             }
+            // return the contact array
+            return $contact;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 
-            echo "<pre>";
-            print_r($contact);
-            echo "</pre>";
+    public function getProtocol($kit_id)
+    {
+        try {
+            $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_kit_contact_protocol` WHERE `contact_id`='$kit_id' AND `protocol_status`='statusActive'";
+            $results = $this->app['db']->fetchAll($SQL);
+            $protocols = array();
+            if (is_array($results)) {
+                foreach ($results as $result) {
+                    $protocol = array();
+                    foreach ($result as $key => $value) {
+                        $protocol[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                    }
+                    $protocols[] = $protocol;
+                }
+                return $protocols;
+            }
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

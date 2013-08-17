@@ -82,11 +82,6 @@ class Overview
           FOREIGN KEY (`contact_name` )
           REFERENCES `$table_contact` (`contact_name` )
           ON DELETE CASCADE
-          ON UPDATE CASCADE,
-        CONSTRAINT `$foreign_key_3`
-          FOREIGN KEY (`contact_status` )
-          REFERENCES `$table_contact` (`contact_status` )
-          ON DELETE CASCADE
           ON UPDATE CASCADE
         )
     COMMENT='Summary/Overview over all contacts'

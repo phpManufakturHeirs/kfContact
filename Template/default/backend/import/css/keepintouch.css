@@ -7,4 +7,7 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 */
 
-
+.red {
+  color: #da251d;
+  background-color: transparent;
+}

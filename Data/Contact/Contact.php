@@ -58,6 +58,7 @@ class Contact
         `contact_name` VARCHAR(128) NOT NULL DEFAULT '',
         `contact_login` VARCHAR(64) NOT NULL DEFAULT '',
         `contact_type` ENUM('PERSON', 'COMPANY') NOT NULL DEFAULT 'PERSON',
+        `contact_since` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
         `contact_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `contact_timestamp` TIMESTAMP,
         PRIMARY KEY (`contact_id`),

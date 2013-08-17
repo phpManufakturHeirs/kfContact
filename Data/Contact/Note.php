@@ -44,11 +44,11 @@ class Note
 
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-    		`note_id` INT(11) NOT NULL AUTO_INCREMENT,
+            `note_id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `note_title` VARCHAR(255) NOT NULL DEFAULT '',
-    		`note_type` ENUM('TEXT', 'HTML') NOT NULL DEFAULT 'TEXT',
-    		`note_content` TEXT NOT NULL,
+            `note_type` ENUM('TEXT', 'HTML') NOT NULL DEFAULT 'TEXT',
+            `note_content` TEXT NOT NULL,
         `note_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `note_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
         PRIMARY KEY (`note_id`) ,
@@ -57,7 +57,6 @@ class Note
             FOREIGN KEY (`contact_id` )
             REFERENCES `$table_contact` (`contact_id` )
             ON DELETE CASCADE
-            ON UPDATE CASCADE
         )
     COMMENT='The notes for the contact table'
     ENGINE=InnoDB
@@ -154,9 +153,9 @@ EOD;
             $TextOnly = (isset($data['note_type']) && ($data['note_type'] === 'HTML')) ? false : true;
             foreach ($data as $key => $value) {
                 if (($key == 'note_id') || ($key == 'note_timestamp')) continue;
-            		if ($TextOnly && ($key === 'note_content')) {
-            			$value = strip_tags($value);
-            		}
+                    if ($TextOnly && ($key === 'note_content')) {
+                        $value = strip_tags($value);
+                    }
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             $this->app['db']->insert(self::$table_name, $insert);
@@ -208,7 +207,7 @@ EOD;
     public function delete($note_id)
     {
         try {
-            $this->app['db']->update(self::$table_name, array('note_status' => 'DELETED'), array('note_id' => $address_id));
+            $this->app['db']->update(self::$table_name, array('note_status' => 'DELETED'), array('note_id' => $note_id));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

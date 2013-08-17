@@ -100,7 +100,6 @@ class ContactCompany extends ContactParent
     {
         // enshure that the contact_id isset
         $data['contact_id'] = $contact_id;
-
         if (!$this->validate($data)) {
             return false;
         }

@@ -61,17 +61,10 @@ class Company
       `company_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
       PRIMARY KEY (`company_id`) ,
       INDEX `contact_id` (`contact_id` ASC) ,
-      INDEX `contact_status_idx` (`company_status` ASC) ,
-      CONSTRAINT `$foreign_key_1`
-        FOREIGN KEY (`company_status` )
-        REFERENCES `$table_contact` (`contact_status` )
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
       CONSTRAINT `$foreign_key_2`
         FOREIGN KEY (`contact_id` )
         REFERENCES `$table_contact` (`contact_id` )
         ON DELETE CASCADE
-        ON UPDATE CASCADE
       )
     COMMENT='The COMPANY contact table'
     ENGINE=InnoDB

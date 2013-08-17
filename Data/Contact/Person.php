@@ -57,7 +57,6 @@ class Person
         `person_last_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_nick_name` VARCHAR(128) NOT NULL DEFAULT '',
         `person_birthday` DATE NOT NULL DEFAULT '0000-00-00',
-        `person_contact_since` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
         `person_primary_address_id` INT(11) NOT NULL DEFAULT '-1',
         `person_primary_company_id` INT(11) NOT NULL DEFAULT '-1',
         `person_primary_phone_id` INT(11) NOT NULL DEFAULT '-1',
@@ -68,7 +67,6 @@ class Person
         PRIMARY KEY (`person_id`),
         INDEX `person_title` (`person_title` ASC) ,
         INDEX `contact_id` (`contact_id` ASC) ,
-        INDEX `contact_status_idx` (`person_status` ASC) ,
         CONSTRAINT `$foreign_key_1`
             FOREIGN KEY (`person_title` )
             REFERENCES `$table_title` (`title_identifier` )
@@ -78,12 +76,6 @@ class Person
             FOREIGN KEY (`contact_id` )
             REFERENCES `$table_contact` (`contact_id` )
             ON DELETE CASCADE
-            ON UPDATE CASCADE,
-        CONSTRAINT `$foreign_key_3`
-            FOREIGN KEY (`person_status` )
-            REFERENCES `$table_contact` (`contact_status` )
-            ON DELETE CASCADE
-            ON UPDATE CASCADE
         )
     COMMENT='The PERSON contact table'
     ENGINE=InnoDB
@@ -136,7 +128,6 @@ EOD;
             'person_last_name' => '',
             'person_nick_name' => '',
             'person_birthday' => '0000-00-00',
-            'person_contact_since' => '0000-00-00 00:00:00',
             'person_primary_address_id' => -1,
             'person_primary_company_id' => -1,
             'person_primary_phone_id' => -1,
@@ -301,4 +292,20 @@ EOD;
         }
     }
 
+    /**
+     * Get the Person ID for the given Contact ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     * @return integer Person ID
+     */
+    public function getPersonIDbyContactID($contact_id)
+    {
+        try {
+            $SQL = "SELECT `person_id` FROM `".self::$table_name."` WHERE `contact_id`='contact_id'";
+            return $this->app['db']->fetchColumn($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }
