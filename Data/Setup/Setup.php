@@ -29,6 +29,9 @@ use phpManufaktur\Contact\Data\Contact\Category;
 use phpManufaktur\Contact\Data\Contact\TagType;
 use phpManufaktur\Contact\Data\Contact\Tag;
 use phpManufaktur\Contact\Data\Contact\Protocol;
+use phpManufaktur\Contact\Data\Contact\ExtraType;
+use phpManufaktur\Contact\Data\Contact\ExtraCategory;
+use phpManufaktur\Contact\Data\Contact\Extra;
 
 class Setup
 {
@@ -115,6 +118,19 @@ class Setup
             $Protocol = new Protocol($app);
             $Protocol->createTable();
             $app['monolog']->addInfo('[Contact Install] Create table `contact_protocol`');
+
+            // create the tables for extra fields
+            $ExtraType = new ExtraType($app);
+            $ExtraType->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_extra_type`');
+
+            $ExtraCategory = new ExtraCategory($app);
+            $ExtraCategory->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_extra_category`');
+
+            $Extra = new Extra($app);
+            $Extra->createTable();
+            $app['monolog']->addInfo('[Contact Install] Create table `contact_extra`');
 
             // success - return message
             $app['monolog']->addInfo('[Contact Install] The setup process was successfull');

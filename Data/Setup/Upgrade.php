@@ -13,7 +13,9 @@ namespace phpManufaktur\Contact\Data\Setup;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Protocol;
-
+use phpManufaktur\Contact\Data\Contact\ExtraType;
+use phpManufaktur\Contact\Data\Contact\ExtraCategory;
+use phpManufaktur\Contact\Data\Contact\Extra;
 
 class Upgrade
 {
@@ -27,7 +29,8 @@ class Upgrade
      * @param string $column_name
      * @return boolean
      */
-    protected function columnExists($table, $column_name) {
+    protected function columnExists($table, $column_name)
+    {
         try {
             $query = $this->app['db']->query("DESCRIBE `$table`");
             while (false !== ($row = $query->fetch())) {
@@ -40,25 +43,44 @@ class Upgrade
     }
 
     /**
+     * Check if the given $table exists
+     *
+     * @param string $table
+     * @throws \Exception
+     * @return boolean
+     */
+    protected function tableExists($table)
+    {
+        try {
+            $query = $this->app['db']->query("SHOW TABLES LIKE '$table'");
+            return (false !== ($row = $query->fetch())) ? true : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
      * Release 2.0.13
      */
     protected function release_2013()
     {
         try {
-            // create protocol table
-            $Protocol = new Protocol($this->app);
-            $Protocol->createTable();
-            $this->app['monolog']->addInfo('[Contact Upgrade] Added table `Protocol`');
+            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_protocol')) {
+                // create protocol table
+                $Protocol = new Protocol($this->app);
+                $Protocol->createTable();
+                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_protocol`');
+            }
 
-            // add field contact_since in contact_contact
             if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_contact', 'contact_since')) {
+                // add field contact_since in contact_contact
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_contact` ADD `contact_since` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `contact_type`";
                 $this->app['db']->query($SQL);
                 $this->app['monolog']->addInfo('[Contact Upgrade] Add field `contact_since` to table `contact_contact`');
             }
 
-            // move data from `person_contact_since` to `contact_since`
             if ($this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_person', 'person_contact_since')) {
+                // move data from `person_contact_since` to `contact_since`
                 $SQL = "SELECT `contact_id`, `person_contact_since` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person`";
                 $results = $this->app['db']->fetchAll($SQL);
                 foreach ($results as $result) {
@@ -76,20 +98,37 @@ class Upgrade
                 $this->app['monolog']->addInfo('[Contact Upgrade] Deleted column `person_contact_since`');
             }
 
-            // add field `note_originator`
             if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_originator')) {
+                // add field `note_originator`
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_note` ADD `note_originator` VARCHAR(64) NOT NULL DEFAULT 'SYSTEM' AFTER `note_content`";
                 $this->app['db']->query($SQL);
                 $this->app['monolog']->addInfo('[Contact Upgrade] Add field `note_originator` to table `contact_note`');
             }
 
-            // add field `note_date`
             if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_date')) {
+                // add field `note_date`
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_note` ADD `note_date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `note_originator`";
                 $this->app['db']->query($SQL);
                 $this->app['monolog']->addInfo('[Contact Upgrade] Add field `note_date` to table `contact_note`');
             }
 
+            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_type')) {
+                $ExtraType = new ExtraType($this->app);
+                $ExtraType->createTable();
+                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_extra_type`');
+            }
+
+            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_category')) {
+                $ExtraCategory = new ExtraCategory($this->app);
+                $ExtraCategory->createTable();
+                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_extra_category`');
+            }
+
+            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra')) {
+                $Extra = new Extra($this->app);
+                $Extra->createTable();
+                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_extra`');
+            }
 
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);

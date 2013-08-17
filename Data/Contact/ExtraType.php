@@ -57,7 +57,7 @@ class ExtraType
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addInfo("Created table 'event_extra_type'", array(__METHOD__, __LINE__));
+            $this->app['monolog']->addInfo("Created table 'contact_extra_type'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

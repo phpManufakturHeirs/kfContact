@@ -58,7 +58,7 @@ class Extra
         `extra_time` TIME NOT NULL DEFAULT '00:00:00',
         `extra_timestamp` TIMESTAMP,
         PRIMARY KEY (`extra_id`),
-        INDEX (`group_id`)
+        INDEX (`category_id`)
         )
     COMMENT='The table for extra fields'
     ENGINE=InnoDB
@@ -68,7 +68,7 @@ class Extra
 EOD;
         try {
             $this->app['db']->query($SQL);
-            $this->app['monolog']->addInfo("Created table 'event_extra'", array(__METHOD__, __LINE__));
+            $this->app['monolog']->addInfo("Created table 'contact_extra'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
