@@ -68,7 +68,7 @@ class ContactCompany extends Dialog {
      * @param array $contact data
      * @return FormBuilder
      */
-    public function getFormFields($contact)
+    public function getFormFields($contact, &$extra_info=array())
     {
         // we need the Tag's as a simple array!
         $tags = array();
@@ -120,7 +120,7 @@ class ContactCompany extends Dialog {
         }
 
 
-        return $this->app['form.factory']->createBuilder('form')
+        $form = $this->app['form.factory']->createBuilder('form')
         ->add('contact_id', 'hidden', array(
             'data' => $contact['contact']['contact_id']
         ))
@@ -143,7 +143,7 @@ class ContactCompany extends Dialog {
             'multiple' => false,
             'required' => false,
             'label' => 'Category',
-            'data' => isset($contact['category'][0]['category_name']) ? $contact['category'][0]['category_name'] : ''
+            'data' => isset($contact['category'][0]['category_type_name']) ? $contact['category'][0]['category_type_name'] : ''
         ))
         ->add('tag', 'choice', array(
             'choices' => $this->ContactControl->getTagArrayForTwig(),
@@ -300,9 +300,44 @@ class ContactCompany extends Dialog {
             'label' => 'Note',
             'data' => isset($contact['note'][0]['note_content']) ? $contact['note'][0]['note_content'] : ''
         ));
+
+        // adding the extra fields
+        if (isset($contact['extra_fields'])) {
+            foreach ($contact['extra_fields'] as $field) {
+                $name= 'extra_'.strtolower($field['extra_type_name']);
+                switch ($field['extra_type_type']) {
+                    // determine the form type for the extra field
+                    case 'TEXT':
+                        $form_type = 'textarea';
+                        break;
+                    case 'HTML':
+                        $form_type = 'textarea';
+                        break;
+                    default:
+                        $form_type = 'text';
+                        break;
+                }
+
+                // add the form field for the extra field
+                $form->add($name, $form_type, array(
+                    'attr' => array('class' => $name),
+                    'data' => $field['extra_value'],
+                    'label' => ucfirst(str_replace('_', ' ', strtolower($field['extra_type_name']))),
+                    'required' => false
+                ));
+
+                // extra info for the Twig handling
+                $extra_info[] = array(
+                    'name' => $name,
+                    'field' => $field
+                );
+            }
+        }
+
+        return $form;
     }
 
-    public function getFormData($data)
+    public function getFormData($data, $extra_info=array())
     {
         $tags = array();
         if (isset($data['tag'])) {
@@ -312,6 +347,13 @@ class ContactCompany extends Dialog {
                     'tag_name' => $tag
                 );
             }
+        }
+
+        $extra_fields = array();
+        foreach ($extra_info as $field) {
+            $dummy = $field['field'];
+            $dummy['extra_value'] = isset($data[$field['name']]) ? $data[$field['name']] : '';
+            $extra_fields[] = $dummy;
         }
 
         return array(
@@ -325,7 +367,7 @@ class ContactCompany extends Dialog {
             'category' => array(
                 array(
                     'contact_id' => $data['contact_id'],
-                    'category_name' => isset($data['category']) ? $data['category'] : ''
+                    'category_type_name' => isset($data['category']) ? $data['category'] : ''
                 )
             ),
             'tag' => $tags,
@@ -414,7 +456,8 @@ class ContactCompany extends Dialog {
                     'note_type' => 'TEXT',
                     'note_content' => $data['note']
                 )
-            )
+            ),
+            'extra_fields' => $extra_fields
         );
     }
 
@@ -442,9 +485,21 @@ class ContactCompany extends Dialog {
      */
     public function exec($extra=null)
     {
+        // check if a contact ID isset
+        $form_request = $this->app['request']->request->get('form', array());
+        if (isset($form_request['contact_id'])) {
+            self::$contact_id = $form_request['contact_id'];
+        }
+
         $contact = $this->ContactControl->select(self::$contact_id, 'COMPANY');
+
+        if ($this->ContactControl->isMessage()) {
+            self::$message = $this->ContactControl->getMessage();
+        }
+
         // get the form fields
-        $contact_form = $this->getFormFields($contact);
+        $extra_info = array();
+        $contact_form = $this->getFormFields($contact, $extra_info);
         // get the form
         $form = $contact_form->getForm();
 
@@ -453,7 +508,7 @@ class ContactCompany extends Dialog {
             $form->bind($this->app['request']);
             if ($form->isValid()) {
                 // get the form data
-                $contact = $this->getFormData($form->getData());
+                $contact = $this->getFormData($form->getData(), $extra_info);
                 self::$contact_id = $contact['contact']['contact_id'];
 
                 if (self::$contact_id < 1) {
@@ -477,7 +532,7 @@ class ContactCompany extends Dialog {
                 // get the values of the new or updated record
                 $contact = $this->ContactControl->select(self::$contact_id, 'COMPANY');
                 // get the form fields
-                $contact_form = $this->getFormFields($contact);
+                $contact_form = $this->getFormFields($contact, $extra_info);
                 // get the form
                 $form = $contact_form->getForm();
             }
@@ -492,7 +547,8 @@ class ContactCompany extends Dialog {
                 'message' => $this->getMessage(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
-                'extra' => $extra
+                'extra' => $extra,
+                'extra_info' => $extra_info
             ));
     }
 }

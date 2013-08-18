@@ -18,6 +18,7 @@ class ExtraCategory
 
     protected $app = null;
     protected static $table_name = null;
+    protected $CategoryType = null;
 
 
     /**
@@ -29,6 +30,7 @@ class ExtraCategory
     {
         $this->app = $app;
         self::$table_name = FRAMEWORK_TABLE_PREFIX.'contact_extra_category';
+        $this->CategoryType = new CategoryType($app);
     }
 
     /**
@@ -46,9 +48,10 @@ class ExtraCategory
         `extra_category_id` INT(11) NOT NULL AUTO_INCREMENT,
         `extra_type_id` INT(11) DEFAULT NULL,
         `category_type_id` INT(11) DEFAULT NULL,
+        `category_type_name` VARCHAR(64) NOT NULL DEFAULT '',
         `extra_category_timestamp` TIMESTAMP,
         PRIMARY KEY (`extra_category_id`),
-        INDEX (`category_type_id`, `extra_type_id`),
+        INDEX (`category_type_id`, `extra_type_id`, `category_type_name`),
         CONSTRAINT
             FOREIGN KEY (`extra_type_id`)
             REFERENCES $table_extra_type(`extra_type_id`)
@@ -56,6 +59,10 @@ class ExtraCategory
         CONSTRAINT
             FOREIGN KEY (`category_type_id`)
             REFERENCES $table_category (`category_type_id`)
+            ON DELETE CASCADE,
+        CONSTRAINT
+            FOREIGN KEY (`category_type_name`)
+            REFERENCES $table_category (`category_type_name`)
             ON DELETE CASCADE
         )
     COMMENT='The table to assign extra fields to a contact category'
@@ -67,6 +74,27 @@ EOD;
         try {
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo("Created table 'contact_extra_category'", array(__METHOD__, __LINE__));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Drop table - switching check for foreign keys off before executing
+     *
+     * @throws \Exception
+     */
+    public function dropTable()
+    {
+        try {
+            $table = self::$table_name;
+            $SQL = <<<EOD
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `$table`;
+    SET foreign_key_checks = 1;
+EOD;
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo("Drop table 'contact_extra_category'", array(__METHOD__, __LINE__));
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -105,9 +133,12 @@ EOD;
     public function insert($extra_type_id, $category_type_id, &$id=null)
     {
         try {
+            // get the category type record for further information
+            $type = $this->CategoryType->select($category_type_id);
             $data = array(
                 'extra_type_id' => $extra_type_id,
-                'category_type_id' => $category_type_id
+                'category_type_id' => $category_type_id,
+                'category_type_name' => $type['category_type_name']
             );
             $this->app['db']->insert(self::$table_name, $data);
             $id = $this->app['db']->lastInsertId();

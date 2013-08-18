@@ -93,14 +93,27 @@
     </fieldset>
     
     <div class="extra_space"></div>
-     
+    
+    {% if extra_info|length > 0 %}
+      <fieldset>
+        <legend>{{ 'Extra fields'|trans }}</legend>
+        {% for extra in extra_info %}
+          {% if form[extra.name] is defined %}
+            {{ form_row(form[extra.name]) }}
+          {% endif %}
+        {% endfor %}
+      </fieldset>
+    {% endif %}
+    
+    <div class="extra_space"></div>
+    
     <fieldset>
       <legend>{{ 'Note'|trans }}</legend>
       {{ form_row(form.note_id) }}
       {{ form_row(form.note) }}
     </fieldset>
     
-    {#{ form_rest(form) }#}
+    {{ form_rest(form) }}
     
     <div class="extra_space"></div>
     <div>

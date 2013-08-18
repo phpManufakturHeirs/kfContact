@@ -128,8 +128,8 @@ return array(
 
     'Delete Tag'
         => 'Markierung (#tag) löschen',
-    'delete the category <b>%category_name%</b>'
-        => 'die Kategorie <b>%category_name%</b> löschen',
+    'delete the category <b>%category_type_name%</b>'
+        => 'die Kategorie <b>%category_type_name%</b> löschen',
     'delete the #tag <b>%tag_name%</b>'
         => 'den #tag <b>%tag_name%</b> löschen',
     'delete the title <b>%title_identifier%</b>'
@@ -153,8 +153,8 @@ return array(
         => 'Kategorien bearbeiten',
     'Edit extra fields'
         => 'Zusätzliche Felder bearbeiten',
-    'Edit the category %category_name%'
-        => 'Die Kategorie %category_name% bearbeiten',
+    'Edit the category %category_type_name%'
+        => 'Die Kategorie %category_type_name% bearbeiten',
     'Edit the <i>#tag</i> %tag_name%'
         => 'Die Markierung #tag <i>%tag_name%</i> bearbeiten',
     'Edit the title %title_identifier%'
@@ -251,12 +251,12 @@ return array(
         => 'Markierungen',
     "The Address with the ID %address_id% was successfull deleted."
         => 'Die Adresse mit der ID %address_id% wurde erfolgreich gelöscht.',
-    'The category %category_name% was successfull deleted.'
-        => 'Die Kategorie %category_name% wurde erfolgreich gelöscht.',
-    'The category %category_name% was successfull inserted.'
-        => 'Die Kategorie %category_name% wurde erfolgreich eingefügt.',
-    'The category %category_name% was successfull updated'
-        => 'Die Kategorie %category_name% wurde erfolgreich aktualisiert.',
+    'The category %category_type_name% was successfull deleted.'
+        => 'Die Kategorie %category_type_name% wurde erfolgreich gelöscht.',
+    'The category %category_type_name% was successfull inserted.'
+        => 'Die Kategorie %category_type_name% wurde erfolgreich eingefügt.',
+    'The category %category_type_name% was successfull updated'
+        => 'Die Kategorie %category_type_name% wurde erfolgreich aktualisiert.',
     'The category type with the ID %category_id% does not exists!'
         => 'Die Kategorie mit der ID %category_id% existiert nicht!',
     "The communication entry %communication% was successfull deleted."

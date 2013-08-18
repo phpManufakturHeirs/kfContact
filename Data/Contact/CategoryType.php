@@ -134,16 +134,16 @@ EOD;
     /**
      * Check if the desired CATEGORY exists
      *
-     * @param string $category_name
+     * @param string $category_type_name
      * @throws \Exception
      * @return boolean
      */
-    public function existsCategory($category_name)
+    public function existsCategory($category_type_name)
     {
         try {
-            $SQL = "SELECT `category_type_name` FROM `".self::$table_name."` WHERE `category_type_name`='$category_name'";
+            $SQL = "SELECT `category_type_name` FROM `".self::$table_name."` WHERE `category_type_name`='$category_type_name'";
             $result = $this->app['db']->fetchColumn($SQL);
-            return ($result == $category_name) ? true : false;
+            return ($result == $category_type_name) ? true : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -198,6 +198,32 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Select the desired category type by the name
+     *
+     * @param string $category_type_name
+     * @throws \Exception
+     * @return array|boolean associated array or false
+     */
+    public function selectByName($category_type_name)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `category_type_name`='$category_type_name'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            if (is_array($result) && isset($result['category_type_name'])) {
+                $category = array();
+                foreach ($result as $key => $value) {
+                    $category[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                return $category;
+            }
+            return false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 
     /**
      * Delete the desired category type ID and all associated category names from

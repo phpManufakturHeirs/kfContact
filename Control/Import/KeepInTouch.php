@@ -129,7 +129,7 @@ class KeepInTouch extends Dialog {
             'category' => array(
                 array(
                     'contact_id' => -1,
-                    'category_name' => (isset($kit['categories'][0])) ? $kit['categories'][0] : ''
+                    'category_type_name' => (isset($kit['categories'][0])) ? $kit['categories'][0] : ''
                     )
                 ),
             'tag' => $tags,

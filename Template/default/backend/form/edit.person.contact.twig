@@ -84,6 +84,17 @@
       {{ form_row(form.address_country) }}
     </fieldset>
     
+    {% if extra_info|length > 0 %}
+      <fieldset>
+        <legend>{{ 'Extra fields'|trans }}</legend>
+        {% for extra in extra_info %}
+        {% if form[extra.name] is defined %}
+          {{ form_row(form[extra.name]) }}
+        {% endif %}
+        {% endfor %}
+      </fieldset>
+    {% endif %}
+     
     <fieldset>
       <legend>{{ 'Note'|trans }}</legend>
       {{ form_row(form.note_id) }}

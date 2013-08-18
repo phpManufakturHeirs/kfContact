@@ -210,8 +210,8 @@ class CategoryEdit extends Dialog {
                 if (!is_null($this->app['request']->request->get('delete', null))) {
                     // delete the category
                     $this->CategoryTypeData->delete($category['category_type_id']);
-                    $this->setMessage('The category %category_name% was successfull deleted.',
-                        array('%category_name%' => $category['category_type_name']));
+                    $this->setMessage('The category %category_type_name% was successfull deleted.',
+                        array('%category_type_name%' => $category['category_type_name']));
                     self::$category_type_id = -1;
                 }
                 else {
@@ -222,14 +222,14 @@ class CategoryEdit extends Dialog {
                             'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : ''
                         );
                         $this->CategoryTypeData->update($data, self::$category_type_id);
-                        $this->setMessage('The category %category_name% was successfull updated',
-                            array('%category_name%' => $category['category_type_name']));
+                        $this->setMessage('The category %category_type_name% was successfull updated',
+                            array('%category_type_name%' => $category['category_type_name']));
                     }
                     else {
                         // insert a new record
-                        $category_name = str_replace(' ', '_', strtoupper(trim($category['category_type_name'])));
+                        $category_type_name = str_replace(' ', '_', strtoupper(trim($category['category_type_name'])));
                         $matches = array();
-                        if (preg_match_all('/[^A-Z0-9_$]/', $category_name, $matches)) {
+                        if (preg_match_all('/[^A-Z0-9_$]/', $category_type_name, $matches)) {
                             // name check fail
                             $this->setMessage('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
                                 array('%identifier%' => 'Category'));
@@ -237,12 +237,12 @@ class CategoryEdit extends Dialog {
                         else {
                             // insert the record
                             $data = array(
-                                'category_type_name' => $category_name,
+                                'category_type_name' => $category_type_name,
                                 'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : ''
                             );
                             $this->CategoryTypeData->insert($data, self::$category_type_id);
-                            $this->setMessage('The category %category_name% was successfull inserted.',
-                                array('%category_name%' => $category_name));
+                            $this->setMessage('The category %category_type_name% was successfull inserted.',
+                                array('%category_type_name%' => $category_type_name));
                         }
                     }
                 }

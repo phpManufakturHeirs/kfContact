@@ -29,6 +29,9 @@ use phpManufaktur\Contact\Data\Contact\Category;
 use phpManufaktur\Contact\Data\Contact\TagType;
 use phpManufaktur\Contact\Data\Contact\Tag;
 use phpManufaktur\Contact\Data\Contact\Protocol;
+use phpManufaktur\Contact\Data\Contact\Extra;
+use phpManufaktur\Contact\Data\Contact\ExtraType;
+use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 
 class Uninstall
 {
@@ -103,6 +106,18 @@ class Uninstall
             $Protocol = new Protocol($app);
             $Protocol->dropTable();
             $app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_protocol`');
+
+            $Extra = new Extra($app);
+            $Extra->dropTable();
+            $app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_extra`');
+
+            $ExtraType = new ExtraType($app);
+            $ExtraType->dropTable();
+            $app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_extra_type`');
+
+            $ExtraCategory = new ExtraCategory($app);
+            $ExtraCategory->dropTable();
+            $app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_extra_category`');
 
             $app['monolog']->addInfo('[Contact Uninstall] Dropped all tables successfull');
             return "The uninstall process was successfull!";

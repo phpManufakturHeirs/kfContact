@@ -67,7 +67,7 @@ class ContactPerson extends Dialog {
      * @param array $contact record
      * @return $form form fields
      */
-    public function getFormFields($contact)
+    public function getFormFields($contact, &$extra_info=array())
     {
         // we need the Tag's as a simple array!
         $tags = array();
@@ -160,7 +160,7 @@ class ContactPerson extends Dialog {
             'multiple' => false,
             'required' => false,
             'label' => 'Category',
-            'data' => isset($contact['category'][0]['category_name']) ? $contact['category'][0]['category_name'] : ''
+            'data' => isset($contact['category'][0]['category_type_name']) ? $contact['category'][0]['category_type_name'] : ''
         ))
 
         ->add('tag', 'choice', array(
@@ -276,10 +276,42 @@ class ContactPerson extends Dialog {
             'data' => isset($contact['note'][0]['note_content']) ? $contact['note'][0]['note_content'] : ''
         ));
 
+        // adding the extra fields
+        if (isset($contact['extra_fields'])) {
+            foreach ($contact['extra_fields'] as $field) {
+                $name= 'extra_'.strtolower($field['extra_type_name']);
+                switch ($field['extra_type_type']) {
+                    // determine the form type for the extra field
+                    case 'TEXT':
+                        $form_type = 'textarea';
+                        break;
+                    case 'HTML':
+                        $form_type = 'textarea';
+                        break;
+                    default:
+                        $form_type = 'text';
+                        break;
+                }
+
+                // add the form field for the extra field
+                $form->add($name, $form_type, array(
+                    'attr' => array('class' => $name),
+                    'data' => $field['extra_value'],
+                    'label' => ucfirst(str_replace('_', ' ', strtolower($field['extra_type_name']))),
+                    'required' => false
+                ));
+
+                // extra info for the Twig handling
+                $extra_info[] = array(
+                    'name' => $name,
+                    'field' => $field
+                );
+            }
+        }
         return $form;
     }
 
-    public function getFormData($data)
+    public function getFormData($data, $extra_info=array())
     {
         $tags = array();
         if (isset($data['tag'])) {
@@ -290,6 +322,14 @@ class ContactPerson extends Dialog {
                 );
             }
         }
+
+        $extra_fields = array();
+        foreach ($extra_info as $field) {
+            $dummy = $field['field'];
+            $dummy['extra_value'] = isset($data[$field['name']]) ? $data[$field['name']] : '';
+            $extra_fields[] = $dummy;
+        }
+
         return array(
             'contact' => array(
                 'contact_id' => $data['contact_id'],
@@ -301,7 +341,7 @@ class ContactPerson extends Dialog {
             'category' => array(
                 array(
                     'contact_id' => $data['contact_id'],
-                    'category_name' => isset($data['category']) ? $data['category'] : ''
+                    'category_type_name' => isset($data['category']) ? $data['category'] : ''
                 )
             ),
             'tag' => $tags,
@@ -369,7 +409,8 @@ class ContactPerson extends Dialog {
                     'note_type' => 'TEXT',
                     'note_content' => $data['note']
                 )
-            )
+            ),
+            'extra_fields' => $extra_fields
         );
     }
 
@@ -403,14 +444,15 @@ class ContactPerson extends Dialog {
         }
 
         // get the contact array
-        $contact = $this->ContactControl->select(self::$contact_id);
+        $contact = $this->ContactControl->select(self::$contact_id, 'PERSON');
 
         if ($this->ContactControl->isMessage()) {
             self::$message = $this->ContactControl->getMessage();
         }
 
         // get the form fields
-        $contact_form = $this->getFormFields($contact);
+        $extra_info = array();
+        $contact_form = $this->getFormFields($contact, $extra_info);
         // get the form
         $form = $contact_form->getForm();
 
@@ -420,7 +462,8 @@ class ContactPerson extends Dialog {
             if ($form->isValid()) {
                 // get the form data
                 $data = $form->getData();
-                $contact = $this->getFormData($data);
+                $contact = $this->getFormData($data, $extra_info);
+
                 if (self::$contact_id < 1) {
                     // insert a new record
                     $this->ContactControl->insert($contact, self::$contact_id);
@@ -442,7 +485,7 @@ class ContactPerson extends Dialog {
                 // get the values of the new or updated record
                 $contact = $this->ContactControl->select(self::$contact_id);
                 // get the form fields
-                $contact_form = $this->getFormFields($contact);
+                $contact_form = $this->getFormFields($contact, $extra_info);
                 // get the form
                 $form = $contact_form->getForm();
             }
@@ -451,13 +494,13 @@ class ContactPerson extends Dialog {
                 $this->setMessage('The form is not valid, please check your input and try again!');
             }
         }
-
         return $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['contact']),
             array(
                 'message' => $this->getMessage(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
-                'extra' => $extra
+                'extra' => $extra,
+                'extra_info' => $extra_info
             ));
     }
 }

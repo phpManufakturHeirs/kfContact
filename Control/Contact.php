@@ -30,6 +30,9 @@ use phpManufaktur\Contact\Control\Helper\ContactTag;
 use phpManufaktur\Contact\Data\Contact\TagType;
 use phpManufaktur\Contact\Data\Contact\Person;
 use phpManufaktur\Contact\Data\Contact\Protocol;
+use phpManufaktur\Contact\Data\Contact\Extra;
+use phpManufaktur\Contact\Data\Contact\ExtraCategory;
+use phpManufaktur\Contact\Data\Contact\ExtraType;
 
 class Contact extends ContactParent
 {
@@ -47,6 +50,9 @@ class Contact extends ContactParent
     protected $ContactTag = null;
     protected $PersonData = null;
     protected $ProtocolData = null;
+    protected $ExtraCategory = null;
+    protected $ExtraType = null;
+    protected $Extra = null;
 
     protected static $ContactBlocks = array(
         'contact' => array(
@@ -93,6 +99,10 @@ class Contact extends ContactParent
         $this->ContactTag = new ContactTag($this->app);
         $this->PersonData = new Person($this->app);
         $this->ProtocolData = new Protocol($this->app);
+        // extra fields
+        $this->Extra = new Extra($this->app);
+        $this->ExtraCategory = new ExtraCategory($this->app);
+        $this->ExtraType = new ExtraType($this->app);
     }
 
     /**
@@ -628,12 +638,22 @@ class Contact extends ContactParent
             if (isset($data['category'])) {
                 foreach ($data['category'] as $category) {
                     if (!is_array($category)) continue;
-                    if (!$this->ContactCategory->insert($category, self::$contact_id)) {
+                    $category_id = -1;
+                    if (!$this->ContactCategory->insert($category, self::$contact_id, $category_id)) {
                         // something went wrong, rollback
                         $this->app['db']->rollback();
                         return false;
                     }
+                    if ($category_id > 0) {
+                        // check if extra fields are associated to the category
+                        $category_type_id = $this->ContactCategory->selectCategoryTypeID($category_id);
+                        $field_ids = $this->ExtraCategory->selectTypeIDByCategoryTypeID($category_type_id);
+                        foreach ($field_ids as $field_id) {
+                            $this->Extra->insert($contact_id, $category_id, $category['category_type_name'], $field_id);
+                        }
+                    }
                 }
+
             }
 
             if (isset($data['tag'])) {
@@ -968,7 +988,7 @@ class Contact extends ContactParent
                     if (!is_array($new_category)) continue;
                     $checked = false;
                     foreach ($old['category'] as $old_category) {
-                        if ($old_category['category_name'] == $new_category['category_name']) {
+                        if ($old_category['category_type_name'] == $new_category['category_type_name']) {
                             $checked = true;
                             break;
                         }
@@ -980,6 +1000,12 @@ class Contact extends ContactParent
                         $this->ContactCategory->insert($new_category, $contact_id, $category_id, $has_inserted);
                         if ($has_inserted) {
                             $data_changed = true;
+                            // check if extra fields are associated to the category
+                            $category_type_id = $this->ContactCategory->selectCategoryTypeID($category_id);
+                            $field_ids = $this->ExtraCategory->selectTypeIDByCategoryTypeID($category_type_id);
+                            foreach ($field_ids as $field_id) {
+                                $this->Extra->insert($contact_id, $category_id, $new_category['category_type_name'], $field_id);
+                            }
                         }
                         continue;
                     }
@@ -988,7 +1014,7 @@ class Contact extends ContactParent
                     $checked = false;
                     foreach ($data['category'] as $new_category) {
                         if (!is_array($new_category)) continue;
-                        if ($new_category['category_name'] == $old_category['category_name']) {
+                        if ($new_category['category_type_name'] == $old_category['category_type_name']) {
                             $checked = true;
                             break;
                         }
@@ -997,7 +1023,15 @@ class Contact extends ContactParent
                         // delete the category
                         $this->ContactCategory->delete($old_category['category_id']);
                         $data_changed = true;
+                        // check if extra fields are asscociated to the category
+                        $this->Extra->delete($contact_id, $old_category['category_id']);
                     }
+                }
+            }
+
+            if (isset($data['extra_fields'])) {
+                foreach ($data['extra_fields'] as $field) {
+                    $this->Extra->update($field['extra_id'], $field);
                 }
             }
 

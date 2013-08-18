@@ -25,6 +25,7 @@ class Contact
     protected $Address = null;
     protected $Category = null;
     protected $Tag = null;
+    protected $Extra = null;
 
     /**
      * Constructor
@@ -42,6 +43,7 @@ class Contact
         $this->Address = new Address($this->app);
         $this->Category = new Category($this->app);
         $this->Tag = new Tag($this->app);
+        $this->Extra = new Extra($this->app);
     }
 
     /**
@@ -312,10 +314,20 @@ EOD;
                     empty($contact['note'])) {
                     $contact['note'] = array();
                 }
-
                 // add the CATEGORIES
                 if ((false === ($contact['category'] = $this->Category->selectByContactID($contact_id))) || empty($contact['category'])) {
                     $contact['category'] = array();
+                }
+
+                // add the EXTRA FIELDS
+                if (isset($contact['category'][0]['category_id'])) {
+                    if ((false === ($contact['extra_fields'] = $this->Extra->select($contact_id, $contact['category'][0]['category_id']))) ||
+                        empty($contact['extra_fields'])) {
+                        $contact['extra_fields'] = array();
+                    }
+                }
+                else {
+                    $contact['extra_fields'] = array();
                 }
 
                 // add the TAGS

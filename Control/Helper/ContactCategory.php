@@ -41,15 +41,15 @@ class ContactCategory extends ContactParent
 
     public function validate(&$category_data, $contact_data=array(), $option=array())
     {
-        if (!isset($category_data['category_name']) || empty($category_data['category_name'])) {
+        if (!isset($category_data['category_type_name']) || empty($category_data['category_type_name'])) {
             $this->setMessage('Missing the key %field_name%, it must always set and not empty!',
-                array('%field_name%' => 'category_name'));
+                array('%field_name%' => 'category_type_name'));
             return false;
         }
 
-        if (!$this->CategoryType->existsCategory($category_data['category_name'])) {
+        if (!$this->CategoryType->existsCategory($category_data['category_type_name'])) {
             $this->setMessage("The category %category% does not exists!",
-                array('%category%' => $category_data['category_name']));
+                array('%category%' => $category_data['category_type_name']));
             return false;
         }
         return true;
@@ -70,7 +70,7 @@ class ContactCategory extends ContactParent
         $data['contact_id'] = $contact_id;
         $has_inserted = false;
 
-        if (is_null($data['category_name']) || !isset($data['category_name']) || empty($data['category_name'])) {
+        if (is_null($data['category_type_name']) || !isset($data['category_type_name']) || empty($data['category_type_name'])) {
             // nothing to do ...
             return true;
         }
@@ -87,6 +87,11 @@ class ContactCategory extends ContactParent
     public function delete($category_id)
     {
         $this->Category->delete($category_id);
+    }
+
+    public function selectCategoryTypeID($category_id)
+    {
+        return $this->Category->selectCategoryTypeID($category_id);
     }
 
 }

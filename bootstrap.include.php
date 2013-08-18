@@ -9,7 +9,7 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-// not really needed but make error control more easy ...
+// not really needed but make syntax control more easy ...
 global $app;
 
 // scan the /Locale directory and add all available languages
