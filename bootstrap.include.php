@@ -66,7 +66,7 @@ $app->match('/admin/contact/simple/category/list',
 // Category Edit
 $app->match('/admin/contact/simple/category/edit',
     'phpManufaktur\Contact\Control\Dialog\Simple\CategoryEdit::controller');
-$app->match('/admin/contact/simple/category/edit/id/{category_id}',
+$app->match('/admin/contact/simple/category/edit/id/{category_type_id}',
     'phpManufaktur\Contact\Control\Dialog\Simple\CategoryEdit::controller');
 
 // Title List
@@ -78,6 +78,16 @@ $app->match('/admin/contact/simple/title/edit',
     'phpManufaktur\Contact\Control\Dialog\Simple\TitleEdit:controller');
 $app->match('/admin/contact/simple/title/edit/id/{title_id}',
     'phpManufaktur\Contact\Control\Dialog\Simple\TitleEdit:controller');
+
+// Extra fields List
+$app->match('/admin/contact/simple/extra/list',
+    'phpManufaktur\Contact\Control\Dialog\Simple\ExtraFieldList::controller');
+
+// Extra fields Edit
+$app->match('/admin/contact/simple/extra/edit',
+    'phpManufaktur\Contact\Control\Dialog\Simple\ExtraFieldEdit::controller');
+$app->match('/admin/contact/simple/extra/edit/id/{type_id}',
+    'phpManufaktur\Contact\Control\Dialog\Simple\ExtraFieldEdit::controller');
 
 // Import from KeepInTouch
 $app->match('/admin/contact/import/keepintouch',

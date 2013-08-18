@@ -151,6 +151,8 @@ return array(
         => 'Graf',
     'Edit categories'
         => 'Kategorien bearbeiten',
+    'Edit extra fields'
+        => 'Zusätzliche Felder bearbeiten',
     'Edit the category %category_name%'
         => 'Die Kategorie %category_name% bearbeiten',
     'Edit the <i>#tag</i> %tag_name%'

@@ -85,6 +85,21 @@ input#form_city {
   text-align: left;
   width: 300px;
 }
+#form_delete input {
+  float: left;
+  width: 15px;
+  padding: 0;
+  margin: 3px 10px 2px 0;
+}
+#form_delete label {
+  clear: none;
+  float: left;
+  text-align: left;
+  width: 225px;
+  margin: 1px 0 2px 0;
+  padding: 0;
+}
+
 .edit_button {
   float: left;
   width: 20px;

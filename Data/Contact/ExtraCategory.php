@@ -40,21 +40,22 @@ class ExtraCategory
     {
         $table = self::$table_name;
         $table_extra_type = FRAMEWORK_TABLE_PREFIX.'contact_extra_type';
-        $table_category = FRAMEWORK_TABLE_PREFIX.'contact_category';
+        $table_category = FRAMEWORK_TABLE_PREFIX.'contact_category_type';
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `extra_category_id` INT(11) NOT NULL AUTO_INCREMENT,
         `extra_type_id` INT(11) DEFAULT NULL,
-        `category_id` INT(11) DEFAULT NULL,
+        `category_type_id` INT(11) DEFAULT NULL,
         `extra_category_timestamp` TIMESTAMP,
         PRIMARY KEY (`extra_category_id`),
+        INDEX (`category_type_id`, `extra_type_id`),
         CONSTRAINT
             FOREIGN KEY (`extra_type_id`)
             REFERENCES $table_extra_type(`extra_type_id`)
             ON DELETE CASCADE,
         CONSTRAINT
-            FOREIGN KEY (`category_id`)
-            REFERENCES $table_category (`category_id`)
+            FOREIGN KEY (`category_type_id`)
+            REFERENCES $table_category (`category_type_id`)
             ON DELETE CASCADE
         )
     COMMENT='The table to assign extra fields to a contact category'
@@ -71,5 +72,66 @@ EOD;
         }
     }
 
+    /**
+     * Return all available Type IDs for the given $category_type_id
+     *
+     * @param integer $category_type_id
+     * @throws \Exception
+     * @return array with ExtraType IDs
+     */
+    public function selectTypeIDByCategoryTypeID($category_type_id)
+    {
+        try {
+            $SQL = "SELECT `extra_type_id` FROM `".self::$table_name."` WHERE `category_type_id`='$category_type_id'";
+            $results = $this->app['db']->fetchAll($SQL);
+            $types = array();
+            foreach ($results as $type) {
+                $types[] = $type['extra_type_id'];
+            }
+            return $types;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 
+    /**
+     * Insert a new record
+     *
+     * @param integer $extra_type_id
+     * @param integer $category_type_id
+     * @param reference integer $id
+     * @throws \Exception
+     */
+    public function insert($extra_type_id, $category_type_id, &$id=null)
+    {
+        try {
+            $data = array(
+                'extra_type_id' => $extra_type_id,
+                'category_type_id' => $category_type_id
+            );
+            $this->app['db']->insert(self::$table_name, $data);
+            $id = $this->app['db']->lastInsertId();
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Delete a specified ExtraType ID for the given $category_type_id
+     *
+     * @param integer $extra_type_id
+     * @param integer $category_type_id
+     * @throws \Exception
+     */
+    public function deleteTypeByCategoryTypeID($extra_type_id, $category_type_id)
+    {
+        try {
+            $this->app['db']->delete(self::$table_name, array(
+                'extra_type_id' => $extra_type_id,
+                'category_type_id' => $category_type_id
+            ));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }
