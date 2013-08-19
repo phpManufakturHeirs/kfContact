@@ -9,11 +9,12 @@
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
-namespace phpManufaktur\Contact\Control\Import;
+namespace phpManufaktur\Contact\Control\Import\KeepInTouch;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Import\KeepInTouch\KeepInTouch as KeepInTouchData;
 use phpManufaktur\Contact\Control\Contact;
+use phpManufaktur\Contact\Control\Import\Dialog;
 
 class KeepInTouch extends Dialog {
 

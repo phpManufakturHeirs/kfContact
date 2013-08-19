@@ -91,8 +91,8 @@ $app->match('/admin/contact/simple/extra/edit/id/{type_id}',
 
 // Import from KeepInTouch
 $app->match('/admin/contact/import/keepintouch',
-    'phpManufaktur\Contact\Control\Import\KeepInTouch::start');
+    'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::start');
 $app->match('/admin/contact/import/keepintouch/start',
-    'phpManufaktur\Contact\Control\Import\KeepInTouch::start');
+    'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::start');
 $app->match('/admin/contact/import/keepintouch/execute',
-    'phpManufaktur\Contact\Control\Import\KeepInTouch::execute');
+    'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::execute');
