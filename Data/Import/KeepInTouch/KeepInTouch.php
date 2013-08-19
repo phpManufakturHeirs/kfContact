@@ -367,28 +367,56 @@ class KeepInTouch
     }
 
     /**
-     * Get all KeepInTouch memos for the given KIT ID
+     * Get KeepInTouch note for the given KIT ID
      *
      * @param integer $kit_id
      * @throws \Exception
      * @return multitype:multitype:unknown
      */
-    public function getMemos($kit_id)
+    public function getNote($kit_id)
     {
         try {
-            $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_kit_contact_memos` WHERE `contact_id`='$kit_id' AND `memo_status`='statusActive'";
-            $results = $this->app['db']->fetchAll($SQL);
-            $memos = array();
-            if (is_array($results)) {
-                foreach ($results as $result) {
-                    $memo = array();
-                    foreach ($result as $key => $value) {
-                        $memo[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
-                    }
-                    $memos[] = $memo;
-                }
-                return $memos;
+            $SQL = "SELECT `contact_note` FROM `".CMS_TABLE_PREFIX."mod_kit_contact` WHERE `contact_id`='$kit_id'";
+            $note_id = $this->app['db']->fetchColumn($SQL);
+            if ($note_id < 1) {
+                return false;
             }
+            $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_kit_contact_memos` WHERE `memo_id`='$note_id' AND `memo_status`='statusActive'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            if (!isset($result['memo_id'])) {
+                return false;
+            }
+            $note = array();
+            foreach ($result as $key => $value) {
+                $note[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            return $note;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function getAdditionalFields()
+    {
+        try {
+            $SQL = "SELECT `cfgAdditionalFields` FROM `".CMS_TABLE_PREFIX."mod_kit_config`";
+            $definition = $this->app['db']->fetchColumn($SQL);
+            $fields = array();
+            if (!empty($definition)) {
+                $def_array = explode(',', $definition);
+                foreach ($def_array as $entry) {
+                    if (false === strpos($entry, '|')) {
+                        continue;
+                    }
+                    list($number, $label) = explode('|', $entry);
+                    $fields[] = array(
+                        'number' => $number,
+                        'label' => $label,
+                        'name' => $this->getIdentifierValue($label)
+                    );
+                }
+            }
+            return $fields;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
