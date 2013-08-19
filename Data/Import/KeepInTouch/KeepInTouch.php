@@ -15,6 +15,7 @@ use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Title;
 use phpManufaktur\Contact\Data\Contact\TagType;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
+use phpManufaktur\Contact\Data\Contact\Contact;
 
 class KeepInTouch
 {
@@ -22,6 +23,7 @@ class KeepInTouch
     protected $Title = null;
     protected $TagType = null;
     protected $CategoryType = null;
+    protected $Contact = null;
 
     /**
      * Constructor
@@ -32,11 +34,34 @@ class KeepInTouch
         $this->Title = new Title($app);
         $this->TagType = new TagType($app);
         $this->CategoryType = new CategoryType($app);
+        $this->Contact = new Contact($app);
     }
 
+    /**
+     * Check if the given $table exists
+     *
+     * @param string $table
+     * @throws \Exception
+     * @return boolean
+     */
+    protected function tableExists($table)
+    {
+        try {
+            $query = $this->app['db']->query("SHOW TABLES LIKE '$table'");
+            return (false !== ($row = $query->fetch())) ? true : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Check if table mod_kit_contact exists
+     *
+     * @return boolean
+     */
     public function existsKIT()
     {
-        return file_exists(CMS_PATH.'/modules/kit/class.interface.php');
+        return $this->tableExists(CMS_TABLE_PREFIX.'mod_kit_contact');
     }
 
     /**
@@ -88,8 +113,9 @@ class KeepInTouch
      * @param string $string
      * @return Ambigous <string, mixed>
      */
-    protected function createIdentifier($string)
+    public function createIdentifier($string)
     {
+        $string = strtoupper($string);
         $identifier = '';
         for ($i=0; $i < strlen($string); $i++) {
             if (false !== strpos('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_ ÄÖÜß', $string[$i])) {
@@ -106,7 +132,7 @@ class KeepInTouch
      * @throws \Exception
      * @return string
      */
-    protected function getIdentifierValue($identifier)
+    public function getIdentifierValue($identifier)
     {
         try {
             $SQL = "SELECT `array_value` FROM `".CMS_TABLE_PREFIX."mod_kit_contact_array_cfg` WHERE `array_identifier`='$identifier'";
@@ -417,6 +443,32 @@ class KeepInTouch
                 }
             }
             return $fields;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * If possible, return the Contact ID for the given KeepInTouch ID
+     *
+     * @param integer $kit_id
+     * @throws \Exception
+     * @return Ambigous <boolean, unknown>
+     */
+    public function getContactID4KeepInTouchID($kit_id)
+    {
+        try {
+            $SQL = "SELECT `contact_email`, `contact_email_standard` FROM `".CMS_TABLE_PREFIX."mod_kit_contact` WHERE `contact_id`='$kit_id'";
+            $kit = $this->app['db']->fetchAssoc($SQL);
+            if (false !== strpos($kit['contact_email'], ',')) {
+                $dummy = explode(',', $kit['contact_email']);
+                list($type, $email) = explode('|', $dummy[$kit['contact_email_standard']]);
+            }
+            else {
+                list($type, $email) = explode('|', $kit['contact_email']);
+            }
+            $contact = $this->Contact->selectLogin($email);
+            return (isset($contact['contact_id'])) ? $contact['contact_id'] : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }

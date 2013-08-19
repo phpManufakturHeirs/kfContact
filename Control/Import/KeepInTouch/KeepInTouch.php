@@ -313,6 +313,8 @@ class KeepInTouch extends Dialog {
 
             if ($prompt_success) {
                 $this->setMessage('The import from KeepInTouch was successfull finished.');
+                $this->app['monolog']->addInfo('The import from KeepInTouch was successfull finished.');
+
                 $this->app['session']->remove('KIT_IMPORT_CONTACTS_DETECTED');
                 $this->app['session']->remove('KIT_IMPORT_CONTACTS_IMPORTED');
             }

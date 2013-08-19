@@ -40,10 +40,10 @@ class TagType
         $table = self::$table_name;
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-    		`tag_type_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `tag_type_id` INT(11) NOT NULL AUTO_INCREMENT,
         `tag_name` VARCHAR(32) NOT NULL DEFAULT '',
         `tag_description` VARCHAR(255) NOT NULL DEFAULT '',
-    		`tag_timestamp` TIMESTAMP,
+        `tag_timestamp` TIMESTAMP,
         PRIMARY KEY (`tag_type_id`),
         UNIQUE (`tag_name`)
         )

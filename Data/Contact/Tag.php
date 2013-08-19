@@ -44,10 +44,10 @@ class Tag
         $foreign_key_2 = self::$table_name.'_ibfk_2';
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
-    		`tag_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `tag_id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `tag_name` VARCHAR(32) NOT NULL DEFAULT '',
-    		`tag_timestamp` TIMESTAMP,
+        `tag_timestamp` TIMESTAMP,
         PRIMARY KEY (`tag_id`),
         INDEX (`contact_id`, `tag_name`),
         CONSTRAINT `$foreign_key_1`
