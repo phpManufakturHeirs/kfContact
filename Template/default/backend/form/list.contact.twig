@@ -18,8 +18,8 @@
     {#  
         The pagination serve a automatic 1 2 3 ... 17 18 19 pagination and 
         navigation for the table if it contain more rows than specified in: 
-        /Contact/Control/Dialog/Simple/SimpleList.json 
-        Changes here must be also done at the footer of the table!
+        /Contact/Template/default/backend/simple/list.contact.json 
+        Changes here must be also done at the footer of the table !!!
      #}  
     {% include '@phpManufaktur/Contact/Template/default/backend/form/pagination.twig' with {
       currentPage: current_page,
@@ -34,7 +34,7 @@
           {# 
               Enable an automatic ordering of the table by the columns, just
               clicking at the head of the column. Default order is specified in:
-              /Contact/Control/Dialog/Simple/SimpleList.json
+              /Contact/Template/default/backend/simple/list.contact.json 
            #}
           {% set order_by_str = order_by|join(',') %}
           {% for head in list.0|keys %}
@@ -50,7 +50,14 @@
                   {% set head_class = head_class ~ ' active desc' %}
                 {% endif %}
               {% endif %}  
-              <th class="{{ head_class }}"><a href="{{ FRAMEWORK_URL ~ route.pagination|replace({'{page}':current_page, '{order}':head, '{direction}':head_order}) }}">{{ head|trans }}</a></th>  
+              <th class="{{ head_class }}">
+                {% if 'active asc' in head_class %}
+                  <i class="icon-caret-down icon-padding"></i>
+                {% elseif 'active desc' in head_class %}
+                  <i class="icon-caret-up icon-padding"></i>
+                {% endif %}
+                <a href="{{ FRAMEWORK_URL ~ route.pagination|replace({'{page}':current_page, '{order}':head, '{direction}':head_order}) }}" title="{% if head_order == 'asc' %}{{ 'Click to sort column ascending'|trans }}{% else %}{{ 'Click to sort column descending'|trans }}{% endif %}">{{ head|trans }}</a>
+              </th>  
             {% endif %}
           {% endfor %}
         </tr>

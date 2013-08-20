@@ -7,6 +7,10 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 */
 
+.icon-padding {
+  padding: 0 3px 0 3px;
+}
+
 table {
     width: 100%;
 }
