@@ -304,6 +304,14 @@ EOD;
         }
     }
 
+    /**
+     * Count the records in the table Overview
+     *
+     * @param array $status flags, i.e. array('ACTIVE','LOCKED')
+     * @param array $type flags, i.e. array('PERSON')
+     * @throws \Exception
+     * @return integer number of records
+     */
     public function count($status=null, $type=null)
     {
         try {
@@ -351,6 +359,18 @@ EOD;
         }
     }
 
+    /**
+     * Select a list from table Overview in paging view
+     *
+     * @param integer $limit_from start selection at position
+     * @param integer $rows_per_page select max. rows per page
+     * @param array $select_status tags, i.e. array('ACTIVE','LOCKED')
+     * @param array $order_by fields to order by
+     * @param string $order_direction 'ASC' (default) or 'DESC'
+     * @param array $select_type tags. i.e. array('PERSON') to limit to PERSON
+     * @throws \Exception
+     * @return array selected records
+     */
     public function selectList($limit_from, $rows_per_page, $select_status=null, $order_by=null, $order_direction='ASC', $select_type=null)
     {
         try {
@@ -413,6 +433,15 @@ EOD;
         }
     }
 
+    /**
+     * Select contacts for the given tags and return a array for the usage in Twig
+     *
+     * @param array $tag_names to select for
+     * @param string $status default is 'ACTIVE'
+     * @param string $status_operator default = '='
+     * @throws \Exception
+     * @return array contacts
+     */
     public function getContactsByTagsForTwig($tag_names, $status='ACTIVE', $status_operator='=')
     {
         try {
