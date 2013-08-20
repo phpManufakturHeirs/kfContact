@@ -81,6 +81,10 @@ return array(
         => 'Mobilfunk',
     'City'
         => 'Stadt',
+    'Click to sort column ascending'
+        => 'Anklicken um die Spalte aufsteigend zu sortieren',
+    'Click to sort column descending'
+        => 'Anklicken um die Spalte absteigend zu sortieren',
     'Communication'
         => 'Kommunikation',
     'communication_email'
