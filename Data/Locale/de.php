@@ -26,9 +26,11 @@ return array(
     'active'
         => 'Aktiv',
     'Add a new category'
-        => 'Eine neue Kategorie hinzufügen',
+        => 'Eine neue Kategorie erstellen',
+    'Add a new extra field'
+        => 'Ein neues Zusatzfeld erstellen',
     'Add a new tag'
-        => 'Eine neue Markierung hinzufügen',
+        => 'Eine neue Markierung (#tag) erstellen',
     'Add a new title'
         => 'Einen neuen Titel hinzufügen',
     'Additional'
