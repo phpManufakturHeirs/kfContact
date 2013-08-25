@@ -228,6 +228,24 @@ EOD;
         }
     }
 
+    public function select($communication_id)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `communication_id`='$communication_id'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            if (!isset($result['communication_id'])) {
+                return false;
+            }
+            $communication = array();
+            foreach ($result as $key => $value) {
+                $communication[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            return $communication;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
     /**
      * Return all COMMUNICATION records for the given Contact ID
      *

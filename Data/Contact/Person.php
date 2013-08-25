@@ -216,6 +216,7 @@ EOD;
         }
     }
 
+
     /**
      * Get the field name by the desired contact type (ADDRESS, NOTE ...)
      *

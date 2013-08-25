@@ -197,6 +197,32 @@ EOD;
         }
     }
 
+    /**
+     * Return a address record for the giben address_id.
+     *
+     * @param integer $address_id
+     * @throws \Exception
+     * @return multitype:unknown |boolean
+     */
+    public function select($address_id)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `address_id`='$address_id'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            if (is_array($result)) {
+                $address = array();
+                foreach ($result as $key => $value) {
+                    $address[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                return $address;
+            }
+            else {
+                return false;
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 
     /**
      * Mark the given $address_id as deleted but does not delete the record physically

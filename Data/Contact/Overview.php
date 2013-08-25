@@ -18,6 +18,11 @@ class Overview
 
     protected $app = null;
     protected static $table_name = null;
+    protected $Contact = null;
+    protected $Address = null;
+    protected $Company = null;
+    protected $Person = null;
+    protected $Communication = null;
 
     /**
      * Constructor
@@ -28,6 +33,11 @@ class Overview
     {
         $this->app = $app;
         self::$table_name = FRAMEWORK_TABLE_PREFIX.'contact_overview';
+        $this->Contact = new Contact($app);
+        $this->Address = new Address($app);
+        $this->Company = new Company($app);
+        $this->Person = new Person($app);
+        $this->Communication = new Communication($app);
     }
 
     /**
@@ -130,47 +140,40 @@ EOD;
     {
         try {
             // get the contact block
-            $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_contact` WHERE `contact_id`='$contact_id'";
-            $contact = $this->app['db']->fetchAssoc($SQL);
+            $contact = $this->Contact->select($contact_id);
 
             if ($contact['contact_type'] == 'COMPANY') {
                 // get the company
-                $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_company` WHERE `contact_id`='$contact_id'";
-                $company = $this->app['db']->fetchAssoc($SQL);
+                $company = $this->Company->selectByContactID($contact_id);
+                $company = $company[0];
 
                 if ($company['company_primary_address_id'] > 0) {
-                    $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_address` WHERE `address_id`='{$company['company_primary_address_id']}'";
-                    $address = $this->app['db']->fetchAssoc($SQL);
+                    $address = $this->Address->select($company['company_primary_address_id']);
                 }
 
                 if ($company['company_primary_email_id'] > 0) {
-                    $SQL = "SELECT `communication_value` FROM `".FRAMEWORK_TABLE_PREFIX."contact_communication` WHERE `communication_id`='{$company['company_primary_email_id']}'";
-                    $email = $this->app['db']->fetchColumn($SQL);
+                    $email = $this->Communication->selectValue($company['company_primary_email_id']);
                 }
 
                 if ($company['company_primary_phone_id'] > 0) {
-                    $SQL = "SELECT `communication_value` FROM `".FRAMEWORK_TABLE_PREFIX."contact_communication` WHERE `communication_id`='{$company['company_primary_email_id']}'";
-                    $phone = $this->app['db']->fetchColumn($SQL);
+                    $phone = $this->Communication->selectValue($company['company_primary_phone_id']);
                 }
             }
             else {
                 // get the person
-                $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_person` WHERE `contact_id`='$contact_id'";
-                $person = $this->app['db']->fetchAssoc($SQL);
+                $person = $this->Person->selectByContactID($contact_id);
+                $person = $person[0];
 
                 if ($person['person_primary_address_id'] > 0) {
-                    $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_address` WHERE `address_id`='{$person['person_primary_address_id']}'";
-                    $address = $this->app['db']->fetchAssoc($SQL);
+                    $address = $this->Address->select($person['person_primary_address_id']);
                 }
 
                 if ($person['person_primary_email_id'] > 0) {
-                    $SQL = "SELECT `communication_value` FROM `".FRAMEWORK_TABLE_PREFIX."contact_communication` WHERE `communication_id`='{$person['person_primary_email_id']}'";
-                    $email = $this->app['db']->fetchColumn($SQL);
+                    $email = $this->Communication->selectValue($person['person_primary_email_id']);
                 }
 
                 if ($person['person_primary_phone_id'] > 0) {
-                    $SQL = "SELECT `communication_value` FROM `".FRAMEWORK_TABLE_PREFIX."contact_communication` WHERE `communication_id`='{$person['person_primary_phone_id']}'";
-                    $phone = $this->app['db']->fetchColumn($SQL);
+                    $phone = $this->Communication->selectValue($person['person_primary_phone_id']);
                 }
             }
 
