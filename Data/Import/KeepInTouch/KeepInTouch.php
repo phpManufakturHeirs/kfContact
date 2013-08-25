@@ -154,10 +154,14 @@ class KeepInTouch
     {
         try {
             $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_kit_contact` WHERE `contact_id`='$kit_id'";
-            $origin = $this->app['db']->fetchAssoc($SQL);
-            if (!isset($origin['contact_id'])) {
+            $result = $this->app['db']->fetchAssoc($SQL);
+            if (!isset($result['contact_id'])) {
                 // contact_id does not exists!
                 return false;
+            }
+            $origin = array();
+            foreach ($result as $key => $value) {
+            	$origin[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
             }
             $contact = array();
             $contact['origin'] = $origin;
@@ -167,11 +171,15 @@ class KeepInTouch
                 $address_ids = explode(',', $origin['contact_address_ids']);
                 foreach ($address_ids as $address_id) {
                     $SQL = "SELECT * FROM `".CMS_TABLE_PREFIX."mod_kit_contact_address` WHERE `address_id`='$address_id'";
-                    $address = $this->app['db']->fetchAssoc($SQL);
-                    if (!isset($address['address_id'])) {
+                    $result = $this->app['db']->fetchAssoc($SQL);
+                    if (!isset($result['address_id'])) {
                         continue;
                     }
-                    if (isset($origin['contact_address_standard']) && ($origin['contact_address_standard'] == $address_id)) {
+                	$address = array();
+		            foreach ($result as $key => $value) {
+		            	$address[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+		            }
+		            if (isset($origin['contact_address_standard']) && ($origin['contact_address_standard'] == $address_id)) {
                         $address['is_default'] = true;
                     }
                     else {
