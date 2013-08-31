@@ -47,6 +47,8 @@ return array(
         => 'PLZ',
     'Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.'
         => 'Erlaubte Zeichen für den %identifier% Bezeichner sind A-Z, 0-9 und der Unterstrich. Der Bezeichner wird stets in Großbuchstaben umgewandelt.',
+    'AT'
+        => 'Österreich',
     "At minimum you must specify a street, a city or a zip code for a valid address"
         => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
 
@@ -81,6 +83,8 @@ return array(
         => 'Zur Übersicht wechseln',
     'Cell'
         => 'Mobilfunk',
+    'CH'
+        => 'Schweiz',
     'City'
         => 'Stadt',
     'Click to sort column ascending'
@@ -132,6 +136,8 @@ return array(
     'Customer'
         => 'Kunde',
 
+    'DE'
+        => 'Deutschland',
     'Delete Tag'
         => 'Markierung (#tag) löschen',
     'delete the category <b>%category_type_name%</b>'
@@ -174,6 +180,8 @@ return array(
         => 'Frau',
     'First name'
         => 'Vorname',
+    'FR'
+        => 'Frankreich',
 
     'Gender'
         => 'Geschlecht',
