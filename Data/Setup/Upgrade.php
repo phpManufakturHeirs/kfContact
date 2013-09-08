@@ -16,6 +16,7 @@ use phpManufaktur\Contact\Data\Contact\Protocol;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\Extra;
+use phpManufaktur\Contact\Data\Contact\Message;
 
 class Upgrade
 {
@@ -129,6 +130,13 @@ class Upgrade
                 $Extra->createTable();
                 $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_extra`');
             }
+
+            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_message')) {
+                $Message = new Message($this->app);
+                $Message->createTable();
+                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_message`');
+            }
+
 
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
