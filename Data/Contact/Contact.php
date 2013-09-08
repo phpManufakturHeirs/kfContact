@@ -61,7 +61,7 @@ class Contact
         `contact_login` VARCHAR(64) NOT NULL DEFAULT '',
         `contact_type` ENUM('PERSON', 'COMPANY') NOT NULL DEFAULT 'PERSON',
         `contact_since` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-        `contact_status` ENUM('ACTIVE', 'LOCKED', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
+        `contact_status` ENUM('ACTIVE', 'LOCKED', 'PENDING', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
         `contact_timestamp` TIMESTAMP,
         PRIMARY KEY (`contact_id`),
         UNIQUE INDEX `contact_login` (`contact_login` ASC) ,
