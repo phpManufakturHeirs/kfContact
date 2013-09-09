@@ -226,7 +226,7 @@ EOD;
      * @param integer $message_id
      * @throws \Exception
      */
-    public function update($data, $note_id)
+    public function update($data, $message_id)
     {
         try {
             $update = array();

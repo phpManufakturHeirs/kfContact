@@ -182,17 +182,17 @@ EOD;
      * @param integer $contact_login
      * @param integer $exclude_contact_id
      * @throws \Exception
-     * @return boolean
+     * @return boolean|integer false if not exists otherwise the contact ID
      */
     public function existsLogin($contact_login, $exclude_contact_id=null)
     {
         try {
-            $SQL = "SELECT `contact_login` FROM `".self::$table_name."` WHERE `contact_login`='$contact_login'";
+            $SQL = "SELECT `contact_id` FROM `".self::$table_name."` WHERE `contact_login`='$contact_login'";
             if (is_numeric($exclude_contact_id)) {
                 $SQL .= " AND `contact_id` != '$exclude_contact_id'";
             }
             $result = $this->app['db']->fetchColumn($SQL);
-            return ($result == $contact_login) ? true : false;
+            return ($result > 0) ? $result : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
