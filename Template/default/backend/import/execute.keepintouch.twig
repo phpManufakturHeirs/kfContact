@@ -6,9 +6,9 @@
   @copyright 2013 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 #}
-{% extends template_file('@framework', 'body.twig') %}
+{% extends getTemplateFile('@framework', 'body.twig') %}
 {% block stylesheet %}
-	{{ parent() }}
+    {{ parent() }}
   <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/backend/import/css/keepintouch.css" media="screen, projection" />
 {% endblock %}
 
@@ -17,9 +17,9 @@
   {% if message|length > 0 %}
     <div class="message">{{ message }}</div>
   {% endif %}
-  
+
   {% if app.translator.locale == 'de' %}
-    {# german translation #} 
+    {# german translation #}
     <p>Es existieren <b>{{ contacts.detected }}</b> KeepInTouch Datensätze, die in kitFramework <i>Contact</i> importiert werden können.</p>
     <p>Tatsächlich wurden <b>{{ contacts.imported }}</b> Datensätze importiert. Hierbei wurden alle Datensätze übersprungen, die bereits in <i>Contact</i> existieren.</p>
   {% else %}
@@ -27,5 +27,5 @@
     <p>Detected <b>{{ contacts.detected }}</b> KeepInTouch contact records which can imported to kitFramework <i>Contact</i>.</p>
     <p>Really imported where <b>{{ contacts.imported }}</b>. Skipped records which are already exists.</p>
   {% endif %}
-    
+
 {% endblock content %}

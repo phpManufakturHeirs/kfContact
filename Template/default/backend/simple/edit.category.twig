@@ -6,7 +6,7 @@
   @copyright 2013 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 #}
-{% extends template_file('@framework', 'body.twig') %}
+{% extends getTemplateFile('@framework', 'body.twig') %}
 {% block stylesheet %}
     {{ parent() }}
   <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/backend/simple/css/contact.css" media="screen, projection" />
