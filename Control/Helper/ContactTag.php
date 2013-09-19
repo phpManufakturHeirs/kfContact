@@ -102,9 +102,42 @@ class ContactTag extends ContactParent
         return true;
     }
 
+    /**
+     * Delete the given $tag_name from the TAG table
+     *
+     * @param string $tag_name
+     */
     public function delete($tag_name)
     {
         $this->Tag->delete($tag_name);
+    }
+
+    /**
+     * Check if the given $tag_name exists in the TAGTYPE table
+     *
+     * @param string $tag_name
+     * @param integer $exclude_tag_id
+     */
+    public function existsTag($tag_name, $exclude_tag_id=null)
+    {
+        return $this->TagType->existsTag($tag_name, $exclude_tag_id);
+    }
+
+    /**
+     * Create a new Tag Type with the given name and description
+     *
+     * @param string $tag_name
+     * @param string $tag_description
+     * @param integer reference $tag_type_id
+     * @return integer new tag type ID
+     */
+    public function createTag($tag_name, $tag_description='', &$tag_type_id=-1) {
+        $data = array(
+            'tag_name' => $tag_name,
+            'tag_description' => $tag_description
+        );
+        $this->TagType->insert($data, $tag_type_id);
+        return $tag_type_id;
     }
 
 }

@@ -1110,6 +1110,31 @@ class Contact extends ContactParent
     }
 
     /**
+     * Check if the given $tag_name already exists
+     *
+     * @param string $tag_name
+     * @param integer $exclude_tag_id
+     * @return boolean
+     */
+    public function existsTagName($tag_name, $exclude_tag_id=null)
+    {
+        return $this->ContactTag->existsTag($tag_name, $exclude_tag_id);
+    }
+
+    /**
+     * Create a new Tag Type with the given name and description
+     *
+     * @param string $tag_name
+     * @param string $tag_description
+     * @param integer reference $tag_type_id
+     * @return integer new tag type ID
+     */
+    public function createTagName($tag_name, $tag_description='', &$tag_type_id=-1)
+    {
+        return $this->ContactTag->createTag($tag_name, $tag_description, $tag_type_id);
+    }
+
+    /**
      * Get the Person ID for the given Contact ID
      *
      * @param integer $contact_id
@@ -1133,6 +1158,11 @@ class Contact extends ContactParent
     public function addProtocolInfo($contact_id, $protocol_text, $protocol_date='0000-00-00 00:00:00', $protocol_originator='SYSTEM', &$protocol_id=-1)
     {
         $this->ProtocolData->addInfo($contact_id, $protocol_text, $protocol_date, $protocol_originator, $protocol_id);
+    }
+
+    public function setContactTag($tag_name, $contact_id)
+    {
+        $this->ContactTag->insert(array('tag_name' => $tag_name), $contact_id);
     }
 
 }
