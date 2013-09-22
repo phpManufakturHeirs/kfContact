@@ -494,7 +494,7 @@ class ContactPerson extends Dialog {
                 $this->setMessage('The form is not valid, please check your input and try again!');
             }
         }
-        return $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['contact']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['contact']),
             array(
                 'message' => $this->getMessage(),
                 'form' => $form->createView(),

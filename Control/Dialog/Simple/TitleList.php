@@ -62,7 +62,7 @@ class TitleList extends Dialog {
     {
         $titles = $this->TitleData->selectAll();
 
-        return $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['list']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['list']),
             array(
                 'message' => $this->getMessage(),
                 'route' => self::$options['route'],

@@ -542,7 +542,7 @@ class ContactCompany extends Dialog {
             }
         }
 
-        return $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['contact']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['contact']),
             array(
                 'message' => $this->getMessage(),
                 'form' => $form->createView(),

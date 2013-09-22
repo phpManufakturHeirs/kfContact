@@ -71,7 +71,7 @@ class KeepInTouch extends Dialog {
         $this->app['session']->set('KIT_IMPORT_CONTACTS_DETECTED', $records);
         $this->app['session']->set('KIT_IMPORT_CONTACTS_IMPORTED', 0);
 
-        return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/import/start.keepintouch.twig'),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile('@phpManufaktur/Contact/Template', 'backend/import/start.keepintouch.twig'),
             array(
                 'message' => $this->getMessage(),
                 'records' => $records,
@@ -323,7 +323,7 @@ class KeepInTouch extends Dialog {
             $this->setMessage('There exists no KeepInTouch installation at the parent CMS!');
         }
 
-        return $this->app['twig']->render($this->app['utils']->templateFile('@phpManufaktur/Contact/Template', 'backend/import/execute.keepintouch.twig'),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile('@phpManufaktur/Contact/Template', 'backend/import/execute.keepintouch.twig'),
             array(
                 'message' => $this->getMessage(),
                 'contacts' => array(

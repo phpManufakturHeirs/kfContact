@@ -61,7 +61,7 @@ class ContactList extends Dialog {
 
         try {
             // search for the config file in the template directory
-            $cfg_file = $this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['settings'], '', true);
+            $cfg_file = $this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['settings'], '', true);
             // get the columns to show in the list
             $cfg = $this->app['utils']->readJSON($cfg_file);
             self::$columns = isset($cfg['columns']) ? $cfg['columns'] : $this->ContactListControl->getColumns();
@@ -122,7 +122,7 @@ class ContactList extends Dialog {
 
         $list = $this->ContactListControl->getList(self::$current_page, self::$rows_per_page, self::$select_status, self::$max_pages, $order_by, $order_direction, self::$select_type);
 
-        return $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['list']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['list']),
             array(
                 'message' => $this->getMessage(),
                 'list' => $list,

@@ -174,7 +174,7 @@ class ExtraFieldEdit extends Dialog {
             }
         }
 
-        return $this->app['twig']->render($this->app['utils']->templateFile(
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             self::$options['template']['namespace'],
             self::$options['template']['edit']),
             array(

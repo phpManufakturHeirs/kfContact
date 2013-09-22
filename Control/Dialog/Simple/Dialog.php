@@ -42,7 +42,7 @@ class Dialog {
      */
     public function setMessage($message, $params=array())
     {
-        self::$message .= $this->app['twig']->render($this->app['utils']->templateFile(self::$options['template']['namespace'], self::$options['template']['message']),
+        self::$message .= $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['message']),
             array('message' => $this->app['translator']->trans($message, $params)));
     }
 
