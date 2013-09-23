@@ -6,6 +6,10 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.14**
+
+* prepared beta test
+
 **2.0.13**
 
 * added import for installed KeepInTouch 0.72+

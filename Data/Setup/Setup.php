@@ -139,7 +139,8 @@ class Setup
 
             // success - return message
             $app['monolog']->addInfo('[Contact Install] The setup process was successfull');
-            return "The setup was successfull!";
+            return $app['translator']->trans('Successfull installed the extension %extension%.',
+                array('%extension%' => 'Contact'));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

@@ -6,29 +6,42 @@
   "vendor":"phpManufaktur",
   "type":"application",
   "path":"\/extension\/phpmanufaktur\/phpManufaktur\/Contact",
-  "namespace": "phpManufaktur\\Contact",
+  "namespace":"phpManufaktur\\Contact",
   "link":{
     "about":"\/contact\/about"
   },
-  "release": {
-    "number" : "2.0.13",
-    "date" : "2013-09-06"
+  "release":{
+    "number":"2.0.14",
+    "date":"2013-09-23",
+    "status":"beta"
   },
-  "description": {
-    "en": {
+  "description":{
+    "en":{
       "title":"Contact management for kitFramework",
-      "short": "Contact management for kitFramework",
-      "long": "Contact management database for general use in kitFramework",
-      "url": "https:\/\/kit2.phpmanufaktur.de"
+      "short":"Contact management for kitFramework",
+      "long":"Contact management database for general use in kitFramework",
+      "url":"https:\/\/kit2.phpmanufaktur.de"
     }
   },
-  "require": {
-    "framework": {
-      "release": "0.21"
+  "require":{
+    "framework":{
+      "release":"0.26"
+    },
+    "extension":{
+        "phpmanufaktur":{
+            "Basic":{
+                "release":"0.35"
+            }
+        }
     }
+  },
+  "setup": {
+      "install":"\/admin\/contact\/setup",
+      "update":"\/admin\/contact\/update",
+      "uninstall":"\/admin\/contact\/uninstall"
   },
   "license":"MIT License",
-  "download": {
+  "download":{
     "availability":"public",
     "agreement":"free",
     "github":{

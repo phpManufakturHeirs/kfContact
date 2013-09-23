@@ -18,7 +18,7 @@ use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\Extra;
 use phpManufaktur\Contact\Data\Contact\Message;
 
-class Upgrade
+class Update
 {
     protected $app = null;
     protected $db_config = null;
@@ -70,14 +70,14 @@ class Upgrade
                 // create protocol table
                 $Protocol = new Protocol($this->app);
                 $Protocol->createTable();
-                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_protocol`');
+                $this->app['monolog']->addInfo('[Contact Update] Create table `contact_protocol`');
             }
 
             if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_contact', 'contact_since')) {
                 // add field contact_since in contact_contact
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_contact` ADD `contact_since` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `contact_type`";
                 $this->app['db']->query($SQL);
-                $this->app['monolog']->addInfo('[Contact Upgrade] Add field `contact_since` to table `contact_contact`');
+                $this->app['monolog']->addInfo('[Contact Update] Add field `contact_since` to table `contact_contact`');
             }
 
             if ($this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_person', 'person_contact_since')) {
@@ -92,49 +92,49 @@ class Upgrade
                         array('contact_id' => $result['contact_id'])
                     );
                 }
-                $this->app['monolog']->addInfo('[Contact Upgrade] Moved all `person_contact_since` dates to `contact_since`');
+                $this->app['monolog']->addInfo('[Contact Update] Moved all `person_contact_since` dates to `contact_since`');
                 // delete column
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_person` DROP `person_contact_since`";
                 $this->app['db']->query($SQL);
-                $this->app['monolog']->addInfo('[Contact Upgrade] Deleted column `person_contact_since`');
+                $this->app['monolog']->addInfo('[Contact Update] Deleted column `person_contact_since`');
             }
 
             if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_originator')) {
                 // add field `note_originator`
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_note` ADD `note_originator` VARCHAR(64) NOT NULL DEFAULT 'SYSTEM' AFTER `note_content`";
                 $this->app['db']->query($SQL);
-                $this->app['monolog']->addInfo('[Contact Upgrade] Add field `note_originator` to table `contact_note`');
+                $this->app['monolog']->addInfo('[Contact Update] Add field `note_originator` to table `contact_note`');
             }
 
             if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_date')) {
                 // add field `note_date`
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_note` ADD `note_date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `note_originator`";
                 $this->app['db']->query($SQL);
-                $this->app['monolog']->addInfo('[Contact Upgrade] Add field `note_date` to table `contact_note`');
+                $this->app['monolog']->addInfo('[Contact Update] Add field `note_date` to table `contact_note`');
             }
 
             if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_type')) {
                 $ExtraType = new ExtraType($this->app);
                 $ExtraType->createTable();
-                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_extra_type`');
+                $this->app['monolog']->addInfo('[Contact Update] Create table `contact_extra_type`');
             }
 
             if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_category')) {
                 $ExtraCategory = new ExtraCategory($this->app);
                 $ExtraCategory->createTable();
-                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_extra_category`');
+                $this->app['monolog']->addInfo('[Contact Update] Create table `contact_extra_category`');
             }
 
             if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra')) {
                 $Extra = new Extra($this->app);
                 $Extra->createTable();
-                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_extra`');
+                $this->app['monolog']->addInfo('[Contact Update] Create table `contact_extra`');
             }
 
             if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_message')) {
                 $Message = new Message($this->app);
                 $Message->createTable();
-                $this->app['monolog']->addInfo('[Contact Upgrade] Create table `contact_message`');
+                $this->app['monolog']->addInfo('[Contact Update] Create table `contact_message`');
             }
 
 
@@ -144,7 +144,7 @@ class Upgrade
     }
 
     /**
-     * Execute all available upgrade steps
+     * Execute all available update steps
      *
      * @param Application $app
      * @throws \Exception
@@ -159,12 +159,14 @@ class Upgrade
             $this->db_config = $this->app['utils']->readConfiguration(FRAMEWORK_PATH . '/config/doctrine.cms.json');
 
             // Release 2.0.13
-            $this->app['monolog']->addInfo('[Contact Upgrade] Execute upgrade for release 2.0.13');
+            $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.13');
             $this->release_2013();
 
             // prompt message and return
-            $this->app['monolog']->addInfo('[Contact Upgrade] The upgrade process was successfull.');
-            return "The upgrade process was successfull!";
+            $this->app['monolog']->addInfo('[Contact Update] The update process was successfull.');
+
+            return $app['translator']->trans('Successfull updated the extension %extension%.',
+                array('%extension%' => 'Contact'));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

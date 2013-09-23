@@ -126,8 +126,9 @@ class Uninstall
 
 
             $app['monolog']->addInfo('[Contact Uninstall] Dropped all tables successfull');
-            return "The uninstall process was successfull!";
 
+            return $app['translator']->trans('Successfull uninstalled the extension %extension%.',
+                array('%extension%' => 'Contact'));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

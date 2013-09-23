@@ -17,11 +17,11 @@ $app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale');
 // scan the /Locale/Custom directory and add all available languages
 $app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale/Custom');
 
-// Setup, Upgrade and Uninstall
+// Setup, Update and Uninstall
 $app->get('/admin/contact/setup',
     'phpManufaktur\Contact\Data\Setup\Setup::exec');
-$app->get('/admin/contact/upgrade',
-    'phpManufaktur\Contact\Data\Setup\Upgrade::exec');
+$app->get('/admin/contact/update',
+    'phpManufaktur\Contact\Data\Setup\Update::exec');
 $app->get('/admin/contact/uninstall',
     'phpManufaktur\Contact\Data\Setup\Uninstall::exec');
 
