@@ -12,7 +12,6 @@
 namespace phpManufaktur\Contact\Data\Contact;
 
 use Silex\Application;
-use phpManufaktur\Basic\Data\Security\Users as frameworkUsers;
 
 class Protocol
 {
