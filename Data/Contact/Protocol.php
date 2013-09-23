@@ -126,17 +126,9 @@ EOD;
         if ($protocol_date == '0000-00-00 00:00:00') {
             $protocol_date = date('Y-m-d H:i:s');
         }
-        if ($protocol_originator == 'SYSTEM') {
-            $token = $this->app['security']->getToken();
-            if (!is_null($token)) {
-                // get user by token
-                $user = $token->getUser();
-                // get the user record
-                $frameworkUsers = new frameworkUsers($this->app);
-                if (false !== ($user_data = $frameworkUsers->selectUser($user->getUsername()))) {
-                    $protocol_originator = (isset($user_data['displayname']) && ! empty($user_data['displayname'])) ? $user_data['displayname'] : $user_data['username'];
-                }
-            }
+        if (($protocol_originator == 'SYSTEM') && $this->app['account']->isAuthenticated()) {
+            // if the user is authenticated use his displayname instead
+            $protocol_originator = $this->app['account']->getDisplayName();
         }
 
         $data = array(
