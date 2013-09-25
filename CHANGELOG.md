@@ -6,6 +6,11 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.15**
+
+* fixed wrong template path
+* changed secured access to users
+
 **2.0.14**
 
 * prepared beta test
