@@ -1,4 +1,4 @@
-## kfContact ##
+## Contact for kitFramework ##
 
 (c) 2013 phpManufaktur by Ralf Hertsch
 
@@ -6,16 +6,21 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
-**2.0.15**
+**2.0.16** - 2013-10-08
+
+* fixed a strong typo which caused the returning of a wrong contact ID 
+* added `issetContactTag()` to contact control 
+
+**2.0.15** - 2013-09-25
 
 * fixed wrong template path
 * changed secured access to users
 
-**2.0.14**
+**2.0.14** - 2013-09-23
 
 * prepared beta test
 
-**2.0.13**
+**2.0.13** - 2013-09-06
 
 * added import for installed KeepInTouch 0.72+
 * added handling for extra fields
