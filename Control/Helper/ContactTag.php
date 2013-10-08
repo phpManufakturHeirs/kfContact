@@ -140,4 +140,15 @@ class ContactTag extends ContactParent
         return $tag_type_id;
     }
 
+    /**
+     * Check if a tag is already set for the given contact ID
+     *
+     * @param string $tag_name
+     * @param integer $contact_id
+     */
+    public function issetContactTag($tag_name, $contact_id)
+    {
+        return $this->Tag->isTagAlreadySet($tag_name, $contact_id);
+    }
+
 }
