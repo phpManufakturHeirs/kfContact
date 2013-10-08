@@ -1102,11 +1102,11 @@ class Contact extends ContactParent
      * @param integer $contact_login
      * @param integer $exclude_contact_id
      * @throws \Exception
-     * @return boolean
+     * @return integer|boolean
      */
     public function existsLogin($contact_login, $exclude_contact_id=null)
     {
-        return $this->ContactData->existsLogin($contact_login. $exclude_contact_id);
+        return $this->ContactData->existsLogin($contact_login, $exclude_contact_id);
     }
 
     /**
@@ -1160,9 +1160,26 @@ class Contact extends ContactParent
         $this->ProtocolData->addInfo($contact_id, $protocol_text, $protocol_date, $protocol_originator, $protocol_id);
     }
 
+    /**
+     * Set the specified tag for the contact with the given ID
+     *
+     * @param string $tag_name
+     * @param integer $contact_id
+     */
     public function setContactTag($tag_name, $contact_id)
     {
         $this->ContactTag->insert(array('tag_name' => $tag_name), $contact_id);
+    }
+
+    /**
+     * Check if the tag name is already set for the contact ID
+     *
+     * @param string $tag_name
+     * @param integer $contact_id
+     */
+    public function issetContactTag($tag_name, $contact_id)
+    {
+        return $this->ContactTag->issetContactTag($tag_name, $contact_id);
     }
 
 }
