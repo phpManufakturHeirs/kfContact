@@ -17,6 +17,7 @@ use phpManufaktur\Contact\Data\Contact\ExtraType;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\Extra;
 use phpManufaktur\Contact\Data\Contact\Message;
+use phpManufaktur\Contact\Data\Contact\Overview;
 
 class Update
 {
@@ -144,6 +145,35 @@ class Update
     }
 
     /**
+     * Release 2.0.14
+     */
+    protected function release_2014()
+    {
+        $has_changed = false;
+        if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'address_area')) {
+            // add field `adress_area`
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `address_area` VARCHAR(128) NOT NULL DEFAULT '' AFTER `address_city`";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add field `address_area` to table `contact_overview`');
+            $has_changed = true;
+        }
+        if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'address_state')) {
+            // add field `adress_area`
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `address_state` VARCHAR(128) NOT NULL DEFAULT '' AFTER `address_area`";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add field `address_state` to table `contact_overview`');
+            $has_changed = true;
+        }
+        if ($has_changed) {
+            // execute a rebuild of all addresses in the overview table
+            $this->app['monolog']->addInfo('[Contact Update] Start rebuilding the table `contact_overview`');
+            $ContactOverview = new Overview($this->app);
+            $ContactOverview->rebuildOverview();
+            $this->app['monolog']->addInfo('[Contact Update] Finished rebuilding the table `contact_overview`');
+        }
+    }
+
+    /**
      * Execute all available update steps
      *
      * @param Application $app
@@ -161,6 +191,10 @@ class Update
             // Release 2.0.13
             $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.13');
             $this->release_2013();
+
+            // Release 2.0.14
+            $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.14');
+            $this->release_2014();
 
             // prompt message and return
             $this->app['monolog']->addInfo('[Contact Update] The update process was successfull.');

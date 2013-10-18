@@ -76,6 +76,8 @@ class Overview
         `address_street` VARCHAR(128) NOT NULL DEFAULT '',
         `address_zip` VARCHAR(32) NOT NULL DEFAULT '',
         `address_city` VARCHAR(128) NOT NULL DEFAULT '',
+        `address_area` VARCHAR(128) NOT NULL DEFAULT '',
+        `address_state` VARCHAR(128) NOT NULL DEFAULT '',
         `address_country_code` VARCHAR(8) NOT NULL DEFAULT '',
         `tags` VARCHAR(512) NOT NULL DEFAULT '',
         `order_name` VARCHAR(256) NOT NULL DEFAULT '',
@@ -229,6 +231,8 @@ EOD;
                 'address_street' => isset($address['address_street']) ? $address['address_street'] : '',
                 'address_city' => isset($address['address_city']) ? $address['address_city'] : '',
                 'address_zip' => isset($address['address_zip']) ? $address['address_zip'] : '',
+                'address_area' => isset($address['address_area']) ? $address['address_area'] : '',
+                'address_state' => isset($address['address_state']) ? $address['address_state'] : '',
                 'address_country_code' => isset($address['address_country_code']) ? $address['address_country_code'] : '',
                 'order_name' => $order_name,
                 'tags' => implode(',', $tags)
