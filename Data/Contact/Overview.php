@@ -471,4 +471,85 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Search for contacts with the given search term. Multiple terms separated
+     * by a space will be concat as OR condition, but you can also use AND as as
+     * a separator to concat the terms with AND.
+     *
+     * @param string $search_term
+     * @param string $status by default 'DELETED'
+     * @param string $status_operator by default '!='
+     * @param string $order_by by default 'order_name'
+     * @param string $order_direction by default 'ASC'
+     * @throws \Exception
+     * @return Ambigous <boolean, array > return false if no hit, overview records otherwise
+     */
+    public function searchContact($search_term, $status='DELETED', $status_operator='!=', $order_by='order_name', $order_direction='ASC')
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE ";
+            $search = trim($search_term);
+            $search_array = array();
+            if (strpos($search, ' ')) {
+                $dummy = explode(' ', $search_term);
+                foreach ($dummy as $item) {
+                    $search_array[] = trim($item);
+                }
+            }
+            else {
+                $search_array[] = trim($search_term);
+            }
+            $start = true;
+            $skipped = false;
+            foreach ($search_array as $search) {
+                if (!$skipped) {
+                    if ($start) {
+                        $SQL .= "(";
+                        $start = false;
+                    }
+                    elseif (strtoupper($search) == 'AND') {
+                        $SQL .= ") AND (";
+                        $skipped = true;
+                        continue;
+                    }
+                    else {
+                        $SQL .= ") OR (";
+                    }
+                }
+                else {
+                    $skipped = false;
+                }
+                $SQL .= "`contact_name` = '$search' OR `contact_name` LIKE '$search%' OR `contact_name` LIKE '%$search%' OR "
+                    ."`contact_type`='$search' OR `person_id` = '$search' OR `person_gender` = '$search'  OR "
+                    ."`person_first_name` = '$search'  OR `person_first_name` LIKE '$search%'  OR `person_first_name` LIKE '%$search%' OR "
+                    ."`person_last_name` = '$search'  OR `person_last_name` LIKE '$search%'  OR `person_last_name` LIKE '%$search%' OR "
+                    ."`person_nick_name` = '$search'  OR `person_nick_name` LIKE '$search%'  OR `person_nick_name` LIKE '%$search%' OR "
+                    ."`person_birthday` = '$search'  OR `person_birthday` LIKE '$search%'  OR `person_birthday` LIKE '%$search%' OR "
+                    ."`company_id` = '$search' OR "
+                    ."`company_name` = '$search'  OR `company_name` LIKE '$search%'  OR `company_name` LIKE '%$search%' OR "
+                    ."`company_department` = '$search'  OR `company_department` LIKE '$search%'  OR `company_department` LIKE '%$search%' OR "
+                    ."`communication_phone` = '$search'  OR `communication_phone` LIKE '$search%'  OR `communication_phone` LIKE '%$search%' OR "
+                    ."`communication_email` = '$search'  OR `communication_email` LIKE '$search%'  OR `communication_email` LIKE '%$search%' OR "
+                    ."`address_id` = '$search' OR "
+                    ."`address_street` = '$search'  OR `address_street` LIKE '$search%'  OR `address_street` LIKE '%$search%' OR "
+                    ."`address_zip` = '$search'  OR `address_zip` LIKE '$search%'  OR `address_zip` LIKE '%$search%' OR "
+                    ."`address_city` = '$search'  OR `address_city` LIKE '$search%'  OR `address_city` LIKE '%$search%' OR "
+                    ."`address_area` = '$search'  OR `address_area` LIKE '$search%'  OR `address_area` LIKE '%$search%' OR "
+                    ."`address_state` = '$search'  OR `address_state` LIKE '$search%'  OR `address_state` LIKE '%$search%' OR "
+                    ."`address_country_code` = '$search'";
+            }
+            $SQL .= ") AND `contact_status` $status_operator '$status' ORDER BY $order_by $order_direction";
+
+            $results = $this->app['db']->fetchAll($SQL);
+
+            $contacts = array();
+            foreach ($results as $key => $value) {
+                $contacts[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            return (!empty($contacts)) ? $contacts : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }

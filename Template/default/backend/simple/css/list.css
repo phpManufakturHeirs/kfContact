@@ -63,3 +63,8 @@ tr.flop {
 .pagination li.active {
   font-weight: bold;
 }
+
+.search-container {
+  width: 100%;
+  text-align: right;
+}

@@ -15,6 +15,11 @@
       {{ 'The contact list is empty.'|trans }}
     </div>
   {% else %}
+    <div class="search-container">
+      <form action="{{ FRAMEWORK_URL ~ route.contact.search }}" method="post" >
+        <input type="text" name="search" />&nbsp;<input type="submit" value="{{ 'Search'|trans }}" />
+      </form>
+    </div>
     {#  
         The pagination serve a automatic 1 2 3 ... 17 18 19 pagination and 
         navigation for the table if it contain more rows than specified in: 

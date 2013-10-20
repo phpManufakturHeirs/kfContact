@@ -49,6 +49,10 @@ $app->match('/admin/contact/simple/contact/list',
 $app->match('/admin/contact/simple/contact/list/page/{page}',
     'phpManufaktur\Contact\Control\Dialog\Simple\ContactList::controller');
 
+// Search
+$app->match('/admin/contact/simple/search',
+    'phpManufaktur\Contact\Control\Dialog\Simple\Search::controller');
+
 // Edit Tags
 $app->match('/admin/contact/simple/tag/edit',
     'phpManufaktur\Contact\Control\Dialog\Simple\TagEdit::controller');

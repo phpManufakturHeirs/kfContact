@@ -125,6 +125,8 @@ return array(
         =>'Typ',
     "Contact insert fail, but the process does not return the reason!"
         => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
+    '%count% hits for the search term </i>%search%</i>.'
+        => '%count% Treffer für den Suchbegriff <i>%search%</i>.',
     'Country'
         => 'Land',
     'Create a new category'
@@ -217,6 +219,8 @@ return array(
 
     'Nick name'
         => 'Spitzname',
+    'No hits for the search term <i>%search%</i>!'
+        => 'Keine Treffer für den Suchbegriff <i>%search%</i>!',
     'Note'
         => 'Notiz',
 
@@ -241,9 +245,13 @@ return array(
         => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
     'Please select the contact type you want to create.'
         => 'Bitte wählen Sie den Kontakt Typ aus, den Sie erstellen möchten.',
+    'Please specify a search term!'
+        => 'Bitte geben Sie einen Suchbegriff ein!',
     'prof'
         => 'Prof.',
 
+    'Search'
+        => 'Suche',
     'Select contact type'
         => 'Kontakt Typ',
     'Short name'
