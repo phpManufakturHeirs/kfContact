@@ -488,7 +488,7 @@ EOD;
     public function searchContact($search_term, $status='DELETED', $status_operator='!=', $order_by='order_name', $order_direction='ASC')
     {
         try {
-            $SQL = "SELECT * FROM `".self::$table_name."` WHERE ";
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE (";
             $search = trim($search_term);
             $search_array = array();
             if (strpos($search, ' ')) {
@@ -513,6 +513,16 @@ EOD;
                         $skipped = true;
                         continue;
                     }
+                    elseif (strtoupper($search) == 'NOT') {
+                        $SQL .= ") AND NOT (";
+                        $skipped = true;
+                        continue;
+                    }
+                    elseif (strtoupper($search) == 'OR') {
+                        $SQL .= ") OR (";
+                        $skipped = true;
+                        continue;
+                    }
                     else {
                         $SQL .= ") OR (";
                     }
@@ -520,26 +530,26 @@ EOD;
                 else {
                     $skipped = false;
                 }
-                $SQL .= "`contact_name` = '$search' OR `contact_name` LIKE '$search%' OR `contact_name` LIKE '%$search%' OR "
-                    ."`contact_type`='$search' OR `person_id` = '$search' OR `person_gender` = '$search'  OR "
-                    ."`person_first_name` = '$search'  OR `person_first_name` LIKE '$search%'  OR `person_first_name` LIKE '%$search%' OR "
-                    ."`person_last_name` = '$search'  OR `person_last_name` LIKE '$search%'  OR `person_last_name` LIKE '%$search%' OR "
-                    ."`person_nick_name` = '$search'  OR `person_nick_name` LIKE '$search%'  OR `person_nick_name` LIKE '%$search%' OR "
-                    ."`person_birthday` = '$search'  OR `person_birthday` LIKE '$search%'  OR `person_birthday` LIKE '%$search%' OR "
+                $SQL .= "`contact_name` LIKE '%$search%' OR "
+                    ."`contact_type`= '$search' OR `person_id` = '$search' OR `person_gender` = '$search'  OR "
+                    ."`person_first_name` LIKE '%$search%' OR "
+                    ."`person_last_name` LIKE '%$search%' OR "
+                    ."`person_nick_name` LIKE '%$search%' OR "
+                    ."`person_birthday` LIKE '%$search%' OR "
                     ."`company_id` = '$search' OR "
-                    ."`company_name` = '$search'  OR `company_name` LIKE '$search%'  OR `company_name` LIKE '%$search%' OR "
-                    ."`company_department` = '$search'  OR `company_department` LIKE '$search%'  OR `company_department` LIKE '%$search%' OR "
-                    ."`communication_phone` = '$search'  OR `communication_phone` LIKE '$search%'  OR `communication_phone` LIKE '%$search%' OR "
-                    ."`communication_email` = '$search'  OR `communication_email` LIKE '$search%'  OR `communication_email` LIKE '%$search%' OR "
+                    ."`company_name` LIKE '%$search%' OR "
+                    ."`company_department` LIKE '%$search%' OR "
+                    ."`communication_phone` LIKE '%$search%' OR "
+                    ."`communication_email` LIKE '%$search%' OR "
                     ."`address_id` = '$search' OR "
-                    ."`address_street` = '$search'  OR `address_street` LIKE '$search%'  OR `address_street` LIKE '%$search%' OR "
-                    ."`address_zip` = '$search'  OR `address_zip` LIKE '$search%'  OR `address_zip` LIKE '%$search%' OR "
-                    ."`address_city` = '$search'  OR `address_city` LIKE '$search%'  OR `address_city` LIKE '%$search%' OR "
-                    ."`address_area` = '$search'  OR `address_area` LIKE '$search%'  OR `address_area` LIKE '%$search%' OR "
-                    ."`address_state` = '$search'  OR `address_state` LIKE '$search%'  OR `address_state` LIKE '%$search%' OR "
+                    ."`address_street` LIKE '%$search%' OR "
+                    ."`address_zip` LIKE '%$search%' OR "
+                    ."`address_city` LIKE '%$search%' OR "
+                    ."`address_area` LIKE '%$search%' OR "
+                    ."`address_state` LIKE '%$search%' OR "
                     ."`address_country_code` = '$search'";
             }
-            $SQL .= ") AND `contact_status` $status_operator '$status' ORDER BY $order_by $order_direction";
+            $SQL .= ")) AND `contact_status` $status_operator '$status' ORDER BY $order_by $order_direction";
 
             $results = $this->app['db']->fetchAll($SQL);
 

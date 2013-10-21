@@ -14,10 +14,7 @@
 {% endblock %}
 
 {% block content %}
-  {% if message|length > 0 %}
-    <div class="message">{{ message }}</div>
-  {% endif %}
-
+  
   {% include '@phpManufaktur/Contact/Template/default/backend/form/list.search.twig' %}
 
 {% endblock content %}

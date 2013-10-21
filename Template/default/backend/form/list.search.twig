@@ -9,19 +9,31 @@
 
 <div id="contact_list">
     
-  {% if (list|length < 1) %}
-    {# The contact list does not contain any data! #}
-    <div class="search-container">
-      <form action="{{ FRAMEWORK_URL ~ route.contact.search }}" method="post" >
-        <input type="text" name="search" />&nbsp;<input type="submit" value="{{ 'Search'|trans }}" />
-      </form>
-    </div>
-  {% else %}
-    <div class="search-container">
-      <form action="{{ FRAMEWORK_URL ~ route.contact.search }}" method="post" >
-        <input type="text" name="search" />&nbsp;<input type="submit" value="{{ 'Search'|trans }}" />
-      </form>
-    </div>
+  <div class="message">
+    {% if message|length > 0 %}
+      {{ message }}
+    {% endif %}
+    {# hint for the general search functions #}
+    {% if app.translator.locale == 'de' %}
+      {# german translation #}
+      <div class="message item">Suchbegriffe die mit einem <i>Leerzeichen</i> oder dem <code>OR</code> Operator verknüpft werden, z.B. <code>berlin mustermann</code> finden Ergebnisse die zu einem <i>beliebigen</i> Begriff passen.</div>  
+      <div class="message item">Suchbegriffe die mit einem <code>AND</code> Operator verknüpft werden, z.B. <code>berlin AND mustermann</code> finden Ergebnisse die zu <i>beiden</i> Begriffen passsen</div>
+      <div class="message item">Suchbegriffe die mit einem <code>NOT</code> Operator verknüpft werden, z.B. <code>berlin NOT mustermann</code> finden Ergebnisse die zum ersten jedoch <i>nicht</i> zum zweiten Begriff passen.</div>
+    {% else %}
+      {# english translation #}
+      <div class="message item">Search terms joined with a <i>space</i> or the <code>OR</code> operator, i.e. <code>berlin mustermann</code> will return search results which fit to <i>any</i> of the terms.</div>  
+      <div class="message item">Search terms joined with a <code>AND</code> operator, i.e. <code>berlin AND mustermann</code> will return search results which fit to <i>both</i> terms.</div>
+      <div class="message item">Search terms joined with a <code>NOT</code> operator, i.e. <code>berlin NOT mustermann</code> will return search results which fit to the first but <i>not</i> to the second term.</div>
+    {% endif %}
+  </div>
+  
+  <div class="search-container">
+    <form action="{{ FRAMEWORK_URL ~ route.contact.search }}" method="post" >
+      <input type="text" name="search" />&nbsp;<input type="submit" value="{{ 'Search'|trans }}" />
+    </form>
+  </div>
+
+  {% if (list|length > 0) %}
     <table>
       <thead>
         <tr>  

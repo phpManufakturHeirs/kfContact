@@ -39,6 +39,11 @@ class ContactList extends Dialog {
         }
     }
 
+    /**
+     * Initialize the Contact List with the given $options or default values
+     *
+     * @param string $options
+     */
     protected function initialize($options=null)
     {
         $this->ContactListControl = new ContactListControl($this->app);
