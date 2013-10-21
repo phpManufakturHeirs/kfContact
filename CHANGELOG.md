@@ -6,6 +6,10 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.18** - 2013-10-21
+
+* added full search function for the contacts
+
 **2.0.17** - 2013-10-18
 
 * added the fields `address_area` and `address_state` to the table `contact_overview`
