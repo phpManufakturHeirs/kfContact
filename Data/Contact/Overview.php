@@ -478,6 +478,7 @@ EOD;
      * a separator to concat the terms with AND.
      *
      * @param string $search_term
+     * @param array $tags default null - restrict search to the given tags
      * @param string $status by default 'DELETED'
      * @param string $status_operator by default '!='
      * @param string $order_by by default 'order_name'
@@ -485,7 +486,7 @@ EOD;
      * @throws \Exception
      * @return Ambigous <boolean, array > return false if no hit, overview records otherwise
      */
-    public function searchContact($search_term, $status='DELETED', $status_operator='!=', $order_by='order_name', $order_direction='ASC')
+    public function searchContact($search_term, $tags=null, $status='DELETED', $status_operator='!=', $order_by='order_name', $order_direction='ASC')
     {
         try {
             $SQL = "SELECT * FROM `".self::$table_name."` WHERE (";
@@ -549,7 +550,23 @@ EOD;
                     ."`address_state` LIKE '%$search%' OR "
                     ."`address_country_code` = '$search'";
             }
-            $SQL .= ")) AND `contact_status` $status_operator '$status' ORDER BY $order_by $order_direction";
+            $SQL .= ")) AND ";
+
+            if (is_array($tags)) {
+                $SQL .= "(";
+                $start = true;
+                foreach ($tags as $tag) {
+                    if ($start) {
+                        $start = false;
+                    }
+                    else {
+                        $SQL .= " OR ";
+                    }
+                    $SQL .= "((`tags` = '$tag') OR (`tags` LIKE '$tag,%') OR (`tags` LIKE '%,$tag,%') OR (`tags` LIKE '%,$tag'))";
+                }
+                $SQL .= ") AND ";
+            }
+            $SQL .= "`contact_status` $status_operator '$status' ORDER BY $order_by $order_direction";
 
             $results = $this->app['db']->fetchAll($SQL);
 
