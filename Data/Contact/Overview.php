@@ -241,7 +241,7 @@ EOD;
             // prepare the data record
             $data = array();
             foreach ($record as $key => $value) {
-                $data[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                $data[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
 
             $SQL = "SELECT `contact_id` FROM `".self::$table_name."` WHERE `contact_id`='$contact_id'";
@@ -267,7 +267,38 @@ EOD;
     public function selectAll()
     {
         try {
-            return $this->app['db']->fetchAll("SELECT * FROM `".self::$table_name."` ORDER BY `contact_id` ASC");
+            $results = $this->app['db']->fetchAll("SELECT * FROM `".self::$table_name."` ORDER BY `contact_id` ASC");
+            $overviews = array();
+            foreach ($results as $result) {
+                $overview = array();
+                foreach ($result as $key => $value) {
+                    $overview[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                $overviews[] = $overview;
+            }
+            return (!empty($overviews)) ? $overviews : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Select the overview record for the given $contact_id
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     * @return Ambigous <boolean,array> false or overview record
+     */
+    public function select($contact_id)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id` = '$contact_id'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            $overview = array();
+            foreach ($result as $key => $value) {
+                $overview[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            return (!empty($overview)) ? $overview : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
@@ -434,7 +465,16 @@ EOD;
                 $SQL .= " $order_direction";
             }
             $SQL .= " LIMIT $limit_from, $rows_per_page";
-            return $this->app['db']->fetchAll($SQL);
+            $results = $this->app['db']->fetchAll($SQL);
+            $overviews = array();
+            foreach ($results as $result) {
+                $overview = array();
+                foreach ($result as $key => $value) {
+                    $overview[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                $overviews[] = $overview;
+            }
+            return (!empty($overviews)) ? $overviews : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
