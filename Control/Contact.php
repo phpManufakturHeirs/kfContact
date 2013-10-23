@@ -262,6 +262,17 @@ class Contact extends ContactParent
     }
 
     /**
+     * Select the overview record for the given contact ID
+     *
+     * @param integer $contact_id
+     * @return Ambigous <boolean, array> FALSE or overview record
+     */
+    public function selectOverview($contact_id)
+    {
+        return $this->Overview->select($contact_id);
+    }
+
+    /**
      * Validate the CONTACT block and perform some actions.
      * Can set the 'contact_login' and the 'contact_name' if specified in the
      * $option array
