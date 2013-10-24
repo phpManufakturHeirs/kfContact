@@ -6,6 +6,13 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.19** - 2013-10-24
+
+* added parameter `$tags` to restrict the search to given TAGs
+* add `selectOverview()` to get a fast overview of contact
+* add `select()` to class *Overview*
+* added missing sanitize commands and comments
+
 **2.0.18** - 2013-10-21
 
 * added full search function for the contacts
