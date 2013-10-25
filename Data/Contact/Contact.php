@@ -236,6 +236,10 @@ EOD;
                 if (($key == 'contact_id') || ($key == 'contact_timestamp')) continue;
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
+            if (!isset($insert['contact_since'])) {
+                // add the 'contact_since' field with the actual date/time
+                $insert['contact_since'] = date('Y-m-d H:i:s');
+            }
             $this->app['db']->insert(self::$table_name, $insert);
             $contact_id = $this->app['db']->lastInsertId();
         } catch (\Doctrine\DBAL\DBALException $e) {
