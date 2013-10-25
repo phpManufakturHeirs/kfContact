@@ -128,7 +128,7 @@ class ContactCompany extends Dialog {
             'data' => $contact['contact']['contact_type']
         ))
         ->add('contact_status', 'choice', array(
-            'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'DELETED' => 'deleted'),
+            'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'PENDING' => 'pending', 'DELETED' => 'deleted'),
             'empty_value' => false,
             'expanded' => false,
             'multiple' => false,

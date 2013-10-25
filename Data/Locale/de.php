@@ -227,6 +227,8 @@ return array(
     'Options'
         => 'Optionen',
 
+    'pending'
+        => 'Ungeklärt',
     'PERSON'
         => 'Person',
     'person_birthday'

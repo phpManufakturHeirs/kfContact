@@ -143,7 +143,7 @@ class ContactPerson extends Dialog {
         ))
         // contact visible form fields
         ->add('contact_status', 'choice', array(
-            'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'DELETED' => 'deleted'),
+            'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'PENDING' => 'pending', 'DELETED' => 'deleted'),
             'empty_value' => false,
             'expanded' => false,
             'multiple' => false,

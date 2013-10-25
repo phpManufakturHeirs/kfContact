@@ -62,6 +62,31 @@ class Update
     }
 
     /**
+     * Check if the $value exists in the ENUM array of the $field
+     *
+     * @param string $table
+     * @param string $field
+     * @param string $value
+     * @throws \Exception
+     * @return boolean|NULL NULL if ENUM not exists in $field or TRUE|FALSE for $value
+     */
+    protected function enumValueExists($table, $field, $value)
+    {
+        try {
+            $SQL = "SHOW COLUMNS FROM `$table` WHERE FIELD = '$field'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            if (isset($result['Type']) && (false !== strpos($result['Type'], "enum('"))) {
+                $enum = str_replace(array("enum('", "')", "''"), array('', '', "'"), $result['Type']);
+                $check = explode("','", $enum);
+                return in_array($value, $check);
+            }
+            return null;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
      * Release 2.0.13
      */
     protected function release_2013()
@@ -174,6 +199,27 @@ class Update
     }
 
     /**
+     * Release 2.0.15
+     */
+    protected function release_2015()
+    {
+        if (false === ($this->enumValueExists(FRAMEWORK_TABLE_PREFIX.'contact_contact', 'contact_status', 'PENDING'))) {
+            // add PENDING to contact_status
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_contact` CHANGE `contact_status` `contact_status` ENUM('ACTIVE', 'LOCKED', 'PENDING', 'DELETED') NOT NULL DEFAULT 'ACTIVE'";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add ENUM value PENDING to field `contact_status` in table `contact_contact`');
+        }
+
+        if (false === ($this->enumValueExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'contact_status', 'PENDING'))) {
+            // add PENDING to contact_status
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` CHANGE `contact_status` `contact_status` ENUM('ACTIVE', 'LOCKED', 'PENDING', 'DELETED') NOT NULL DEFAULT 'ACTIVE'";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add ENUM value PENDING to field `contact_status` in table `contact_overview`');
+        }
+
+    }
+
+    /**
      * Execute all available update steps
      *
      * @param Application $app
@@ -195,6 +241,10 @@ class Update
             // Release 2.0.14
             $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.14');
             $this->release_2014();
+
+            // Release 2.0.15
+            $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.15');
+            $this->release_2015();
 
             // prompt message and return
             $this->app['monolog']->addInfo('[Contact Update] The update process was successfull.');

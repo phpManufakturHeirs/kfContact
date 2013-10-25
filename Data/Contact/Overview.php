@@ -59,7 +59,7 @@ class Overview
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
         `contact_name` VARCHAR(128) NOT NULL DEFAULT '',
         `contact_type` ENUM('PERSON','COMPANY') NOT NULL DEFAULT 'PERSON',
-        `contact_status` ENUM('ACTIVE','LOCKED','DELETED'),
+        `contact_status` ENUM('ACTIVE','LOCKED','PENDING','DELETED'),
         `person_id` INT(11) NOT NULL DEFAULT '-1',
         `person_gender` ENUM('MALE','FEMALE') NOT NULL DEFAULT 'MALE',
         `person_title` VARCHAR(32) NOT NULL DEFAULT '',
