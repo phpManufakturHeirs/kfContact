@@ -192,7 +192,7 @@ EOD;
                 $SQL .= " AND `contact_id` != '$exclude_contact_id'";
             }
             $result = $this->app['db']->fetchColumn($SQL);
-            return ($result > 0) ? $result : false;
+            return (!is_null($result)) ? $result : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
