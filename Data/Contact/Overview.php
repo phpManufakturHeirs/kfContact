@@ -57,6 +57,7 @@ class Overview
     CREATE TABLE IF NOT EXISTS `$table` (
         `id` INT(11) NOT NULL AUTO_INCREMENT,
         `contact_id` INT(11) NOT NULL DEFAULT '-1',
+        `contact_login` VARCHAR(64) NOT NULL DEFAULT '',
         `contact_name` VARCHAR(128) NOT NULL DEFAULT '',
         `contact_type` ENUM('PERSON','COMPANY') NOT NULL DEFAULT 'PERSON',
         `contact_status` ENUM('ACTIVE','LOCKED','PENDING','DELETED'),
@@ -213,6 +214,7 @@ EOD;
 
             $record = array(
                 'contact_id' => $contact_id,
+                'contact_login' => $contact['contact_login'],
                 'contact_name' => $contact['contact_name'],
                 'contact_type' => $contact['contact_type'],
                 'contact_status' => $contact['contact_status'],
@@ -304,6 +306,27 @@ EOD;
         }
     }
 
+    /**
+     * Select the overview record for the given contact login
+     *
+     * @param string $login
+     * @throws \Exception
+     * @return Ambigous <boolean, array> false or overview record
+     */
+    public function selectLogin($login)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_login` = '$login'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            $overview = array();
+            foreach ($result as $key => $value) {
+                $overview[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            return (!empty($overview)) ? $overview : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
     /**
      * Rebuild the complete overview table
      *
@@ -619,4 +642,6 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+
 }

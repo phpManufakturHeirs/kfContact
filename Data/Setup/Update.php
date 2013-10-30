@@ -220,6 +220,24 @@ class Update
     }
 
     /**
+     * Release 2.0.21
+     */
+    protected function release_2021()
+    {
+        if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'contact_login')) {
+            // add field
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `contact_login` VARCHAR(64) NOT NULL DEFAULT '' AFTER `contact_id`";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add field `contact_login` to table `contact_overview`');
+            // execute a rebuild of all addresses in the overview table
+            $this->app['monolog']->addInfo('[Contact Update] Start rebuilding the table `contact_overview`');
+            $ContactOverview = new Overview($this->app);
+            $ContactOverview->rebuildOverview();
+            $this->app['monolog']->addInfo('[Contact Update] Finished rebuilding the table `contact_overview`');
+        }
+    }
+
+    /**
      * Execute all available update steps
      *
      * @param Application $app
@@ -245,6 +263,10 @@ class Update
             // Release 2.0.15
             $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.15');
             $this->release_2015();
+
+            // Release 2.0.21
+            $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.21');
+            $this->release_2021();
 
             // prompt message and return
             $this->app['monolog']->addInfo('[Contact Update] The update process was successfull.');
