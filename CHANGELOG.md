@@ -6,6 +6,10 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.21** - 2013-10-30
+
+* added field `contact_login` to the overview table
+
 **2.0.20** - 2013-10-25
 
 * if not given automatically set value for `contact_since` on inserting a new contact
