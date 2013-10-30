@@ -142,7 +142,7 @@ class ContactPerson extends Dialog {
             'data' => $contact['contact']['contact_name']
         ))
         ->add('contact_login', 'text', array(
-            'required' => false,
+            'required' => !self::$config['email']['required'],
             'label' => 'Contact login',
             'data' => $contact['contact']['contact_login']
         ))
@@ -184,6 +184,7 @@ class ContactPerson extends Dialog {
 
         // person - visible form fields
         ->add('person_gender', 'choice', array(
+            'required' => false,
             'choices' => array('MALE' => 'male', 'FEMALE' => 'female'),
             'expanded' => true,
             'label' => 'Gender',
@@ -215,6 +216,7 @@ class ContactPerson extends Dialog {
             'data' => $email['communication_id']
         ))
         ->add('email', 'email', array(
+            'required' => self::$config['email']['required'],
             'label' => 'E-Mail',
             'data' => $email['communication_value']
         ))
@@ -261,6 +263,16 @@ class ContactPerson extends Dialog {
             'required' => false,
             'label' => 'City',
             'data' => $address_private['address_city']
+        ))
+        ->add('address_area', 'text', array(
+            'required' => false,
+            'label' => 'Area',
+            'data' => $address_private['address_area']
+        ))
+        ->add('address_state', 'text', array(
+            'required' => false,
+            'label' => 'State',
+            'data' => $address_private['address_state']
         ))
         ->add('address_country', 'choice', array(
             'choices' => $this->ContactControl->getCountryArrayForTwig(),
@@ -404,6 +416,8 @@ class ContactPerson extends Dialog {
                     'address_street' => $data['address_street'],
                     'address_zip' => $data['address_zip'],
                     'address_city' => $data['address_city'],
+                    'address_area' => $data['address_area'],
+                    'address_state' => $data['address_state'],
                     'address_country_code' => $data['address_country']
                 )
             ),

@@ -47,6 +47,8 @@ return array(
         => 'PLZ',
     'Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.'
         => 'Erlaubte Zeichen für den %identifier% Bezeichner sind A-Z, 0-9 und der Unterstrich. Der Bezeichner wird stets in Großbuchstaben umgewandelt.',
+    'Area'
+        => 'Bezirk, Region',
     'AT'
         => 'Österreich',
     "At minimum you must specify a street, a city or a zip code for a valid address"
@@ -201,6 +203,8 @@ return array(
         => 'Nachname',
     'locked'
         => 'Gesperrt',
+    'login_name'
+        => 'Kontakt Anmeldename',
     'Long name'
         => 'Langbezeichnung',
     'Long name (translated)'
@@ -328,7 +332,7 @@ return array(
     'The login <b>%login%</b> is already in use, please choose another one!'
         => "Der Login <b>%login%</b> wird bereits verwendet, bitte legen Sie einen anderen Login fest!",
     "The login_name or a email address must be always set, can't insert the record!"
-        => 'Das Feld login_name oder eine E-Mail Adresse müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
+        => 'Das Feld <i>Anmeldename</i> oder eine <i>E-Mail Adresse</i> müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
     "The process has not returned a status message"
         => 'Der Prozess hat keinen Status für den Vorgang gemeldet',
     'The record with the ID %id% was successfull inserted.'

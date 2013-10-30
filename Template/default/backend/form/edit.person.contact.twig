@@ -31,10 +31,7 @@
       {% endif %}
       
       {# hide the contact_name field, with form_row(form.contact_name) you can use it as regular text field #}
-      {{ form_widget(form.contact_name, {'attr': {'class':'hidden'}} ) }}
-      
-      {# hide the contact_login field, with form_row(form.contact_login) you can use it as regular text field #}
-      {{ form_widget(form.contact_login, {'attr': {'class':'hidden'}} ) }}
+      <div class="extra_space"></div>
       
       {% if form.contact_id.vars.value > 0 %}
         {{ form_row(form.contact_status) }}
@@ -48,6 +45,14 @@
       <div class="edit_button">
         <input type="button" value=".." title="{{ 'Edit tags'|trans }}" onclick="self.location.href='{{ FRAMEWORK_URL ~ route.tag }}{% if '?' in route.tag %}&{% else %}?{% endif %}contact_id={{ form.contact_id.vars.value }}';return false;" />
       </div>  
+      
+      <div class="extra_space"></div>
+      {{ form_row(form.contact_name) }}
+      
+      {# hide the contact_login field, with form_row(form.contact_login) you can use it as regular text field #}
+      {#{ form_widget(form.contact_login, {'attr': {'class':'hidden'}} ) }#}
+      {{ form_row(form.contact_login) }}
+      
     </fieldset>
         
     <fieldset>
@@ -81,6 +86,11 @@
       {{ form_row(form.address_street) }}
       {{ form_row(form.address_zip) }}
       {{ form_row(form.address_city) }}
+      <div class="extra_space"></div>
+      {# hide the address_area field, with form_row(form.address_area) you can use it as regular text field #}
+      {{ form_widget(form.address_area, {'attr': {'class':'hidden'}} ) }}
+      {{ form_row(form.address_state) }}
+      
       {{ form_row(form.address_country) }}
     </fieldset>
     

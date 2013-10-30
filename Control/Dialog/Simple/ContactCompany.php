@@ -165,7 +165,7 @@ class ContactCompany extends Dialog {
             'data' => $contact['contact']['contact_name']
         ))
         ->add('contact_login', 'text', array(
-            'required' => false,
+            'required' => !self::$config['email']['required'],
             'label' => 'Contact login',
             'data' => $contact['contact']['contact_login']
         ))
@@ -175,6 +175,7 @@ class ContactCompany extends Dialog {
             'data' => $contact['company'][0]['company_id']
         ))
         ->add('company_name', 'text', array(
+            'required' => false,
             'label' => 'Company name',
             'data' => $contact['company'][0]['company_name']
         ))
@@ -204,6 +205,7 @@ class ContactCompany extends Dialog {
             'data' => $email['communication_id']
         ))
         ->add('email_value', 'email', array(
+            'required' => self::$config['email']['required'],
             'label' => 'E-Mail',
             'data' => $email['communication_value']
         ))
@@ -258,6 +260,16 @@ class ContactCompany extends Dialog {
             'required' => false,
             'label' => 'City',
             'data' => $address_business['address_city']
+        ))
+        ->add('address_business_area', 'text', array(
+            'required' => false,
+            'label' => 'Area',
+            'data' => $address_business['address_area']
+        ))
+        ->add('address_business_state', 'text', array(
+            'required' => false,
+            'label' => 'State',
+            'data' => $address_business['address_state']
         ))
         ->add('address_business_country', 'choice', array(
             'choices' => $this->ContactControl->getCountryArrayForTwig(),
@@ -444,6 +456,8 @@ class ContactCompany extends Dialog {
                     'address_street' => $data['address_business_street'],
                     'address_zip' => $data['address_business_zip'],
                     'address_city' => $data['address_business_city'],
+                    'address_area' => $data['address_business_area'],
+                    'address_state' => $data['address_business_state'],
                     'address_country_code' => $data['address_business_country']
                 ),
                 array(

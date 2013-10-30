@@ -78,6 +78,10 @@
       {{ form_row(form.address_business_street) }}
       {{ form_row(form.address_business_zip) }}
       {{ form_row(form.address_business_city) }}
+      <div class="extra_space"></div>
+      {# hide the address_business_area field, with form_row(form.address_business_area) you can use it as regular text field #}
+      {{ form_widget(form.address_business_area, {'attr': {'class':'hidden'}} ) }}
+      {{ form_row(form.address_business_state) }}
       {{ form_row(form.address_business_country) }}
     </fieldset>
     
