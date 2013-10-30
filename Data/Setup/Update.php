@@ -18,6 +18,7 @@ use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\Extra;
 use phpManufaktur\Contact\Data\Contact\Message;
 use phpManufaktur\Contact\Data\Contact\Overview;
+use phpManufaktur\Contact\Control\Configuration;
 
 class Update
 {
@@ -267,6 +268,9 @@ class Update
             // Release 2.0.21
             $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.21');
             $this->release_2021();
+
+            // Create Configuration if not exists - only constructor needed
+            $Configuration = new Configuration($app);
 
             // prompt message and return
             $this->app['monolog']->addInfo('[Contact Update] The update process was successfull.');

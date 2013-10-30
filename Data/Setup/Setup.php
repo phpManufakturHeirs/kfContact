@@ -33,6 +33,7 @@ use phpManufaktur\Contact\Data\Contact\ExtraType;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\Extra;
 use phpManufaktur\Contact\Data\Contact\Message;
+use phpManufaktur\Contact\Control\Configuration;
 
 class Setup
 {
@@ -136,6 +137,9 @@ class Setup
             $Message = new Message($app);
             $Message->createTable();
             $app['monolog']->addInfo('[Contact Install] Create table `contact_message`');
+
+            // Create Configuration - only constructor needed
+            $Configuration = new Configuration($app);
 
             // success - return message
             $app['monolog']->addInfo('[Contact Install] The setup process was successfull');
