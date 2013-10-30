@@ -14,11 +14,13 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 use Silex\Application;
 use phpManufaktur\Contact\Control\Contact as ContactControl;
 use Symfony\Component\Form\FormBuilder;
+use phpManufaktur\Contact\Control\Configuration;
 
 class ContactCompany extends Dialog {
 
     protected static $contact_id = -1;
     protected $ContactControl = null;
+    protected static $config = null;
 
     /**
      * Constructor
@@ -50,6 +52,10 @@ class ContactCompany extends Dialog {
             )
         ));
         $this->ContactControl = new ContactControl($this->app);
+
+        // get the configuration
+        $Configuration = new Configuration($this->app);
+        self::$config = $Configuration->getConfiguration();
     }
 
     /**
@@ -260,7 +266,8 @@ class ContactCompany extends Dialog {
             'multiple' => false,
             'required' => false,
             'label' => 'Country',
-            'data' => $address_business['address_country_code']
+            'data' => $address_business['address_country_code'],
+            'preferred_choices' => self::$config['countries']['preferred']
         ))
 
         // delivery address
@@ -289,7 +296,8 @@ class ContactCompany extends Dialog {
             'multiple' => false,
             'required' => false,
             'label' => 'Country',
-            'data' => $address_delivery['address_country_code']
+            'data' => $address_delivery['address_country_code'],
+            'preferred_choices' => self::$config['countries']['preferred']
         ))
 
         ->add('note_id', 'hidden', array(

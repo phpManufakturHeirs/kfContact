@@ -13,11 +13,13 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
 use phpManufaktur\Contact\Control\Contact as ContactControl;
+use phpManufaktur\Contact\Control\Configuration;
 
 class ContactPerson extends Dialog {
 
     protected static $contact_id = -1;
     protected $ContactControl = null;
+    protected static $config = null;
 
     /**
      * Constructor
@@ -49,6 +51,9 @@ class ContactPerson extends Dialog {
             )
         ));
         $this->ContactControl = new ContactControl($this->app);
+
+        $Configuration = new Configuration($this->app);
+        self::$config = $Configuration->getConfiguration();
     }
 
     /**
@@ -264,7 +269,8 @@ class ContactPerson extends Dialog {
             'multiple' => false,
             'required' => false,
             'label' => 'Country',
-            'data' => $address_private['address_country_code']
+            'data' => $address_private['address_country_code'],
+            'preferred_choices' => self::$config['countries']['preferred']
         ))
 
         ->add('note_id', 'hidden', array(
