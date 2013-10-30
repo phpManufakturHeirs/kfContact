@@ -6,6 +6,13 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.22** - 2013-10-30
+
+* introduce configuration file `config.contact.json`
+* added preferred choices for countries - get data from `config.contact.json`
+* can configure if the email field is required or not
+* added fields address area and state (area is hidden by default)
+
 **2.0.21** - 2013-10-30
 
 * added field `contact_login` to the overview table
