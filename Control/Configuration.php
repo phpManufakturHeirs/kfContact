@@ -37,6 +37,9 @@ class Configuration
     public static function getDefaultConfigArray()
     {
         return array(
+            'email' => array(
+                'required' => true
+            ),
             'countries' => array(
                 'preferred' => array(
                     'DE',
