@@ -6,6 +6,10 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.23** - 2013-11-04
+
+* added support for additional vendor information
+
 **2.0.22** - 2013-10-30
 
 * introduce configuration file `config.contact.json`
