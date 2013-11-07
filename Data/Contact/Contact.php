@@ -234,7 +234,7 @@ EOD;
             $insert = array();
             foreach ($data as $key => $value) {
                 if (($key == 'contact_id') || ($key == 'contact_timestamp')) continue;
-                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+                $insert[$key] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             if (!isset($insert['contact_since'])) {
                 // add the 'contact_since' field with the actual date/time
