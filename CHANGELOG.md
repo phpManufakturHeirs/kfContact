@@ -10,6 +10,7 @@ kitFramework - <https://kit2.phpmanufaktur.de>
 
 * changed to Font Awesome 4.0.3 and make it local available
 * make Contact available as Admin-Tool in the CMS backend
+* added `create` routes to the simple dialogs
 
 **2.0.24** - 2013-11-08
 
