@@ -37,7 +37,7 @@ class ExtraEdit extends Backend {
                 'edit' => 'backend/admin/contact.extra.edit.twig'
             ),
             'route' => array(
-                'action' => '/admin/contact/backend/extra/edit?usage='.self::$usage
+                'action' => '/admin/contact/backend/extra/create?usage='.self::$usage
             )
         ));
     }

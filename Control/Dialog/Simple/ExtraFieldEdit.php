@@ -72,15 +72,6 @@ class ExtraFieldEdit extends Dialog {
             'required' => false,
             'label' => 'Description'
         ))
-        /*
-        ->add('delete', 'choice', array(
-            'choices' => array('DELETE' => 'delete this extra field'),
-            'expanded' => true,
-            'multiple' => true,
-            'required' => false,
-            'label' => 'Delete'
-        ))
-        */
         ->add('delete', 'checkbox', array(
             'required' => false,
             'label' => 'Delete extra field'
