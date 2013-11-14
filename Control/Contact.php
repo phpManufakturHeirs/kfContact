@@ -237,6 +237,10 @@ class Contact extends ContactParent
      */
     public function select($identifier, $contact_type='PERSON')
     {
+        if (!is_numeric($identifier)) {
+            // try to get the contact ID by the login name
+            $identifier = $this->existsLogin($identifier);
+        }
         if (is_numeric($identifier)) {
             self::$contact_id = $identifier;
             if (self::$contact_id < 1) {
@@ -662,6 +666,17 @@ class Contact extends ContactParent
                         foreach ($field_ids as $field_id) {
                             $this->Extra->insert($contact_id, $category_id, $category['category_type_name'], $field_id);
                         }
+                        // check if any data are submitted
+                        if (isset($data['extra_fields'])) {
+                            foreach ($data['extra_fields'] as $field) {
+                                if (false === ($type = $this->ExtraType->selectName($field['extra_type_name']))) {
+                                    $this->setMessage('Missing the field `extra_type_name`');
+                                    $this->app['db']->rollback();
+                                    return false;
+                                }
+                                $this->Extra->insert($contact_id, $category_id, $category['category_type_name'], $type['extra_type_id'], $field['extra_value']);
+                            }
+                        }
                     }
                 }
 
@@ -677,6 +692,8 @@ class Contact extends ContactParent
                     }
                 }
             }
+
+
 
             // all complete - now we refresh the OVERVIEW
             $this->Overview->refresh($contact_id);
@@ -1118,6 +1135,62 @@ class Contact extends ContactParent
     public function existsLogin($contact_login, $exclude_contact_id=null)
     {
         return $this->ContactData->existsLogin($contact_login, $exclude_contact_id);
+    }
+
+    /**
+     * Check if the given category name exists
+     *
+     * @param string $category_name
+     * @return boolean
+     */
+    public function existsCategoryName($category_name)
+    {
+        return $this->ContactCategory->existsCategory($category_name);
+    }
+
+    /**
+     * Create a new category
+     *
+     * @param array $data
+     * @param integer reference $category_type_id
+     */
+    public function createCategory($data, &$category_type_id)
+    {
+        $this->ContactCategory->createCategory($data, $category_type_id);
+    }
+
+    /**
+     * Check if a extra type name already exists
+     *
+     * @param string $extra_type_name
+     * @return boolean
+     */
+    public function existsExtraTypeName($extra_type_name)
+    {
+        return $this->ExtraType->existsTypeName($extra_type_name);
+    }
+
+    /**
+     * Create a new extra type
+     *
+     * @param array $data
+     * @param integer $extra_type_id
+     */
+    public function createExtraType($data, &$extra_type_id)
+    {
+        $this->ExtraType->insert($data, $extra_type_id);
+    }
+
+    /**
+     * Bind a extra type to the given category
+     *
+     * @param integer $extra_type_id
+     * @param integer $category_type_id
+     * @param integer reference $id
+     */
+    public function bindExtraTypeToCategory($extra_type_id, $category_type_id, &$id=null)
+    {
+        $this->ExtraCategory->insert($extra_type_id, $category_type_id, $id);
     }
 
     /**
