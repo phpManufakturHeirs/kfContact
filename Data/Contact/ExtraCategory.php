@@ -142,6 +142,7 @@ EOD;
             );
             $this->app['db']->insert(self::$table_name, $data);
             $id = $this->app['db']->lastInsertId();
+
             $SQL = "SELECT `extra_type_type`, `extra_type_name` FROM `".FRAMEWORK_TABLE_PREFIX."contact_extra_type` WHERE `extra_type_id`='$extra_type_id'";
             $extra_type = $this->app['db']->fetchAssoc($SQL);
 
