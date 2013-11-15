@@ -239,9 +239,12 @@ class Contact extends ContactParent
     {
         if (!is_numeric($identifier)) {
             // try to get the contact ID by the login name
-            $identifier = $this->existsLogin($identifier);
+            if (!$identifier = $this->existsLogin($identifier)) {
+                return $this->getDefaultRecord($contact_type);
+            }
         }
         if (is_numeric($identifier)) {
+
             self::$contact_id = $identifier;
             if (self::$contact_id < 1) {
                 return $this->getDefaultRecord($contact_type);
@@ -1264,6 +1267,19 @@ class Contact extends ContactParent
     public function issetContactTag($tag_name, $contact_id)
     {
         return $this->ContactTag->issetContactTag($tag_name, $contact_id);
+    }
+
+    /**
+     * Get the status for the given $login, where $login can be the
+     * contact_login or the contact_id
+     *
+     * @param <string|integer> $login
+     * @throws \Exception
+     * @return Ambigous <boolean, string> FALSE or contact_status
+     */
+    public function getStatus($login)
+    {
+        return $this->ContactData->getStatus($login);
     }
 
 }
