@@ -6,6 +6,16 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.26**
+
+* added `getStatus()` to Contact Control
+* added `existsCategory()` and `createCategory()` to class ContactCategory
+* Contact Control: `select()` handle now also the login name instead of the contact ID
+* Contact Control: `insert()` handle now also submitting extra fields
+* Contact Control: added `existsCategory()`, `createCategory()`, `existsExtraTypeName()`, `createExtraType()`, `bindExtraTypeToCategory()`
+* extra fields are now automatically inserted and deleted for all assigned contacts
+* fixed: category edit calls the wrong route
+
 **2.0.25** - 2013-11-10
 
 * changed to Font Awesome 4.0.3 and make it local available
