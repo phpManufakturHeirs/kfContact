@@ -55,7 +55,11 @@
   "setup": {
       "install":"\/admin\/contact\/setup",
       "update":"\/admin\/contact\/update",
-      "uninstall":"\/admin\/contact\/uninstall"
+      "uninstall":"\/admin\/contact\/uninstall",
+      "icon_path":{
+        "BlackCat":"\/extension\/phpmanufaktur\/phpManufaktur\/Contact\/Data\/Setup\/Icon\/icon.png",
+        "WebsiteBaker":"\/extension\/phpmanufaktur\/phpManufaktur\/Contact\/Data\/Setup\/Icon\/tool_icon.png"
+      }
   },
   "license": {
     "name":"MIT License",
