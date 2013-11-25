@@ -228,6 +228,16 @@ class Contact extends ContactParent
     }
 
     /**
+     * Return the primary EMail address for the given contact ID
+     *
+     * @param integer $contact_id
+     */
+    public function getPrimaryEMailAddress($contact_id)
+    {
+        return $this->ContactData->getPrimaryEmailAddress($contact_id);
+    }
+
+    /**
      * General select function for contact records.
      * The identifier can be the contact_id or the login name.
      * Return a PERSON or a COMPANY record. If the identifier not exists return

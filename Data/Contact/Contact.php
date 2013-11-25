@@ -492,6 +492,17 @@ EOD;
     }
 
     /**
+     * Return the primary EMAIL address for the given contact ID
+     *
+     * @param integer $contact_id
+     */
+    public function getPrimaryEmailAddress($contact_id)
+    {
+        $communication_id = $this->getPrimaryEmailID($contact_id);
+        return $this->Communication->selectValue($communication_id);
+    }
+
+    /**
      * Set the primary EMAIL ID for the CONTACT ID
      *
      * @param integer $contact_id
