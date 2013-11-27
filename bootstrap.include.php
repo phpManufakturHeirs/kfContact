@@ -13,7 +13,12 @@
 global $app;
 
 use phpManufaktur\Basic\Control\CMS\EmbeddedAdministration;
+use phpManufaktur\Contact\Control\Contact;
 
+// share the CONTACT CONTROL
+$app['contact'] = $app->share(function($app) {
+    return new Contact($app);
+});
 
 // scan the /Locale directory and add all available languages
 $app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale');
