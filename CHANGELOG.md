@@ -6,6 +6,12 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.27**
+
+* add `icon.png` and `tool_icon.png` for BlackCat CMS and WebsiteBaker 2.8.4 support
+* added `getPrimaryEMailAddress()` to Contact Control
+* share Contact Control as $app['contact']
+
 **2.0.26**
 
 * added `getStatus()` to Contact Control
