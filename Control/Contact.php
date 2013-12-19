@@ -794,14 +794,15 @@ class Contact extends ContactParent
      * @param array $data regular contact array
      * @param integer $contact_id
      * @param reference boolean $data_changed will be set to true if data has changed
+     * @param boolean $ignore_status set to true to update also DELETED records
      * @throws ContactException
      * @throws \Exception
      * @return boolean
      */
-    public function update($data, $contact_id, &$data_changed=false)
+    public function update($data, $contact_id, &$data_changed=false, $ignore_status=false)
     {
         // first get the existings record
-        if (false === ($old = $this->ContactData->selectContact($contact_id))) {
+        if (false === ($old = $this->ContactData->selectContact($contact_id, 'DELETED', '!=', $ignore_status))) {
             $this->setMessage("The contact with the ID %contact_id% does not exists!",
                 array('%contact_id%' => $contact_id));
             return false;
@@ -1140,7 +1141,7 @@ class Contact extends ContactParent
      * Check if the desired contact login already existst. Optionally exclude the
      * given contact id from the check
      *
-     * @param integer $contact_login
+     * @param string $contact_login
      * @param integer $exclude_contact_id
      * @throws \Exception
      * @return integer|boolean

@@ -277,15 +277,21 @@ EOD;
      * @param integer $contact_id
      * @param string $status can be ACTIVE, LOCKED or DELETED, default is DELETED
      * @param string $status_operator can be '=' or '!=', default is '!='
+     * @param boolean $ignore_status set to true to select also DELETED records
      * @throws \Doctrine\DBAL\DBALException
      * @throws \Exception
      * @return array|boolean FALSE if SELECT return no result
      */
-    public function selectContact($contact_id, $status='DELETED', $status_operator='!=')
+    public function selectContact($contact_id, $status='DELETED', $status_operator='!=', $ignore_status=false)
     {
         try {
             // first get the main contact record ...
-            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='{$contact_id}' AND `contact_status`{$status_operator}'{$status}'";
+            if ($ignore_status) {
+                $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='{$contact_id}'";
+            }
+            else {
+                $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id`='{$contact_id}' AND `contact_status`{$status_operator}'{$status}'";
+            }
             $result = $this->app['db']->fetchAssoc($SQL);
             if (is_array($result) && isset($result['contact_id'])) {
                 $contact = array();
