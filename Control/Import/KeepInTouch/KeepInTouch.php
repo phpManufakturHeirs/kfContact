@@ -111,12 +111,12 @@ class KeepInTouch extends Dialog {
                     'address_id' => -1,
                     'contact_id' => -1,
                     'address_type' => ($contact_type == 'PERSON') ? 'PRIVATE' : 'BUSINESS',
-                    'address_street' => $address['address_street'],
+                    'address_street' => $this->app['utils']->sanitizeText($address['address_street']),
                     'address_zip' => $address['address_zip'],
-                    'address_city' => $address['address_city'],
+                    'address_city' => $this->app['utils']->sanitizeText($address['address_city']),
                     'address_country_code' => ($address['address_country'] != '-1') ? strtoupper($address['address_country']) : '',
-                    'address_appendix_1' => $address['address_extra'],
-                    'address_state' => $address['address_region']
+                    'address_appendix_1' => $this->app['utils']->sanitizeText($address['address_extra']),
+                    'address_state' => $this->app['utils']->sanitizeText($address['address_region'])
                 );
             }
         }
@@ -148,8 +148,8 @@ class KeepInTouch extends Dialog {
                     'contact_id' => -1,
                     'person_gender' => $kit['person_gender'],
                     'person_title' => $kit['person_title'],
-                    'person_first_name' => $kit['origin']['contact_person_first_name'],
-                    'person_last_name' => $kit['origin']['contact_person_last_name'],
+                    'person_first_name' => $this->app['utils']->sanitizeText($kit['origin']['contact_person_first_name']),
+                    'person_last_name' => $this->app['utils']->sanitizeText($kit['origin']['contact_person_last_name']),
                     'person_birthday' => (!empty($kit['origin']['contact_birthday'])) ? $kit['origin']['contact_birthday'] : '0000-00-00',
                     'person_primary_company_id' => isset($kit['primary_company_id']) ? $kit['primary_company_id'] : -1
                 )
@@ -160,9 +160,9 @@ class KeepInTouch extends Dialog {
                 array(
                     'company_id' => -1,
                     'contact_id' => -1,
-                    'company_name' => $kit['origin']['contact_company_name'],
-                    'company_department' => $kit['origin']['contact_company_dept'],
-                    'company_additional' => $kit['origin']['contact_company_add'],
+                    'company_name' => $this->app['utils']->sanitizeText($kit['origin']['contact_company_name']),
+                    'company_department' => $this->app['utils']->sanitizeText($kit['origin']['contact_company_dept']),
+                    'company_additional' => $this->app['utils']->sanitizeText($kit['origin']['contact_company_add']),
                     'company_primary_person_id' => isset($kit['primary_person_id']) ? $kit['primary_person_id'] : -1
                     )
             );
@@ -176,7 +176,7 @@ class KeepInTouch extends Dialog {
                 'note_id' => -1,
                 'note_title' => 'Imported from KeepInTouch',
                 'note_type' => 'TEXT',
-                'note_content' => strip_tags($note['memo_memo']),
+                'note_content' => $this->app['utils']->sanitizeText(strip_tags($note['memo_memo'])),
                 'note_originator' => $note['memo_update_by'],
                 'note_date' => $note['memo_update_when']
             );
@@ -217,7 +217,9 @@ class KeepInTouch extends Dialog {
         $prompt_success = true;
         if (self::$import_is_possible) {
             // get all KIT IDs
-            $kit_ids = $this->KeepInTouch->getAllKITids();
+
+            $start_id = $app['session']->get('KIT_IMPORT_LAST_ID', 1);
+            $kit_ids = $this->KeepInTouch->getAllKITids($start_id);
 
             // check for additional fields
             // - not implemented yet -
@@ -292,10 +294,10 @@ class KeepInTouch extends Dialog {
                         }
                     }
                 }
-
+                $this->app['session']->set('KIT_IMPORT_LAST_ID', $kit_id['contact_id']);
                 // increase counter
                 $counter++;
-                $total = $this->app['session']->get('KIT_IMPORT_CONTACTS_IMPORTED', 0) + $counter;
+                $total = $this->app['session']->get('KIT_IMPORT_CONTACTS_IMPORTED', 0) + 1;
                 $this->app['session']->set('KIT_IMPORT_CONTACTS_IMPORTED', $total);
 
                 if (((microtime(true) - self::$script_start) + 5) > self::$max_execution_time) {
@@ -317,6 +319,7 @@ class KeepInTouch extends Dialog {
 
                 $this->app['session']->remove('KIT_IMPORT_CONTACTS_DETECTED');
                 $this->app['session']->remove('KIT_IMPORT_CONTACTS_IMPORTED');
+                $this->app['session']->remove('KIT_IMPORT_LAST_ID');
             }
         }
         else {

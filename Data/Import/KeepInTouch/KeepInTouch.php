@@ -96,10 +96,11 @@ class KeepInTouch
         }
     }
 
-    public function getAllKITids()
+    public function getAllKITids($start_id=1)
     {
         try {
-            $SQL = "SELECT `contact_id` FROM `".CMS_TABLE_PREFIX."mod_kit_contact` WHERE `contact_status`!='statusDeleted'";
+            $SQL = "SELECT `contact_id` FROM `".CMS_TABLE_PREFIX."mod_kit_contact` WHERE ".
+                "`contact_status`!='statusDeleted' AND `contact_id` >= '$start_id' ORDER BY `contact_id` ASC";
             return $this->app['db']->fetchAll($SQL);
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
@@ -161,7 +162,7 @@ class KeepInTouch
             }
             $origin = array();
             foreach ($result as $key => $value) {
-            	$origin[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                $origin[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
             }
             $contact = array();
             $contact['origin'] = $origin;
@@ -175,11 +176,11 @@ class KeepInTouch
                     if (!isset($result['address_id'])) {
                         continue;
                     }
-                	$address = array();
-		            foreach ($result as $key => $value) {
-		            	$address[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
-		            }
-		            if (isset($origin['contact_address_standard']) && ($origin['contact_address_standard'] == $address_id)) {
+                    $address = array();
+                    foreach ($result as $key => $value) {
+                        $address[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                    }
+                    if (isset($origin['contact_address_standard']) && ($origin['contact_address_standard'] == $address_id)) {
                         $address['is_default'] = true;
                     }
                     else {
