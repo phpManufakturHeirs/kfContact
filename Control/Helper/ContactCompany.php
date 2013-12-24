@@ -50,8 +50,8 @@ class ContactCompany extends ContactParent
 
         // the company_id must be always set!
         if (!isset($company_data['company_id'])) {
-            $this->setMessage("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
-                array('%identifier%' => 'company_id'));
+            $this->setAlert("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
+                array('%identifier%' => 'company_id'), self::ALERT_TYPE_WARNING);
             return false;
         }
 

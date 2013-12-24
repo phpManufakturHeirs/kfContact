@@ -19,6 +19,11 @@ class ExtraEdit extends Backend {
 
     protected $SimpleExtraFieldEdit = null;
 
+    /**
+     * Constructor
+     *
+     * @param Application $app
+     */
     public function __construct(Application $app=null)
     {
         parent::__construct($app);
@@ -27,22 +32,29 @@ class ExtraEdit extends Backend {
         }
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Backend\Backend::initialize()
+     */
     protected function initialize(Application $app)
     {
         parent::initialize($app);
         $this->SimpleExtraFieldEdit = new SimpleExtraFieldEdit($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'message' => 'backend/message.twig',
-                'edit' => 'backend/admin/contact.extra.edit.twig'
+                'alert' => 'bootstrap/pattern/alert.twig',
+                'edit' => 'bootstrap/admin/edit.extra.twig'
             ),
             'route' => array(
-                'action' => '/admin/contact/backend/extra/create?usage='.self::$usage
+                'action' => '/admin/contact/backend/extra/create?usage='.self::$usage,
+                'list' => '/admin/contact/backend/extra/list?usage='.self::$usage
             )
         ));
     }
 
     /**
+     * Set the type ID
+     *
      * @param number $type_id
      */
     public function setTypeID($type_id)
@@ -50,6 +62,12 @@ class ExtraEdit extends Backend {
         $this->SimpleExtraFieldEdit->setTypeID($type_id);
     }
 
+    /**
+     * Controller to create and edit extra fields
+     *
+     * @param Application $app
+     * @param integer $type_id
+     */
     public function controller(Application $app, $type_id=null)
     {
         $this->initialize($app);

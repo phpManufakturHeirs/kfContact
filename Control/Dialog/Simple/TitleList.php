@@ -27,17 +27,24 @@ class TitleList extends Dialog {
     {
         parent::__construct($app);
         if (!is_null($app)) {
-            $this->initialize($options);
+            $this->initialize($app, $options);
         }
     }
 
-    protected function initialize($options=null)
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Alert::initialize()
+     */
+    protected function initialize(Application $app, $options=null)
     {
+        parent::initialize($app);
+
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/list.title.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'bootstrap/pattern/admin/simple/list.title.twig'
             ),
             'route' => array(
                 'create' => isset($options['route']['create']) ? $options['route']['create'] : '/admin/contact/simple/title/edit',
@@ -47,6 +54,12 @@ class TitleList extends Dialog {
         $this->TitleData = new Title($this->app);
     }
 
+    /**
+     * Controller for the title list
+     *
+     * @param Application $app
+     * @return string
+     */
     public function controller(Application $app)
     {
         $this->app = $app;
@@ -65,7 +78,7 @@ class TitleList extends Dialog {
 
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['list']),
             array(
-                'message' => $this->getMessage(),
+                'alert' => $this->getAlert(),
                 'route' => self::$options['route'],
                 'titles' => $titles,
                 'extra' => $extra

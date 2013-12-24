@@ -14,7 +14,7 @@
 
 {% block content %}
   <h1>{{ 'Category type list'|trans }}</h1>
-  {% if message|length > 0 %}
+  {% if message.content|length > 0 %}
     <div class="message">{{ message }}</div>
   {% endif %}
 

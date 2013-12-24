@@ -7,58 +7,87 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 #}
 
-<div class="contact_form">
-  <form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }}>
-    {{ form_row(form._token) }}
-    {{ form_errors(form) }}
+{{ alert }}
 
-    {{ form_row(form.extra_type_id) }}
-    <div>
+<form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }} role="form">
+  {{ form_row(form._token) }}
+  {{ form_errors(form) }}
+
+  {{ form_row(form.extra_type_id) }}
+  
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">
       <label>{{ 'ID'|trans }}</label>
-      <div class="value">
-        {% if form.extra_type_id.vars.value > 0 %}
-          {{ '%03d'|format(form.extra_type_id.vars.value) }}
-        {% else %}
-          {{ '- new extra field -'|trans }}
-        {% endif %}
-      </div>
     </div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      {% if form.extra_type_id.vars.value > 0 %}
+        {{ '%03d'|format(form.extra_type_id.vars.value) }}
+      {% else %}
+        {{ '- new extra field -'|trans }}
+      {% endif %}
+    </div>
+  </div>
 
-    {{ form_row(form.extra_type_type) }}
-
-    {{ form_row(form.extra_type_name) }}
-    {% if form.extra_type_id.vars.value > 0 %}  
-      <div>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.extra_type_type) }}</div>
+    <div class="col-lg-6 col-md-6 col-sm-8">{{ form_widget(form.extra_type_type, {'attr':{'class':'form-control input-sm'}}) }}</div>
+  </div>
+  <div class="height-5"></div>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.extra_type_name) }}</div>
+    <div class="col-lg-6 col-md-6 col-sm-8">{{ form_widget(form.extra_type_name, {'attr':{'class':'form-control input-sm'}}) }}</div>
+  </div>
+  
+  {% if form.extra_type_id.vars.value > 0 %}  
+    <div class="height-5"></div>
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4">
         <label>{{ 'Field name (translated)'|trans }}</label>
-        <div class="value">{{ form.extra_type_name.vars.value|replace({'_':' '})|capitalize }} &rArr; {{ form.extra_type_name.vars.value|replace({'_':' '})|capitalize|trans }}</div>
       </div>
-    {% endif %}
-
-    {{ form_row(form.extra_type_description) }} 
-    
-    {% if form.extra_type_id.vars.value > 0 %}  
-      <div>
-        <label>{{ 'Description (translated)'|trans }}</label>
-        <div class="value">{{ form.extra_type_description.vars.value|trans }}</div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
+        {{ form.extra_type_name.vars.value|replace({'_':' '})|capitalize }} &rArr; {{ form.extra_type_name.vars.value|replace({'_':' '})|capitalize|trans }}
       </div>
-    {% endif %}
-
-    {% if form.extra_type_id.vars.value > 0 %}
-      {#
-      <div>
-        <label>&nbsp;</label>
-        {{ form_widget(form.delete) }}
-      </div>    
-      #}
-      {{ form_row(form.delete) }}
-    {% endif %}
-
-    {#{ form_rest(form) }#}     
-      
-    <div>
-      <label for="submit">&nbsp;</label>
-      <input type="submit" name="submit" />
     </div>
-    <div class="clear"></div>  
-  </form>
-</div>
+    <div class="height-5"></div>  
+  {% endif %}
+
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.extra_type_description) }}</div>
+    <div class="col-lg-6 col-md-6 col-sm-8">{{ form_widget(form.extra_type_description, {'attr':{'class':'form-control input-sm'}}) }}</div>
+  </div>
+  
+  {% if form.extra_type_id.vars.value > 0 %}  
+    <div class="height-5"></div>
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4">
+        <label>{{ 'Description (translated)'|trans }}</label>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
+        {{ form.extra_type_description.vars.value|trans }}
+      </div>
+    </div>
+    <div class="height-5"></div>
+  {% endif %}
+
+  <div class="height-15"></div>
+  {% if form.extra_type_id.vars.value > 0 %}
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4"><label>&nbsp;</label></div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
+        <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the extra field <b>%extra_type_name%</b>'|trans({'%extra_type_name%':form.extra_type_name.vars.value}) }}
+      </div>
+    </div>
+  {% endif %}
+  
+  {#{ form_rest(form) }#}     
+  
+  <div class="height-15"></div>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4"<label for="submit">&nbsp;</label></div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      <input class="btn btn-default" type="submit" value="{{ 'Submit'|trans }}" />&nbsp;
+      <a class="btn btn-default" href="{{ FRAMEWORK_URL ~ route.list }}" role="button">{{ 'Cancel'|trans }}</a>
+    </div>
+  </div>
+  
+</form>

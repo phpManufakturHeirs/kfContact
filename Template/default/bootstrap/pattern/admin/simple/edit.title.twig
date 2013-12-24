@@ -7,53 +7,92 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 #}
 
-<div class="contact_form">
-  <form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }}>
-    {{ form_errors(form) }}
+{{ alert }}
 
-    {{ form_row(form.title_id) }}
-    <div>
-      <label>{{ 'title_id'|trans }}</label>
-      <div class="value">
-        {% if form.vars.value.title_id > 0 %}
-          {{ '%03d'|format(form.vars.value.title_id) }}
-        {% else %}
-          {{ '- new title -'|trans }}
-        {% endif %}
-     </div>
+<form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }} role="form">
+  {{ form_errors(form) }}
+  {{ form_row(form._token) }}
+  {{ form_row(form.title_id) }}
+  
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">
+      <label>{{ 'ID'|trans }}</label>
     </div>
-      
-    {{ form_row(form.title_identifier) }}
-    {{ form_row(form.title_short) }}
-    {% if form.vars.value.title_id > 0 %}  
-      <div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      {% if form.title_id.vars.value > 0 %}
+        {{ '%03d'|format(form.title_id.vars.value) }}
+      {% else %}
+        {{ '- new title -'|trans }}
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">
+      {{ form_label(form.title_identifier) }}
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      {{ form_widget(form.title_identifier, {'attr':{'class':'form-control input-sm'}}) }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">
+      {{ form_label(form.title_short) }}
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      {{ form_widget(form.title_short, {'attr':{'class':'form-control input-sm'}}) }}
+    </div>
+  </div>
+  
+  {% if form.vars.value.title_id > 0 %}  
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4">
         <label>{{ 'Short name (translated)'|trans }}</label>
-        <div class="value">{{ form.vars.value.title_short }} &rArr; {{ form.vars.value.title_short|trans }}</div>
       </div>
-    {% endif %}
-      
-    {{ form_row(form.title_long) }}
-    {% if form.vars.value.title_id > 0 %}
-      <div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
+        {{ form.vars.value.title_short }} &rArr; {{ form.vars.value.title_short|trans }}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">
+      {{ form_label(form.title_long) }}
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      {{ form_widget(form.title_long, {'attr':{'class':'form-control input-sm'}}) }}
+    </div>
+  </div>
+  {% if form.vars.value.title_id > 0 %}
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4">
         <label>{{ 'Long name (translated)'|trans }}</label>
-        <div class="value">{{ form.vars.value.title_long }} &rArr; {{ form.vars.value.title_long|trans }}</div>
       </div>
-    {% endif %}  
-      
-    {{ form_rest(form) }}
-    
-    {% if form.vars.value.title_id > 0 %}
-      <div class="clear"></div>
-      <div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
+        {{ form.vars.value.title_long }} &rArr; {{ form.vars.value.title_long|trans }}
+      </div>
+    </div>
+  {% endif %}  
+
+  {% if form.vars.value.title_id > 0 %}
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4">
         <label>&nbsp;</label>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
         <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the title <b>%title_identifier%</b>'|trans({'%title_identifier%':form.vars.value.title_identifier}) }}
       </div>
-    {% endif %}
-
-    <div>
-      <label for="submit">&nbsp;</label>
-      <input type="submit" name="submit" />
     </div>
-    <div class="clear"></div>  
-  </form>
-</div>
+  {% endif %}
+  
+  {#{ form_rest(form) }#}
+
+  <div class="height-15"></div>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4"<label for="submit">&nbsp;</label></div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      <input class="btn btn-default" type="submit" value="{{ 'Submit'|trans }}" />&nbsp;
+      <a class="btn btn-default" href="{{ FRAMEWORK_URL ~ route.list }}" role="button">{{ 'Cancel'|trans }}</a>
+    </div>
+  </div>
+</form>

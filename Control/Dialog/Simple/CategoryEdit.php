@@ -39,21 +39,28 @@ class CategoryEdit extends Dialog {
     {
         parent::__construct($app);
         if (!is_null($app)) {
-            $this->initialize($options);
+            $this->initialize($app, $options);
         }
     }
 
-    protected function initialize($options=null)
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Alert::initialize()
+     */
+    protected function initialize(Application $app, $options=null)
     {
+        parent::initialize($app);
+
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'backend/simple/edit.category.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
+                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'bootstrap/pattern/admin/simple/edit.category.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/category/edit',
-                'extra' => isset($options['route']['extra']) ? $options['route']['extra'] : '/admin/contact/simple/extra/list'
+                'extra' => isset($options['route']['extra']) ? $options['route']['extra'] : '/admin/contact/simple/extra/list',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/category/list',
             )
         ));
         $this->CategoryTypeData = new CategoryType($this->app);
@@ -135,8 +142,8 @@ class CategoryEdit extends Dialog {
     {
         if (self::$category_type_id > 0) {
             if (false === ($category = $this->CategoryTypeData->select(self::$category_type_id))) {
-                $this->setMessage('The category type with the ID %category_id% does not exists!',
-                    array('%category_id%' => self::$category_type_id));
+                $this->setAlert('The category type with the ID %category_id% does not exists!',
+                    array('%category_id%' => self::$category_type_id), self::ALERT_TYPE_WARNING);
                 self::$category_type_id = -1;
             }
         }
@@ -210,8 +217,8 @@ class CategoryEdit extends Dialog {
                 if (!is_null($this->app['request']->request->get('delete', null))) {
                     // delete the category
                     $this->CategoryTypeData->delete($category['category_type_id']);
-                    $this->setMessage('The category %category_type_name% was successfull deleted.',
-                        array('%category_type_name%' => $category['category_type_name']));
+                    $this->setAlert('The category %category_type_name% was successfull deleted.',
+                        array('%category_type_name%' => $category['category_type_name']), self::ALERT_TYPE_SUCCESS);
                     self::$category_type_id = -1;
                 }
                 else {
@@ -222,8 +229,8 @@ class CategoryEdit extends Dialog {
                             'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : ''
                         );
                         $this->CategoryTypeData->update($data, self::$category_type_id);
-                        $this->setMessage('The category %category_type_name% was successfull updated',
-                            array('%category_type_name%' => $category['category_type_name']));
+                        $this->setAlert('The category %category_type_name% was successfull updated',
+                            array('%category_type_name%' => $category['category_type_name']), self::ALERT_TYPE_SUCCESS);
                     }
                     else {
                         // insert a new record
@@ -231,8 +238,8 @@ class CategoryEdit extends Dialog {
                         $matches = array();
                         if (preg_match_all('/[^A-Z0-9_$]/', $category_type_name, $matches)) {
                             // name check fail
-                            $this->setMessage('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
-                                array('%identifier%' => 'Category'));
+                            $this->setAlert('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
+                                array('%identifier%' => 'Category'), self::ALERT_TYPE_WARNING);
                         }
                         else {
                             // insert the record
@@ -241,8 +248,8 @@ class CategoryEdit extends Dialog {
                                 'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : ''
                             );
                             $this->CategoryTypeData->insert($data, self::$category_type_id);
-                            $this->setMessage('The category %category_type_name% was successfull inserted.',
-                                array('%category_type_name%' => $category_type_name));
+                            $this->setAlert('The category %category_type_name% was successfull inserted.',
+                                array('%category_type_name%' => $category_type_name), self::ALERT_TYPE_SUCCESS);
                         }
                     }
                 }
@@ -251,13 +258,15 @@ class CategoryEdit extends Dialog {
             }
             else {
                 // general error (timeout, CSFR ...)
-                $this->setMessage('The form is not valid, please check your input and try again!');
+                $this->setAlert('The form is not valid, please check your input and try again!', array(), self::ALERT_TYPE_DANGER);
             }
         }
 
-        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['edit']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            self::$options['template']['namespace'], self::$options['template']['edit']),
             array(
                 'message' => $this->getMessage(),
+                'alert' => $this->getAlert(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
                 'extra' => $extra

@@ -32,27 +32,44 @@ class ExtraFieldEdit extends Dialog {
         }
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Alert::initialize()
+     */
     protected function initialize(Application $app, $options=null)
     {
-        $this->app = $app;
+        parent::initialize($app);
+
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'backend/simple/edit.extra.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
+                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'bootstrap/pattern/simple/edit.extra.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/extra/edit'
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/extra/edit',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/extra/list'
             )
         ));
         $this->ExtraType = new ExtraType($this->app);
     }
 
+    /**
+     * Set the type ID
+     *
+     * @param integer $type_id
+     */
     public function setTypeID($type_id)
     {
         self::$type_id = $type_id;
     }
 
+    /**
+     * Get the form fields
+     *
+     * @param array $data
+     * @return form.factory
+     */
     protected function getFormFields($data)
     {
         $fields = $this->app['form.factory']->createBuilder('form', $data)
@@ -96,6 +113,11 @@ class ExtraFieldEdit extends Dialog {
         return $this->exec();
     }
 
+    /**
+     * Execute the create and edit dialog
+     *
+     * @param array $extra
+     */
     public function exec($extra=null)
     {
         if (self::$type_id < 1) {
@@ -103,7 +125,8 @@ class ExtraFieldEdit extends Dialog {
         }
         elseif (false === ($type = $this->ExtraType->select(self::$type_id))) {
             $type = $this->ExtraType->getDefaultRecord();
-            $this->setMessage('The record with the ID %id% does not exists!', array('%id%' => self::$type_id));
+            $this->setAlert('The record with the ID %id% does not exists!',
+                array('%id%' => self::$type_id), self::ALERT_TYPE_WARNING);
             self::$type_id = -1;
         }
 
@@ -123,12 +146,13 @@ class ExtraFieldEdit extends Dialog {
                     $type_name = str_replace(' ', '_', strtoupper($type['extra_type_name']));
                     if (preg_match_all('/[^A-Z0-9_$]/', $type_name, $matches)) {
                         // name check fail
-                        $this->setMessage('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
-                            array('%identifier%' => $this->app['tranlator']->trans('Extra field')));
+                        $this->setAlert('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
+                            array('%identifier%' => $this->app['tranlator']->trans('Extra field')), self::ALERT_TYPE_WARNING);
                     }
                     elseif ($this->ExtraType->existsTypeName($type_name)) {
                         // the tag already exists
-                        $this->setMessage('The identifier %identifier% already exists!', array('%identifier%' => $type_name));
+                        $this->setAlert('The identifier %identifier% already exists!',
+                            array('%identifier%' => $type_name), self::ALERT_TYPE_WARNING);
                     }
                     else {
                         $data = array(
@@ -137,14 +161,15 @@ class ExtraFieldEdit extends Dialog {
                             'extra_type_description' => !is_null($type['extra_type_description']) ? $type['extra_type_description'] : ''
                         );
                         $this->ExtraType->insert($data, self::$type_id);
-                        $this->setMessage('The record with the ID %id% was successfull inserted.',
-                            array('%id%' => self::$type_id));
+                        $this->setAlert('The record with the ID %id% was successfull inserted.',
+                            array('%id%' => self::$type_id), self::ALERT_TYPE_SUCCESS);
                     }
                 }
                 elseif (!empty($type['delete'])) {
                     // delete the extra field
                     $this->ExtraType->delete(self::$type_id);
-                    $this->setMessage('The record with the ID %id% was successfull deleted.', array('%id%' => self::$type_id));
+                    $this->setAlert('The record with the ID %id% was successfull deleted.',
+                        array('%id%' => self::$type_id), self::ALERT_TYPE_SUCCESS);
                     self::$type_id = -1;
                 }
                 else {
@@ -154,8 +179,8 @@ class ExtraFieldEdit extends Dialog {
                         'extra_type_description' => $type['extra_type_description']
                     );
                     $this->ExtraType->update($data, self::$type_id);
-                    $this->setMessage('The record with the ID %id% was successfull updated.',
-                        array('%id%' => self::$type_id));
+                    $this->setAlert('The record with the ID %id% was successfull updated.',
+                        array('%id%' => self::$type_id), self::ALERT_TYPE_SUCCESS);
                 }
 
                 if (self::$type_id > 0) {
@@ -172,7 +197,8 @@ class ExtraFieldEdit extends Dialog {
             }
             else {
                 // general error (timeout, CSFR ...)
-                $this->setMessage('The form is not valid, please check your input and try again!');
+                $this->setAlert('The form is not valid, please check your input and try again!',
+                    array(), self::ALERT_TYPE_DANGER);
             }
         }
 
@@ -181,6 +207,7 @@ class ExtraFieldEdit extends Dialog {
             self::$options['template']['edit']),
             array(
                 'message' => $this->getMessage(),
+                'alert' => $this->getAlert(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
                 'extra' => $extra

@@ -32,23 +32,31 @@ class ContactCompany extends Dialog {
         parent::__construct($app);
 
         if (!is_null($app)) {
-            $this->initialize($options);
+            $this->initialize($app, $options);
         }
     }
 
-    protected function initialize($options=null)
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Alert::initialize()
+     */
+    protected function initialize(Application $app, $options=null)
     {
+        parent::initialize($app);
+
         // set the form options
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'backend/simple/edit.company.contact.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
+                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'bootstrap/pattern/admin/simple/edit.contact.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact/company',
                 'category' => isset($options['route']['category']) ? $options['route']['category'] : '/admin/contact/simple/category/list',
-                'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/simple/tag/list'
+                'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/simple/tag/list',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/list'
             )
         ));
         $this->ContactControl = new ContactControl($this->app);
@@ -204,7 +212,7 @@ class ContactCompany extends Dialog {
         ->add('email_id', 'hidden', array(
             'data' => $email['communication_id']
         ))
-        ->add('email_value', 'email', array(
+        ->add('email', 'email', array(
             'required' => self::$config['email']['required'],
             'label' => 'E-Mail',
             'data' => $email['communication_value']
@@ -357,6 +365,13 @@ class ContactCompany extends Dialog {
         return $form;
     }
 
+    /**
+     * Get the form data
+     *
+     * @param array $data
+     * @param array $extra_info
+     * @return array contact record
+     */
     public function getFormData($data, $extra_info=array())
     {
         $tags = array();
@@ -413,7 +428,7 @@ class ContactCompany extends Dialog {
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'EMAIL',
                     'communication_usage' => 'BUSINESS',
-                    'communication_value' => $data['email_value']
+                    'communication_value' => $data['email']
                 ),
                 array(
                     // phone
@@ -515,8 +530,9 @@ class ContactCompany extends Dialog {
 
         $contact = $this->ContactControl->select(self::$contact_id, 'COMPANY');
 
-        if ($this->ContactControl->isMessage()) {
-            self::$message = $this->ContactControl->getMessage();
+        if ($this->ContactControl->isAlert()) {
+            $this->setAlert(strip_tags($this->ContactControl->getMessage()),
+                array(), self::ALERT_TYPE_WARNING);
         }
 
         // get the form fields
@@ -543,12 +559,13 @@ class ContactCompany extends Dialog {
                     $this->ContactControl->update($contact, self::$contact_id, $has_changed);
                 }
 
-                if (!$this->ContactControl->isMessage()) {
-                    $this->setMessage("The contact process has not returned a status message");
+                if (!$this->ContactControl->isAlert()) {
+                    $this->setAlert("The contact process has not returned a status message",
+                        array(), self::ALERT_TYPE_WARNING);
                 }
                 else {
                     // use the return status messages
-                    self::$message = $this->ContactControl->getMessage();
+                    $this->setAlertUnformatted($this->ContactControl->getAlert());
                 }
 
                 // get the values of the new or updated record
@@ -560,11 +577,13 @@ class ContactCompany extends Dialog {
             }
             else {
                 // general error (timeout, CSFR ...)
-                $this->setMessage('The form is not valid, please check your input and try again!');
+                $this->setAlert('The form is not valid, please check your input and try again!',
+                    array(), self::ALERT_TYPE_DANGER);
             }
         }
 
-        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['contact']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            self::$options['template']['namespace'], self::$options['template']['contact']),
             array(
                 'message' => $this->getMessage(),
                 'form' => $form->createView(),

@@ -149,7 +149,7 @@ $app->match('/admin/contact/backend/search',
 $app->match('/admin/contact/backend/select',
     // select a new contact
     'phpManufaktur\Contact\Control\Backend\ContactSelect::controller');
-$app->match('/admin/contact/contact/backend/select/id/{contact_id}',
+$app->match('/admin/contact/backend/select/id/{contact_id}',
     // select a person or company contact
     'phpManufaktur\Contact\Control\Backend\ContactSelect::controller');
 $app->match('/admin/contact/backend/category/list',
@@ -182,7 +182,7 @@ $app->match('/admin/contact/backend/tag/edit/id/{tag_id}',
 $app->match('/admin/contact/backend/title/list',
     // title list
     'phpManufaktur\Contact\Control\Backend\TitleList::controller');
-$app->match('/admin/contact/backend/title/create',
+$app->match('/admin/contact/backend/title/edit',
     // create a new title
     'phpManufaktur\Contact\Control\Backend\TitleEdit::controller');
 $app->match('/admin/contact/backend/title/edit/id/{title_id}',

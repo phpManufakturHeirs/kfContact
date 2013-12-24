@@ -7,54 +7,85 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 #}
 
-<div class="contact_form">
-  <form action="{{ FRAMEWORK_URL }}{{ route.action }}" method="post">
-    
-    {{ form_row(form.tag_type_id) }}
-    <div>
+{{ alert }}
+
+<form action="{{ FRAMEWORK_URL }}{{ route.action }}" method="post" role="form">
+
+  {{ form_errors(form) }}
+  {{ form_row(form._token) }}
+  {{ form_row(form.tag_type_id) }}
+  
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">
       <label>ID</label>
-      <div class="value">
-        {% if form.vars.value.tag_type_id > 0 %}
-          {{ '%03d'|format(form.vars.value.tag_type_id) }}
-        {% else %}
-          {{ '- new tag -'|trans }}
-        {% endif %}
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      {% if form.vars.value.tag_type_id > 0 %}
+        {{ '%03d'|format(form.vars.value.tag_type_id) }}
+      {% else %}
+        {{ '- new tag -'|trans }}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.tag_name) }}</div>
+    <div class="col-lg-6 col-md-6 col-sm-8">{{ form_widget(form.tag_name, {'attr':{'class':'form-control input-sm'}}) }}</div>
+  </div>
+      
+  {% if form.vars.value.tag_type_id > 0 %}  
+    <div class="height-5"></div>
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4">
+        <label>{{ 'Tag (translated)'|trans }}</label>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
+        {{ form.vars.value.tag_name|capitalize }} &rArr; {{ form.vars.value.tag_name|capitalize|trans }}
       </div>
     </div>
-    
-    {{ form_row(form.tag_name) }}
-    
-    {% if form.vars.value.tag_type_id > 0 %}  
-      <div>
-        <label>{{ 'Tag (translated)'|trans }}</label>
-        <div class="value">{{ form.vars.value.tag_name|capitalize }} &rArr; {{ form.vars.value.tag_name|capitalize|trans }}</div>
-      </div>
-    {% endif %}
-    
-    {{ form_row(form.tag_description) }}
-    {% if form.vars.value.tag_type_id > 0 %}  
-      <div>
+    <div class="height-5"></div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.tag_description) }}</div>
+    <div class="col-lg-6 col-md-6 col-sm-8">{{ form_widget(form.tag_description, {'attr':{'class':'form-control input-sm'}}) }}</div>
+  </div>
+   
+  {% if form.vars.value.tag_type_id > 0 %}  
+    <div class="height-5"></div>
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4">
         <label>{{ 'Description (translated)'|trans }}</label>
-        <div class="value">{{ form.vars.value.tag_description|trans }}</div>
       </div>
-    {% endif %}
-    
-    
-    {% if form.vars.value.tag_type_id > 0 %}
-      <div class="clear"></div>
-      <div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
+        {{ form.vars.value.tag_description|trans }}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if form.vars.value.tag_type_id > 0 %}
+    <div class="height-15"></div>
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4">
         <label>&nbsp;</label>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
         <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the #tag <b>%tag_name%</b>'|trans({'%tag_name%':form.vars.value.tag_name}) }}
       </div>
-    {% endif %}
-      
-    {{ form_rest(form) }}  
-    
-    <div class="clear"></div>
-    <div>
-      <label for="submit">&nbsp;</label>
-      <input type="submit" name="submit" />
     </div>
-    <div class="clear"></div>  
-  </form>
-</div>
+    <div class="height-15"></div>
+  {% endif %}
+
+  {#{ form_rest(form) }#}  
+
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">
+      <label for="submit">&nbsp;</label>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      <input class="btn btn-default" type="submit" value="{{ 'Submit'|trans }}" />&nbsp;
+      <a class="btn btn-default" href="{{ FRAMEWORK_URL ~ route.list }}" role="button">{{ 'Cancel'|trans }}</a>
+    </div>
+  </div>
+  <div class="clear"></div>  
+</form>

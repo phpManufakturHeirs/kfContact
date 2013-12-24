@@ -139,6 +139,8 @@ return array(
         => 'Eine neue Markierung (#tag) erstellen',
     'Create a new title'
         => 'Einen neuen Titel erstellen',
+    'Create contact'
+        => 'Kontakt anlegen',
     'Customer'
         => 'Kunde',
 
@@ -227,6 +229,8 @@ return array(
 
     'Nick name'
         => 'Spitzname',
+    'no extra field assigned'
+        => 'kein Zusatzfeld zugeordnet',
     'No hits for the search term <i>%search%</i>!'
         => 'Keine Treffer für den Suchbegriff <i>%search%</i>!',
     'Note'
@@ -253,8 +257,8 @@ return array(
         => 'Telefon',
     'Please define a short name for the title!'
         => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
-    'Please select the contact type you want to create.'
-        => 'Bitte wählen Sie den Kontakt Typ aus, den Sie erstellen möchten.',
+    'Please select the type of contact you want to create. Be aware that you can not change the contact type if the record is created.'
+        => 'Bitte legen Sie den Typ des neuen Kontakt fest. Bitte beachten Sie, dass Sie den Typ nicht mehr ändern können wenn der Datensatz angelegt ist.',
     'Please specify a search term!'
         => 'Bitte geben Sie einen Suchbegriff ein!',
     'prof'

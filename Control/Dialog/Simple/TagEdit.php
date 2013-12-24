@@ -30,26 +30,38 @@ class TagEdit extends Dialog {
         parent::__construct($app);
 
         if (!is_null($app)) {
-            $this->initialize($options);
+            $this->initialize($app, $options);
         }
     }
 
-    protected function initialize($options=null)
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Alert::initialize()
+     */
+    protected function initialize(Application $app, $options=null)
     {
+        parent::initialize($app);
+
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'backend/simple/edit.tag.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
+                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'bootstrap/admin/simple/edit.tag.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/tag/edit'
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/tag/edit',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/tag/list',
             )
         ));
 
         $this->TagTypeData = new TagTypeData($this->app);
     }
 
+    /**
+     * Set the given Tag ID
+     *
+     * @param integer $tag_id
+     */
     public function setTagID($tag_id)
     {
         self::$tag_type_id = $tag_id;
@@ -120,8 +132,8 @@ class TagEdit extends Dialog {
             if (!is_null($delete)) {
                 // delete this tag
                 $this->TagTypeData->delete(self::$tag_type_id);
-                $this->setMessage('The record with the ID %id% was successfull deleted.',
-                    array('%id%' => self::$tag_type_id));
+                $this->setAlert('The record with the ID %id% was successfull deleted.',
+                    array('%id%' => self::$tag_type_id), self::ALERT_TYPE_SUCCESS);
                 self::$tag_type_id = -1;
                 $tag_type = $this->TagTypeData->getDefaultRecord();
                 $form = $this->getForm($tag_type);
@@ -138,12 +150,13 @@ class TagEdit extends Dialog {
                         $tag_name = str_replace(' ', '_', strtoupper($tag['tag_name']));
                         if (preg_match_all('/[^A-Z0-9_$]/', $tag_name, $matches)) {
                             // name check fail
-                            $this->setMessage('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
-                                array('%identifier%' => 'Tag'));
+                            $this->setAlert('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
+                                array('%identifier%' => 'Tag'), self::ALERT_TYPE_WARNING);
                         }
                         elseif ($this->TagTypeData->existsTag($tag_name)) {
                             // the tag already exists
-                            $this->setMessage('The tag type %tag_name% already exists!', array('%tag_name%' => $tag_name));
+                            $this->setAlert('The tag type %tag_name% already exists!',
+                                array('%tag_name%' => $tag_name), self::ALERT_TYPE_WARNING);
                         }
                         else {
                             $data = array(
@@ -151,13 +164,15 @@ class TagEdit extends Dialog {
                                 'tag_description' => !is_null($tag['tag_description']) ? $tag['tag_description'] : ''
                             );
                             $this->TagTypeData->insert($data, self::$tag_type_id);
-                            $this->setMessage('The record with the ID %id% was successfull inserted.', array('%id%' => self::$tag_type_id));
+                            $this->setAlert('The record with the ID %id% was successfull inserted.',
+                                array('%id%' => self::$tag_type_id), self::ALERT_TYPE_SUCCESS);
                         }
                     }
                     else {
                         // update an existing tag
                         $this->TagTypeData->update($tag, self::$tag_type_id);
-                        $this->setMessage('The record with the ID %id% was successfull updated.', array('%id%' => self::$tag_type_id));
+                        $this->setAlert('The record with the ID %id% was successfull updated.',
+                            array('%id%' => self::$tag_type_id), self::ALERT_TYPE_SUCCESS);
                     }
 
                     // get the changed tag record
@@ -169,14 +184,17 @@ class TagEdit extends Dialog {
                 }
                 else {
                     // general error (timeout, CSFR ...)
-                    $this->setMessage('The form is not valid, please check your input and try again!');
+                    $this->setAlert('The form is not valid, please check your input and try again!',
+                        array(), self::ALERT_TYPE_DANGER);
                 }
             }
         }
 
-        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['edit']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            self::$options['template']['namespace'], self::$options['template']['edit']),
             array(
                 'message' => $this->getMessage(),
+                'alert' => $this->getAlert(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
                 'extra' => $extra

@@ -57,8 +57,8 @@ class ContactPerson extends ContactParent
     {
         // the person_id must be always set!
         if (!isset($person_data['person_id'])) {
-            $this->setMessage("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
-                array('%identifier%' => 'person_id'));
+            $this->setAlert("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
+                array('%identifier%' => 'person_id'), self::ALERT_TYPE_WARNING);
             return false;
         }
         // check if any items are NULL

@@ -19,6 +19,11 @@ class TagList extends Backend {
 
     protected $SimpleTagList = null;
 
+    /**
+     * Constructor
+     *
+     * @param Application $app
+     */
     public function __construct(Application $app=null)
     {
         parent::__construct($app);
@@ -27,14 +32,18 @@ class TagList extends Backend {
         }
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Backend\Backend::initialize()
+     */
     protected function initialize(Application $app)
     {
         parent::initialize($app);
         $this->SimpleTagList = new SimpleTagList($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'message' => 'backend/message.twig',
-                'list' => 'backend/admin/contact.tag.list.twig'
+                'alert' => 'bootstrap/pattern/alert.twig',
+                'list' => 'bootstrap/admin/list.tag.twig'
             ),
             'route' => array(
                 'create' => '/admin/contact/backend/tag/edit?usage='.self::$usage,
@@ -43,6 +52,11 @@ class TagList extends Backend {
         ));
     }
 
+    /**
+     * Controller for the Contact tag list
+     *
+     * @param Application $app
+     */
     public function controller(Application $app)
     {
         $this->initialize($app);

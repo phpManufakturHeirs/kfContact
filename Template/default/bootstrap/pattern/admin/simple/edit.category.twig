@@ -6,25 +6,101 @@
   @copyright 2013 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 #}
-{% extends getTemplateFile('@phpManufaktur/Basic/Template', 'framework/body.twig') %}
-{% block stylesheet %}
-    {{ parent() }}
-  <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/backend/simple/css/contact.css" media="screen, projection" />
-{% endblock %}
 
-{% block content %}
-  {% if form.vars.value.category_type_id > 0 %}
-    <h1>{{ 'Edit the category %category_type_name%'|trans({'%category_type_name%':form.vars.value.category_type_name}) }}</h1>
-  {% else %}
-    <h1>{{ 'Create a new category'|trans }}</h1>
-  {% endif %}
-  {% if message|length > 0 %}
-    <div class="message">{{ message }}</div>
-  {% endif %}
+{{ alert }}
 
-  {% include '@phpManufaktur/Contact/Template/default/backend/form/edit.category.twig' %}
+<form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }} role="form">
+  
+  {{ form_errors(form) }}
+  {{ form_row(form._token) }}
+  {{ form_row(form.category_type_id) }}
 
-  <div>
-    <p><a href="{{ FRAMEWORK_URL }}/admin/contact/simple/category/list">{{ 'Change to the overview'|trans }}</a></p>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">
+      <label>{{ 'category_type_id'|trans }}</label>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      {% if form.category_type_id.vars.value > 0 %}
+        {{ '%03d'|format(form.category_type_id.vars.value) }}
+      {% else %}
+        {{ '- new category -'|trans }}
+      {% endif %}
+    </div>
   </div>
-{% endblock content %}
+
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.category_type_name) }}</div>
+    <div class="col-lg-6 col-md-6 col-sm-8">{{ form_widget(form.category_type_name, {'attr':{'class':'form-control input-sm'}}) }}</div>
+  </div>
+
+  {% if form.vars.value.category_type_id > 0 %}
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4"><label>{{ 'Category name (translated)'|trans }}</label></div>
+      <div class="col-lg-6 col-md-6 col-sm-8">{{ form.vars.value.category_type_name|capitalize }} &rArr; {{ form.vars.value.category_type_name|capitalize|trans }}</div>
+    </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.category_type_description) }}</div>
+    <div class="col-lg-6 col-md-6 col-sm-8">{{ form_widget(form.category_type_description, {'attr':{'class':'form-control input-sm'}}) }}</div>
+  </div>
+
+  {% if form.category_type_id.vars.value > 0 %}
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4"><label>{{ 'Category description (translated)'|trans }}</label></div>
+      <div class="col-lg-6 col-md-6 col-sm-8">{{ form.category_type_description.vars.value|trans }}</div>
+    </div>
+  {% endif %}
+
+  {{ form_row(form.category_extra_fields) }}
+  <div class="height-5"></div>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4"><label>{{ 'Extra fields'|trans }}</label></div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      {% if form.category_extra_fields.vars.value|length > 0 %}
+        {% set extras = form.category_extra_fields.vars.value|split(',') %}
+        {% for extra in extras %}
+          <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4">{{ form_label(attribute(form, 'extra_field_' ~ extra)) }}</div>
+            <div class="col-lg-8 col-md-8 col-sm-8">{{ form_widget(attribute(form, 'extra_field_' ~ extra), {'attr':{'class':'form-control input-sm'}}) }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        - {{ 'no extra field assigned'|trans }} -
+      {% endif %}
+    </div>
+  </div>  
+  <div class="height-5"></div> 
+
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.add_extra_field) }}</div>
+    <div class="col-lg-5 col-md-5 col-sm-6">
+      {{ form_widget(form.add_extra_field, {'attr':{'class':'form-control input-sm'}}) }}
+    </div>
+    <div class="col-lg-1 col-md-1 col-sm-2">
+      <a class="btn btn-default input-sm" href="{{ FRAMEWORK_URL ~ route.extra }}" role="button" title="{{ 'Edit extra fields'|trans }}"><i class="fa fa-pencil-square-o"></i></a>
+    </div>
+  </div>  
+
+  <div class="height-15"></div>
+  {% if form.category_type_id.vars.value > 0 %}
+    <div class="row">
+      <div class="col-lg-3 col-md-3 col-sm-4"><label>&nbsp;</label></div>
+      <div class="col-lg-6 col-md-6 col-sm-8">
+        <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the category <b>%category_type_name%</b>'|trans({'%category_type_name%':form.category_type_name.vars.value}) }}
+      </div>
+    </div>
+  {% endif %}
+
+  {{ form_rest(form) }}
+
+  <div class="height-15"></div>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4"<label for="submit">&nbsp;</label></div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      <input class="btn btn-default" type="submit" value="{{ 'Submit'|trans }}" />&nbsp;
+      <a class="btn btn-default" href="{{ FRAMEWORK_URL ~ route.list }}" role="button">{{ 'Cancel'|trans }}</a>
+    </div>
+  </div>
+
+</form>

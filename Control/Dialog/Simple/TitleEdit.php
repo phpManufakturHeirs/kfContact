@@ -28,26 +28,36 @@ class TitleEdit extends Dialog {
     {
         parent::__construct($app);
         if (!is_null($app)) {
-            $this->initialize($options);
+            $this->initialize($app, $options);
         }
     }
 
-    protected function initialize($options=null)
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Alert::initialize()
+     */
+    protected function initialize(Application $app, $options=null)
     {
+        parent::initialize($app);
+
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'backend/simple/edit.title.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
+                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'bootstrap/pattern/admin/simple/edit.title.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/title/edit'
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/title/edit',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/title/list'
             )
         ));
         $this->TitleData = new Title($this->app);
     }
 
-      /**
+    /**
+     * Set the title ID
+     *
      * @param number $title_id
      */
     public function setTitleID($title_id)
@@ -55,6 +65,11 @@ class TitleEdit extends Dialog {
         self::$title_id = $title_id;
     }
 
+    /**
+     * Get the title form
+     *
+     * @param array $title
+     */
     protected function getForm($title)
     {
         return $this->app['form.factory']->createBuilder('form', $title)
@@ -72,12 +87,17 @@ class TitleEdit extends Dialog {
             ->getForm();
     }
 
+    /**
+     * Get the title
+     *
+     * @return array
+     */
     protected function getTitle()
     {
         if (self::$title_id > 0) {
             if (false === ($title = $this->TitleData->select(self::$title_id))) {
-                $this->setMessage('The title with the ID %title_id% does not exists!',
-                    array('%title_id%' => self::$title_id));
+                $this->setAlert('The title with the ID %title_id% does not exists!',
+                    array('%title_id%' => self::$title_id), self::ALERT_TYPE_WARNING);
                 self::$title_id = -1;
             }
         }
@@ -94,6 +114,13 @@ class TitleEdit extends Dialog {
         return $title;
     }
 
+    /**
+     * Controller to create or edit the title
+     *
+     * @param Application $app
+     * @param integer $title_id
+     * @return string
+     */
     public function controller(Application $app, $title_id=null)
     {
         $this->app = $app;
@@ -128,8 +155,8 @@ class TitleEdit extends Dialog {
                 if (!is_null($this->app['request']->request->get('delete', null))) {
                     // delete the title
                     $this->TitleData->delete($title['title_id']);
-                    $this->setMessage('The title %title_identifier% was successfull deleted.',
-                        array('%title_identifier%' => $title['title_identifier']));
+                    $this->setAlert('The title %title_identifier% was successfull deleted.',
+                        array('%title_identifier%' => $title['title_identifier']), self::ALERT_TYPE_SUCCESS);
                     self::$title_id = -1;
                 }
                 else {
@@ -138,7 +165,7 @@ class TitleEdit extends Dialog {
                         // update the record
                         if (empty($title['title_short']) || (strlen($title['title_short']) < 2)) {
                             // missing the short title!
-                            $this->setMessage('Please define a short name for the title!');
+                            $this->setAlert('Please define a short name for the title!');
                         }
                         else {
                             if (empty($title['title_long'])) {
@@ -149,8 +176,8 @@ class TitleEdit extends Dialog {
                                 'title_long' => $title['title_long']
                             );
                             $this->TitleData->update($data, $title['title_id']);
-                            $this->setMessage('The record with the ID %id% was successfull updated.',
-                                array('%id%' => $title['title_id']));
+                            $this->setAlert('The record with the ID %id% was successfull updated.',
+                                array('%id%' => $title['title_id']), self::ALERT_TYPE_SUCCESS);
                         }
                     }
                     else {
@@ -159,12 +186,12 @@ class TitleEdit extends Dialog {
                         $matches = array();
                         if (preg_match_all('/[^A-Z0-9_$]/', $title_identifier, $matches)) {
                             // name check fail
-                            $this->setMessage('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
-                                array('%identifier%' => 'Title'));
+                            $this->setAlert('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
+                                array('%identifier%' => 'Title'), self::ALERT_TYPE_WARNING);
                         }
                         elseif (empty($title['title_short']) || (strlen($title['title_short']) < 2)) {
                             // missing the short title!
-                            $this->setMessage('Please define a short name for the title!');
+                            $this->setAlert('Please define a short name for the title!');
                         }
                         else {
                             // insert the record
@@ -177,8 +204,8 @@ class TitleEdit extends Dialog {
                                 'title_long' => $title['title_long']
                             );
                             $this->TitleData->insert($data, self::$title_id);
-                            $this->setMessage('The title %title_identifier% was successfull inserted.',
-                                array('%title_identifier%' => $title_identifier));
+                            $this->setAlert('The title %title_identifier% was successfull inserted.',
+                                array('%title_identifier%' => $title_identifier), self::ALERT_TYPE_SUCCESS);
                         }
                     }
                 }
@@ -187,18 +214,17 @@ class TitleEdit extends Dialog {
             }
             else {
                 // general error (timeout, CSFR ...)
-                $this->setMessage('The form is not valid, please check your input and try again!');
+                $this->setAlert('The form is not valid, please check your input and try again!', array(), self::ALERT_TYPE_DANGER);
             }
         }
 
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['edit']),
             array(
-                'message' => $this->getMessage(),
+                'alert' => $this->getAlert(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
                 'extra' => $extra
             ));
     }
-
 
 }

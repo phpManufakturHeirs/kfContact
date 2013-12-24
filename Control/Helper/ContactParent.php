@@ -11,56 +11,9 @@
 
 namespace phpManufaktur\Contact\Control\Helper;
 
-use Silex\Application;
+use phpManufaktur\Contact\Control\Alert;
 
-class ContactParent
+class ContactParent extends Alert
 {
-    protected $app = null;
-    protected static $message = '';
-
-    /**
-     * Constructor
-     *
-     * @param Application $app
-     */
-    public function __construct(Application $app)
-    {
-        $this->app = $app;
-    }
-
-    /**
-     * @return the $message
-     */
-    public static function getMessage()
-    {
-        return self::$message;
-    }
-
-    /**
-     * @param string $message
-     */
-    public function setMessage($message, $params=array())
-    {
-        self::$message .= $this->app['twig']->render($this->app['utils']->getTemplateFile('@phpManufaktur/Contact/Template', 'backend/message.twig'),
-            array('message' => $this->app['translator']->trans($message, $params)));
-    }
-
-    /**
-     * Check if a message is active
-     *
-     * @return boolean
-     */
-    public static function isMessage()
-    {
-        return !empty(self::$message);
-    }
-
-    /**
-     * Clear the existing message(s)
-     */
-    public static function clearMessage()
-    {
-        self::$message = '';
-    }
-
+    // nothing to extend at the moment ...
 }

@@ -262,12 +262,13 @@ class Contact extends ContactParent
             else {
                 if (false === ($contact = $this->ContactData->select(self::$contact_id))) {
                     self::$contact_id = -1;
-                    $this->setMessage("The contact with the ID %contact_id% does not exists!", array('%contact_id%' => $identifier));
+                    $this->setAlert("The contact with the ID %contact_id% does not exists!",
+                        array('%contact_id%' => $identifier), self::ALERT_TYPE_WARNING);
                     return $this->getDefaultRecord($contact_type);
                 }
                 if (false === ($contact = $this->ContactData->selectContact(self::$contact_id))) {
-                    $this->setMessage("Can't read the contact with the ID %contact_id% - it is possibly deleted.",
-                        array('%contact_id%' => $identifier));
+                    $this->setAlert("Can't read the contact with the ID %contact_id% - it is possibly deleted.",
+                        array('%contact_id%' => $identifier), self::ALERT_TYPE_WARNING);
                     return $this->getDefaultRecord($contact_type);
                 }
                 return $contact;
@@ -303,16 +304,16 @@ class Contact extends ContactParent
     {
         // the contact_id must be always set
         if (!isset($data['contact_id']) || !is_numeric($data['contact_id'])) {
-            $this->setMessage("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
-                array('%identifier%' => 'contact_id'));
+            $this->setAlert("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
+                array('%identifier%' => 'contact_id'), self::ALERT_TYPE_WARNING);
             return false;
         }
 
         // the contact type must be always set
         $contact_types = $this->ContactData->getContactTypes();
         if (!isset($data['contact_type']) || !in_array($data['contact_type'], $contact_types)) {
-            $this->setMessage("The contact_type must be always set (%contact_types%).",
-                array('%contact_types%' => implode(', ', $contact_types)));
+            $this->setAlert("The contact_type must be always set (%contact_types%).",
+                array('%contact_types%' => implode(', ', $contact_types)), self::ALERT_TYPE_WARNING);
             return false;
         }
 
@@ -330,7 +331,7 @@ class Contact extends ContactParent
                                 if (isset($communication['communication_value'])) {
                                     $errors = $this->app['validator']->validateValue($communication['communication_value'], new Assert\Email());
                                     if (count($errors) > 0) {
-                                        $this->setMessage("The contact login must be set!");
+                                        $this->setAlert("The contact login must be set!", array(), self::ALERT_TYPE_WARNING);
                                         return false;
                                     }
                                     else {
@@ -343,17 +344,17 @@ class Contact extends ContactParent
                             }
                         }
                         if (!$use_email) {
-                            $this->setMessage("The contact login must be set!");
+                            $this->setAlert("The contact login must be set!", array(), self::ALERT_TYPE_WARNING);
                             return false;
                         }
                     }
                     else {
-                        $this->setMessage("The contact login must be set!");
+                        $this->setAlert("The contact login must be set!", array(), self::ALERT_TYPE_WARNING);
                         return false;
                     }
                 }
                 else {
-                    $this->setMessage("The contact login must be set!");
+                    $this->setAlert("The contact login must be set!", array(), self::ALERT_TYPE_WARNING);
                     return false;
                 }
             }
@@ -364,7 +365,7 @@ class Contact extends ContactParent
                     $data['contact_name'] = $data['contact_login'];
                 }
                 else {
-                    $this->setMessage("The contact name must be set!");
+                    $this->setAlert("The contact name must be set!", array(), self::ALERT_TYPE_WARNING);
                     return false;
                 }
             }
@@ -373,8 +374,8 @@ class Contact extends ContactParent
         // if this is new record check it the login name is available
         if (($data['contact_id'] < 1) &&
             (false !== ($check = $this->ContactData->selectLogin($data['contact_login'])))) {
-            $this->setMessage('The login <b>%login%</b> is already in use, please choose another one!',
-                array('%login%' => $data['contact_login']));
+            $this->setAlert('The login <b>%login%</b> is already in use, please choose another one!',
+                array('%login%' => $data['contact_login']), self::ALERT_TYPE_WARNING);
             return false;
         }
 
@@ -398,7 +399,7 @@ class Contact extends ContactParent
         }
 
         $check = true;
-        $this->clearMessage();
+        $this->clearAlert();
 
         foreach ($options as $key => $value) {
             if (is_array($value)) {
@@ -546,7 +547,8 @@ class Contact extends ContactParent
             }
 
             if (!$check) {
-                $this->setMessage("The login_name or a email address must be always set, can't insert the record!");
+                $this->setAlert("The login_name or a email address must be always set, can't insert the record!",
+                    array(), self::ALERT_TYPE_WARNING);
                 return false;
             }
         }
@@ -584,14 +586,15 @@ class Contact extends ContactParent
             // BEGIN TRANSACTION
             $this->app['db']->beginTransaction();
 
-            $this->clearMessage();
+            $this->clearAlert();
 
             // get the contact blocks with the options
             $contact_blocks = $this->getContactBlocks();
 
             // first step: insert a contact record
             if (!isset($data['contact'])) {
-                $this->setMessage("Missing the contact block! Can't insert the new record!");
+                $this->setAlert("Missing the contact block! Can't insert the new record!",
+                    array(), self::ALERT_TYPE_WARNING);
                 $this->app['db']->rollback();
                 return false;
             }
@@ -683,7 +686,7 @@ class Contact extends ContactParent
                         if (isset($data['extra_fields'])) {
                             foreach ($data['extra_fields'] as $field) {
                                 if (false === ($type = $this->ExtraType->selectName($field['extra_type_name']))) {
-                                    $this->setMessage('Missing the field `extra_type_name`');
+                                    $this->setAlert('Missing the field `extra_type_name`', array(), self::ALERT_TYPE_WARNING);
                                     $this->app['db']->rollback();
                                     return false;
                                 }
@@ -717,8 +720,9 @@ class Contact extends ContactParent
             // COMMIT TRANSACTION
             $this->app['db']->commit();
 
-            if (!$this->isMessage()) {
-                $this->setMessage("Inserted the new contact with the ID %contact_id%.", array('%contact_id%' => self::$contact_id));
+            if (!$this->isAlert()) {
+                $this->setAlert("Inserted the new contact with the ID %contact_id%.",
+                    array('%contact_id%' => self::$contact_id), self::ALERT_TYPE_SUCCESS);
             }
 
             return true;
@@ -757,26 +761,28 @@ class Contact extends ContactParent
                     case 'contact_login':
                         if (is_null($value) || empty($value)) {
                             // contact_login must be always set!
-                            $this->setMessage("The field %field% can not be empty!", array('%field%' => 'contact_login'));
+                            $this->setAlert("The field %field% can not be empty!",
+                                array('%field%' => 'contact_login'), self::ALERT_TYPE_WARNING);
                             return false;
                         }
                         // check if the login already exists
                         if ($this->ContactData->existsLogin($value, $contact_id)) {
-                            $this->setMessage('The login <b>%login%</b> is already in use, please choose another one!',
-                                array('%login%' => $value));
+                            $this->setAlert('The login <b>%login%</b> is already in use, please choose another one!',
+                                array('%login%' => $value), self::ALERT_TYPE_WARNING);
                             return false;
                         }
                         break;
                     case 'contact_name':
                         if (is_null($value) || empty($value)) {
                             // contact_name must be always set!
-                            $this->setMessage("The field %field% can not be empty!", array('%field%' => 'contact_name'));
+                            $this->setAlert("The field %field% can not be empty!",
+                                array('%field%' => 'contact_name'), self::ALERT_TYPE_WARNING);
                             return false;
                         }
                         if ($this->ContactData->existsName($value, $contact_id)) {
                             // the contact_name already exists - tell it the user but update the record!
-                            $this->setMessage("The contact name %name% already exists! The update has still executed, please check if you really want this duplicate name.",
-                                array('%name%' => $value));
+                            $this->setAlert("The contact name %name% already exists! The update has still executed, please check if you really want this duplicate name.",
+                                array('%name%' => $value), self::ALERT_TYPE_WARNING);
                             // don't return false!!!
                         }
                 }
@@ -803,8 +809,8 @@ class Contact extends ContactParent
     {
         // first get the existings record
         if (false === ($old = $this->ContactData->selectContact($contact_id, 'DELETED', '!=', $ignore_status))) {
-            $this->setMessage("The contact with the ID %contact_id% does not exists!",
-                array('%contact_id%' => $contact_id));
+            $this->setAlert("The contact with the ID %contact_id% does not exists!",
+                array('%contact_id%' => $contact_id), self::ALERT_TYPE_WARNING);
             return false;
         }
         self::$contact_id = $contact_id;
@@ -813,7 +819,7 @@ class Contact extends ContactParent
             // start transaction
             $this->app['db']->beginTransaction();
 
-            $this->clearMessage();
+            $this->clearAlert();
 
             $data_changed = false;
 
@@ -830,7 +836,7 @@ class Contact extends ContactParent
                 }
             }
             else {
-                $this->setMessage("The contact block must be set always!");
+                $this->setAlert("The contact block must be set always!", array(), self::ALERT_TYPE_WARNING);
                 // rollback
                 $this->app['db']->rollback();
                 return false;
@@ -924,12 +930,12 @@ class Contact extends ContactParent
                     }
                     if (!$processed) {
                         // the communication entry was not processed!
-                        $this->setMessage("The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!",
+                        $this->setAlert("The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!",
                             array(
                                 '%id%' => $new_communication['communication_id'],
                                 '%entry%' => 'communication'
-                            ));
-                        $this->addError("The communication ID {$new_communication['communication_id']} was not updated because it was not found in the table!",
+                                ), self::ALERT_TYPE_WARNING);
+                        $this->app['monolog']->addError("The communication ID {$new_communication['communication_id']} was not updated because it was not found in the table!",
                             array(__METHOD__, __LINE__));
                     }
                 }
@@ -969,12 +975,12 @@ class Contact extends ContactParent
                     }
                     if (!$processed) {
                         // the address entry was not processed!
-                        $this->setMessage("The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!",
+                        $this->setAlert("The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!",
                             array(
                                 '%id%' => $new_address['address_id'],
                                 '%entry%' => 'address'
-                            ));
-                        $this->addError("The address ID {$new_address['address_id']} was not updated because it was not found in the table!",
+                            ), self::ALERT_TYPE_WARNING);
+                        $this->app['monolog']->addError("The address ID {$new_address['address_id']} was not updated because it was not found in the table!",
                             array(__METHOD__, __LINE__));
                     }
                 }
@@ -1014,12 +1020,12 @@ class Contact extends ContactParent
                     }
                     if (!$processed) {
                         // the address entry was not processed!
-                        $this->setMessage("The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!",
+                        $this->setAlert("The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!",
                             array(
                                 '%id%' => $new_note['note_id'],
                                 '%entry%' => 'note'
-                            ));
-                        $this->addError("The note ID {$new_note['note_id']} was not updated because it was not found in the table!",
+                            ), self::ALERT_TYPE_WARNING);
+                        $this->app['monolog']->addError("The note ID {$new_note['note_id']} was not updated because it was not found in the table!",
                         array(__METHOD__, __LINE__));
                     }
                 }
@@ -1118,14 +1124,14 @@ class Contact extends ContactParent
             $this->app['db']->commit();
 
             if ($data_changed) {
-                if (!$this->isMessage()) {
-                    $this->setMessage("The contact with the ID %contact_id% was successfull updated.",
-                        array('%contact_id%' => self::$contact_id));
+                if (!$this->isAlert()) {
+                    $this->setAlert("The contact with the ID %contact_id% was successfull updated.",
+                        array('%contact_id%' => self::$contact_id), self::ALERT_TYPE_SUCCESS);
                 }
             }
             else {
-                if (!$this->isMessage()) {
-                    $this->setMessage("The contact record was not changed!");
+                if (!$this->isAlert()) {
+                    $this->setAlert("The contact record was not changed!", array(), self::ALERT_TYPE_INFO);
                 }
             }
 

@@ -1,0 +1,26 @@
+{% block toolbar %}
+  <ul class="nav nav-tabs">
+    {% for item in toolbar %}
+      <li{% if item.active %} class="active"{% endif %}>
+        <a href="{{ item.link }}" title="{{ item.hint|trans }}">
+          {%if item.name == 'contact_list' %}
+            <i class="fa fa-users"></i>
+          {% elseif item.name == 'contact_edit' %}
+            <i class="fa fa-edit"></i>
+          {% elseif item.name == 'categories' %}
+            <i class="fa fa-list"></i>
+          {% elseif item.name == 'tags' %}
+            <i class="fa fa-tags"></i>
+          {% elseif item.name == 'extra_fields' %}
+            <i class="fa fa-plus-square-o"></i>
+          {% elseif item.name == 'about' %}
+            <i class="fa fa-question"></i>
+          {% endif %}
+          {% if item.name != 'about' %}  
+            <span class="visible-lg pull-right">&nbsp;{{ item.text|trans }}</span>  
+          {% endif %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock toolbar %}

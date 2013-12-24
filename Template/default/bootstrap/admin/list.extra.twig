@@ -12,35 +12,23 @@
   {% set template_file = 'framework/body.twig' %}
 {% else %}
   {% set template_namespace = '@phpManufaktur/Contact/Template' %}
-  {% set template_file = 'backend/admin/body.twig' %}
+  {% set template_file = 'bootstrap/admin/body.twig' %}
 {% endif %}
 {% extends getTemplateFile(template_namespace, template_file) %}
-{% block title %}{{ 'Contact categories'|trans }}{% endblock %}
 {% block stylesheet %}
   {{ parent() }}
-  {% if extra.usage == 'framework' %}
-    <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/backend/admin/css/backend.css" media="screen, projection" />
-  {% endif %}
-  <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/backend/admin/css/contact.edit.css" media="screen, projection" />
-  <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/backend/admin/css/go.back.css" media="screen, projection" />
+  <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/bootstrap/css/admin.min.css" media="screen, projection" />
 {% endblock stylesheet %}
+{% block title %}{{ 'Contact Administration - Extra fields'|trans }}{% endblock %}
+
 {% block content %}
-  <div id="contact_content">
-    {% include '@phpManufaktur/Contact/Template/default/backend/admin/toolbar.twig' with {toolbar: extra.toolbar} only %}
-    {% if message|length > 0 %}
-      <div class="message">{{ message }}</div>
-    {% endif %}
-
-    {% include '@phpManufaktur/Contact/Template/default/backend/admin/go.back.twig' with {
-      links: {
-        0: {
-          url: FRAMEWORK_URL ~ route.create,
-          text: 'Add category'
-        }
-      }
-    } only %}
-
-    {% include '@phpManufaktur/Contact/Template/default/backend/form/list.category.twig' %}
-
+  <div class="container">
+    {% include '@phpManufaktur/Contact/Template/default/bootstrap/admin/toolbar.twig' with {toolbar: extra.toolbar} only %}
+    <div class="height-15"></div>
+    <div class="text-right">
+      <a class="btn btn-default" role="button" href="{{ FRAMEWORK_URL ~ route.create }}">{{ 'Add a new extra field'|trans }}</a>
+    </div>
+    <div class="height-15"></div>
+    {% include '@phpManufaktur/Contact/Template/default/bootstrap/pattern/admin/simple/list.extra.twig' %}
   </div>
 {% endblock content %}

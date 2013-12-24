@@ -11,29 +11,24 @@
 
 namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
-use Silex\Application;
+use phpManufaktur\Contact\Control\Alert;
 
-class Dialog {
+class Dialog extends Alert
+{
 
-    protected $app = null;
     protected static $message = '';
+
     protected static $options = array();
 
     /**
-     * Constructor
-     *
-     * @param Application $app
-     */
-    public function __construct(Application $app=null)
-    {
-        $this->app = $app;
-    }
-
-    /**
      * @return the $message
+     * @deprecated use getAlert() instead
      */
     public function getMessage()
     {
+        $callers = debug_backtrace();
+        $this->app['monolog']->addDebug('DEPRECATED: getMessage()', array(__METHOD__, __LINE__, $callers[1]));
+
         return self::$message;
     }
 
@@ -42,7 +37,11 @@ class Dialog {
      */
     public function setMessage($message, $params=array())
     {
-        self::$message .= $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['message']),
+        $callers = debug_backtrace();
+        $this->app['monolog']->addDebug('DEPRECATED: setMessage()', array(__METHOD__, __LINE__, $callers[1]));
+
+        self::$message .= $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            self::$options['template']['namespace'], self::$options['template']['message']),
             array('message' => $this->app['translator']->trans($message, $params)));
     }
 

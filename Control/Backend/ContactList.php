@@ -19,6 +19,11 @@ class ContactList extends Backend {
 
     protected $SimpleContactList = null;
 
+    /**
+     * Constructor
+     *
+     * @param Application $app
+     */
     public function __construct(Application $app=null)
     {
         parent::__construct($app);
@@ -27,15 +32,19 @@ class ContactList extends Backend {
         }
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Backend\Backend::initialize()
+     */
     protected function initialize(Application $app)
     {
         parent::initialize($app);
         $options = array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'settings' => 'backend/admin/contact.list.json',
-                'message' => 'backend/message.twig',
-                'list' => 'backend/admin/contact.list.twig'
+                'settings' => 'bootstrap/admin/list.contact.json',
+                'alert' => 'bootstrap/pattern/alert.twig',
+                'list' => 'bootstrap/admin/list.contact.twig'
             ),
             'route' => array(
                 'pagination' => '/admin/contact/backend/list/page/{page}?order={order}&direction={direction}&usage='.self::$usage,
@@ -49,11 +58,22 @@ class ContactList extends Backend {
         $this->SimpleContactList = new SimpleContactList($this->app, $options);
     }
 
+    /**
+     * Set the current page of the table
+     *
+     * @param integer $page
+     */
     public function setCurrentPage($page)
     {
         $this->SimpleContactList->setCurrentPage($page);
     }
 
+    /**
+     * Controller for the Contact List
+     *
+     * @param Application $app
+     * @param integer $page
+     */
     public function controller(Application $app, $page=null)
     {
         $this->initialize($app);

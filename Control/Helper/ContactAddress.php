@@ -60,8 +60,8 @@ class ContactAddress extends ContactParent
     public function validate(&$address_data, $contact_data=array(), $option=array())
     {
         if (!isset($address_data['address_id']) || !is_numeric($address_data['address_id'])) {
-            $this->setMessage("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
-                array('%identifier%' => 'address_id'));
+            $this->setAlert("Missing the %identifier%! The ID should be set to -1 if you insert a new record.",
+                array('%identifier%' => 'address_id'), self::ALERT_TYPE_WARNING);
             return false;
         }
 
@@ -105,8 +105,8 @@ class ContactAddress extends ContactParent
             if (isset($address_data['address_country_code']) && !empty($address_data['address_country_code'])) {
                 $address_data['address_country_code'] = strtoupper(trim($address_data['address_country_code']));
                 if (!$this->Country->existsCountryCode($address_data['address_country_code'])) {
-                    $this->setMessage('The country code %country_code% does not exists!',
-                        array('%country_code%' => $address_data['address_country_code']));
+                    $this->setAlert('The country code %country_code% does not exists!',
+                        array('%country_code%' => $address_data['address_country_code']), self::ALERT_TYPE_WARNING);
                     return false;
                 }
             }
@@ -115,7 +115,8 @@ class ContactAddress extends ContactParent
                 isset($address_data['address_zip']) && !empty($address_data['address_zip'])) {
                 // check the german ZIP code
                 if (!preg_match('/^(?!01000|99999)(0[1-9]\d{3}|[1-9]\d{4})$/', $address_data['address_zip'])) {
-                    $this->setMessage('The zip %zip% is not valid!', array('%zip%' => $address_data['address_zip']));
+                    $this->setAlert('The zip %zip% is not valid!', array('%zip%' => $address_data['address_zip']),
+                    self::ALERT_TYPE_WARNING);
                     return false;
                 }
             }
@@ -183,15 +184,15 @@ class ContactAddress extends ContactParent
             // check if this address can be deleted
 
             if ($this->Contact->getPrimaryAddressID($old_data['contact_id']) == $address_id) {
-                $this->setMessage("Can't delete the Adress with the ID %address_id% because it is used as primary address.",
-                    array('%address_id%' => $address_id));
+                $this->setAlert("Can't delete the Adress with the ID %address_id% because it is used as primary address.",
+                    array('%address_id%' => $address_id), self::ALERT_TYPE_WARNING);
                 return false;
             }
             else {
                 // delete the address
                 $this->Address->delete($address_id);
-                $this->setMessage("The Address with the ID %address_id% was successfull deleted.",
-                    array('%address_id%' => $address_id));
+                $this->setAlert("The Address with the ID %address_id% was successfull deleted.",
+                    array('%address_id%' => $address_id), self::ALERT_TYPE_SUCCESS);
                 $has_changed = true;
                 return true;
             }

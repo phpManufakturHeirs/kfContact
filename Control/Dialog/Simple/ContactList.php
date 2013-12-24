@@ -35,25 +35,26 @@ class ContactList extends Dialog {
     {
         parent::__construct($app);
         if (!is_null($app)) {
-            $this->initialize($options);
+            $this->initialize($app, $options);
         }
     }
 
     /**
-     * Initialize the Contact List with the given $options or default values
-     *
-     * @param string $options
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Alert::initialize()
      */
-    protected function initialize($options=null)
+    protected function initialize(Application $app, $options=null)
     {
+        parent::initialize($app);
+
         $this->ContactListControl = new ContactListControl($this->app);
 
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'backend/simple/list.contact.json',
-                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/list.contact.twig'
+                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'bootstrap/pattern/admin/simple/list.contact.json',
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'bootstrap/pattern/admin/simple/list.contact.twig'
             ),
             'route' => array(
                 'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/simple/contact/list/page/{page}?order={order}&direction={direction}',
@@ -126,11 +127,20 @@ class ContactList extends Dialog {
         $order_by = explode(',', $this->app['request']->get('order', implode(',', self::$order_by)));
         $order_direction = $this->app['request']->get('direction', self::$order_direction);
 
-        $list = $this->ContactListControl->getList(self::$current_page, self::$rows_per_page, self::$select_status, self::$max_pages, $order_by, $order_direction, self::$select_type);
+        $list = $this->ContactListControl->getList(
+            self::$current_page,
+            self::$rows_per_page,
+            self::$select_status,
+            self::$max_pages,
+            $order_by,
+            $order_direction,
+            self::$select_type);
 
-        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['list']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            self::$options['template']['namespace'], self::$options['template']['list']),
             array(
                 'message' => $this->getMessage(),
+                'alert' => $this->getAlert(),
                 'list' => $list,
                 'columns' => self::$columns,
                 'route' => self::$options['route'],

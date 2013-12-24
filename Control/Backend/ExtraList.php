@@ -19,6 +19,11 @@ class ExtraList extends Backend {
 
     protected $SimpleExtraFieldList = null;
 
+    /**
+     * Constructor
+     *
+     * @param Application $app
+     */
     public function __construct(Application $app=null)
     {
         parent::__construct($app);
@@ -27,14 +32,18 @@ class ExtraList extends Backend {
         }
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Backend\Backend::initialize()
+     */
     protected function initialize(Application $app)
     {
         parent::initialize($app);
         $this->SimpleExtraFieldList = new SimpleExtraFieldList($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'message' => 'backend/message.twig',
-                'list' => 'backend/admin/contact.extra.list.twig'
+                'alert' => 'bootstrap/pattern/alert.twig',
+                'list' => 'bootstrap/admin/list.extra.twig'
             ),
             'route' => array(
                 'edit' => '/admin/contact/backend/extra/edit/id/{type_id}?usage='.self::$usage,
@@ -43,6 +52,11 @@ class ExtraList extends Backend {
         ));
     }
 
+    /**
+     * Controller for the extra fields list
+     *
+     * @param Application $app
+     */
     public function controller(Application $app)
     {
         $this->initialize($app);

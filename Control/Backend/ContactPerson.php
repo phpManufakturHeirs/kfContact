@@ -19,6 +19,11 @@ class ContactPerson extends Backend {
 
     protected $SimpleContactPerson = null;
 
+    /**
+     * Constructor
+     *
+     * @param Application $app
+     */
     public function __construct(Application $app=null)
     {
         parent::__construct($app);
@@ -27,29 +32,45 @@ class ContactPerson extends Backend {
         }
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Backend\Backend::initialize()
+     */
     protected function initialize(Application $app)
     {
         parent::initialize($app);
         $this->SimpleContactPerson = new SimpleContactPerson($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'message' => 'backend/message.twig',
-                'contact' => 'backend/admin/contact.person.twig'
+                'message' => 'bootstrap/pattern/alert.twig',
+                'contact' => 'bootstrap/admin/edit.contact.twig'
             ),
             'route' => array(
                 'action' => '/admin/contact/backend/person/edit?usage='.self::$usage,
                 'category' => '/admin/contact/backend/category/list?usage='.self::$usage,
                 'title' => '/admin/contact/backend/title/list?usage='.self::$usage,
-                'tag' => '/admin/contact/backend/tag/list?usage='.self::$usage
+                'tag' => '/admin/contact/backend/tag/list?usage='.self::$usage,
+                'list' => '/admin/contact/backend/list?usage='.self::$usage
             )
         ));
     }
 
+    /**
+     * Set the contact ID
+     *
+     * @param integer $contact_id
+     */
     public function setContactID($contact_id)
     {
         $this->SimpleContactPerson->setContactID($contact_id);
     }
 
+    /**
+     * Controller to create and edit a person contact
+     *
+     * @param Application $app
+     * @param integer $contact_id
+     */
     public function controller(Application $app, $contact_id=null)
     {
         $this->initialize($app);

@@ -27,17 +27,23 @@ class TagList extends Dialog {
     {
         parent::__construct($app);
         if (!is_null($app)) {
-            $this->initialize($options);
+            $this->initialize($app, $options);
         }
     }
 
-    protected function initialize($options=null)
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Alert::initialize()
+     */
+    protected function initialize(Application $app, $options=null)
     {
+        parent::initialize($app);
+
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'backend/simple/list.tag.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'bootstrap/pattern/simple/list.tag.twig'
             ),
             'route' => array(
                 'create' => isset($options['route']['create']) ? $options['route']['create'] : '/admin/contact/simple/tag/edit',
@@ -68,9 +74,11 @@ class TagList extends Dialog {
     {
         $tags = $this->TagTypeData->selectAll();
 
-        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['list']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            self::$options['template']['namespace'], self::$options['template']['list']),
             array(
                 'message' => $this->getMessage(),
+                'alert' => $this->getAlert(),
                 'route' => self::$options['route'],
                 'tags' => $tags,
                 'extra' => $extra

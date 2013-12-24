@@ -19,6 +19,11 @@ class ContactCompany extends Backend {
 
     protected $SimpleContactCompany = null;
 
+    /**
+     * Constructor
+     *
+     * @param Application $app
+     */
     public function __construct(Application $app=null)
     {
         parent::__construct($app);
@@ -27,28 +32,44 @@ class ContactCompany extends Backend {
         }
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Backend\Backend::initialize()
+     */
     protected function initialize(Application $app)
     {
         parent::initialize($app);
         $this->SimpleContactCompany = new SimpleContactCompany($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'message' => 'backend/message.twig',
-                'contact' => 'backend/admin/contact.company.twig'
+                'alert' => 'bootstrap/pattern/alert.twig',
+                'contact' => 'bootstrap/admin/edit.contact.twig'
             ),
             'route' => array(
                 'action' => '/admin/contact/backend/company/edit?usage='.self::$usage,
                 'category' => '/admin/contact/backend/category/list?usage='.self::$usage,
-                'tag' => '/admin/contact/backend/tag/list?usage='.self::$usage
+                'tag' => '/admin/contact/backend/tag/list?usage='.self::$usage,
+                'list' => '/admin/contact/backend/list?usage='.self::$usage
             )
         ));
     }
 
+    /**
+     * Set the contact ID
+     *
+     * @param integer $contact_id
+     */
     public function setContactID($contact_id)
     {
         $this->SimpleContactCompany->setContactID($contact_id);
     }
 
+    /**
+     * Controller for the company contact record
+     *
+     * @param Application $app
+     * @param integer $contact_id
+     */
     public function controller(Application $app, $contact_id=null)
     {
         $this->initialize($app);

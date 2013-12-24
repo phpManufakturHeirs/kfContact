@@ -27,14 +27,18 @@ class CategoryList extends Backend {
         }
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Backend\Backend::initialize()
+     */
     protected function initialize(Application $app)
     {
         parent::initialize($app);
         $this->SimpleCategoryList = new SimpleCategoryList($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'message' => 'backend/message.twig',
-                'list' => 'backend/admin/contact.category.list.twig'
+                'alert' => 'bootstrap/pattern/alert.twig',
+                'list' => 'bootstrap/admin/list.category.twig'
             ),
             'route' => array(
                 'create' => '/admin/contact/backend/category/create?usage='.self::$usage,
@@ -43,6 +47,11 @@ class CategoryList extends Backend {
         ));
     }
 
+    /**
+     * Controller to show the category list
+     *
+     * @param Application $app
+     */
     public function controller(Application $app)
     {
         $this->initialize($app);

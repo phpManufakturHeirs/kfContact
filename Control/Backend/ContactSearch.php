@@ -19,6 +19,11 @@ class ContactSearch extends Backend {
 
     protected $SimpleSearch = null;
 
+    /**
+     * Constructor
+     *
+     * @param Application $app
+     */
     public function __construct(Application $app=null)
     {
         parent::__construct($app);
@@ -27,15 +32,19 @@ class ContactSearch extends Backend {
         }
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Backend\Backend::initialize()
+     */
     protected function initialize(Application $app)
     {
         parent::initialize($app);
         $options = array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'settings' => 'backend/admin/contact.list.json',
-                'message' => 'backend/message.twig',
-                'search' => 'backend/admin/contact.search.twig'
+                'settings' => 'bootstrap/admin/list.contact.json',
+                'alert' => 'bootstrap/pattern/alert.twig',
+                'search' => 'bootstrap/admin/list.search.twig'
             ),
             'route' => array(
                 'contact' => array(
@@ -48,6 +57,11 @@ class ContactSearch extends Backend {
         $this->SimpleSearch = new SimpleSearch($this->app, $options);
     }
 
+    /**
+     * Controller for the Search
+     *
+     * @param Application $app
+     */
     public function controller(Application $app)
     {
         $this->initialize($app);

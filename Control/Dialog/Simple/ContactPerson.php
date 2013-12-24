@@ -14,6 +14,7 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 use Silex\Application;
 use phpManufaktur\Contact\Control\Contact as ContactControl;
 use phpManufaktur\Contact\Control\Configuration;
+use Carbon\Carbon;
 
 class ContactPerson extends Dialog {
 
@@ -31,23 +32,30 @@ class ContactPerson extends Dialog {
         parent::__construct($app);
 
         if (!is_null($app)) {
-            $this->initialize($options);
+            $this->initialize($app, $options);
         }
     }
 
-    protected function initialize($options=null)
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Contact\Control\Alert::initialize()
+     */
+    protected function initialize(Application $app, $options=null)
     {
+        parent::initialize($app);
+
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'backend/simple/edit.person.contact.twig'
+                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'bootstrap/pattern/alert.twig',
+                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'bootstrap/pattern/admin/simple/edit.contact.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact/person',
                 'category' => isset($options['route']['category']) ? $options['route']['category'] : '/admin/contact/simple/category/list',
                 'title' => isset($options['route']['title']) ? $options['route']['title'] : '/admin/contact/simple/title/list',
-                'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/simple/tag/list'
+                'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/simple/tag/list',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/list'
             )
         ));
         $this->ContactControl = new ContactControl($this->app);
@@ -82,7 +90,7 @@ class ContactPerson extends Dialog {
 
         // create array for the birthday years
         $years = array();
-        for ($i = date('Y')-18; $i > (date('Y')-100); $i--) {
+        for ($i = date('Y'); $i > (date('Y')-100); $i--) {
             $years[] = $i;
         }
         $birthday_array = array(
@@ -209,7 +217,12 @@ class ContactPerson extends Dialog {
             'label' => 'Last name',
             'data' => $contact['person'][0]['person_last_name']
         ))
-        ->add('person_birthday', 'date', $birthday_array)
+        //->add('person_birthday', 'date', $birthday_array)
+        ->add('person_birthday', 'text', array(
+            'required' => false,
+            'label' => 'Birthday',
+            'data' => (!empty($contact['person'][0]['person_birthday']) && ($contact['person'][0]['person_birthday'] != '0000-00-00')) ? date($this->app['translator']->trans('DATE_FORMAT'), strtotime($contact['person'][0]['person_birthday'])) : '',
+        ))
 
         // communication
         ->add('email_id', 'hidden', array(
@@ -245,7 +258,7 @@ class ContactPerson extends Dialog {
             'data' => $fax['communication_value']
         ))
 
-        // business address
+        // private address
         ->add('address_id', 'hidden', array(
             'data' => $address_private['address_id']
         ))
@@ -329,6 +342,13 @@ class ContactPerson extends Dialog {
         return $form;
     }
 
+    /**
+     * Get the data from the person contact form
+     *
+     * @param array $data
+     * @param array $extra_info
+     * @return array
+     */
     public function getFormData($data, $extra_info=array())
     {
         $tags = array();
@@ -347,6 +367,16 @@ class ContactPerson extends Dialog {
             $dummy['extra_value'] = isset($data[$field['name']]) ? $data[$field['name']] : '';
             $extra_fields[] = $dummy;
         }
+
+
+        if (isset($data['person_birthday']) && !empty($data['person_birthday'])) {
+            $dt = Carbon::createFromFormat($this->app['translator']->trans('DATE_FORMAT'), $data['person_birthday']);
+            $birthday = $dt->toDateTimeString();
+        }
+        else {
+            $birthday = '0000-00-00';
+        }
+
 
         return array(
             'contact' => array(
@@ -371,7 +401,7 @@ class ContactPerson extends Dialog {
                     'person_title' => isset($data['person_title']) && !empty($data['person_title']) ? $data['person_title'] : 'NO_TITLE',
                     'person_first_name' => $data['person_first_name'],
                     'person_last_name' => $data['person_last_name'],
-                    'person_birthday' => (isset($data['person_birthday']) && is_object($data['person_birthday'])) ? date('Y-m-d', $data['person_birthday']->getTimestamp()) : '0000-00-00',
+                    'person_birthday' => $birthday
                 )
             ),
             'communication' => array(
@@ -466,8 +496,8 @@ class ContactPerson extends Dialog {
         // get the contact array
         $contact = $this->ContactControl->select(self::$contact_id, 'PERSON');
 
-        if ($this->ContactControl->isMessage()) {
-            self::$message = $this->ContactControl->getMessage();
+        if ($this->ContactControl->isAlert()) {
+            $this->setAlertUnformatted($this->ContactControl->getAlert());
         }
 
         // get the form fields
@@ -494,14 +524,6 @@ class ContactPerson extends Dialog {
                     $this->ContactControl->update($contact, self::$contact_id, $has_changed);
                 }
 
-                if (!$this->ContactControl->isMessage()) {
-                    $this->setMessage("The contact process has not returned a status message");
-                }
-                else {
-                    // use the return status messages
-                    self::$message = $this->ContactControl->getMessage();
-                }
-
                 // get the values of the new or updated record
                 $contact = $this->ContactControl->select(self::$contact_id);
                 // get the form fields
@@ -511,12 +533,13 @@ class ContactPerson extends Dialog {
             }
             else {
                 // general error (timeout, CSFR ...)
-                $this->setMessage('The form is not valid, please check your input and try again!');
+                $this->setAlert('The form is not valid, please check your input and try again!', array(), self::ALERT_TYPE_DANGER);
             }
         }
-        return $this->app['twig']->render($this->app['utils']->getTemplateFile(self::$options['template']['namespace'], self::$options['template']['contact']),
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            self::$options['template']['namespace'], self::$options['template']['contact']),
             array(
-                'message' => $this->getMessage(),
+                'alert' => $this->getAlert(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
                 'extra' => $extra,

@@ -43,8 +43,8 @@ class ContactTag extends ContactParent
     {
         // tag name must be set
         if (is_null($tag_data['tag_name']) || !isset($tag_data['tag_name']) || empty($tag_data['tag_name'])) {
-            $this->setMessage('Missing the key %field_name%, it must always set and not empty!',
-                array('%field_name%' => 'tag_name'));
+            $this->setAlert('Missing the key %field_name%, it must always set and not empty!',
+                array('%field_name%' => 'tag_name'), self::ALERT_TYPE_WARNING);
             return false;
         }
 
@@ -53,15 +53,15 @@ class ContactTag extends ContactParent
         $tag_data['tag_name'] = str_replace(' ', '_', strtoupper($tag_data['tag_name']));
         if (preg_match_all('/[^A-Z0-9_$]/', $tag_data['tag_name'], $matches)) {
             // name check fail
-            $this->setMessage('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
-                array('%identifier%' => 'Tag'));
+            $this->setAlert('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
+                array('%identifier%' => 'Tag'), self::ALERT_TYPE_WARNING);
             return false;
         }
 
         // tag name must exists
         if (!$this->TagType->existsTag($tag_data['tag_name'])) {
-            $this->setMessage('The #tag %tag_name% does not exists!',
-                array('%tag_name%' => strtoupper($tag_data['tag_name'])));
+            $this->setAlert('The #tag %tag_name% does not exists!',
+                array('%tag_name%' => strtoupper($tag_data['tag_name'])), self::ALERT_TYPE_WARNING);
             return false;
         }
 

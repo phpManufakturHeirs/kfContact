@@ -7,13 +7,38 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 #}
 
-<div class="contact_form">
-  <form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }}>
-    {{ form_widget(form) }}  
-    <div>
-      <label for="submit">&nbsp;</label>
-      <input type="submit" name="submit" />
-    </div>
-    <div class="clear"></div>  
-  </form>
+{{ alert }}
+
+<div class="alert alert-info">
+  <a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>
+  {{ 'Please select the type of contact you want to create. Be aware that you can not change the contact type if the record is created.'|trans }}
 </div>
+
+<form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }} role="form">
+  {{ form_errors(form) }}
+  {{ form_row(form._token) }}
+  {{ form_row(form.contact_id) }}
+  
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.select_type) }}</div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      {# parse the radio fields #}
+      {% for children in form.select_type.vars.form.children %}
+        <div class="radio">
+          <label>
+            <input type="radio" name="{{ children.vars.full_name }}" id="{{ children.vars.id }}" value="{{ children.vars.value }}"{% if children.vars.data %} checked="checked"{% endif %} />
+            {{ children.vars.value|capitalize|trans }}
+          </label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  
+  <div class="height-15"></div>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4"><label for="submit">&nbsp;</label></div>
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      <input class="btn btn-default" type="submit" value="{{ 'Create contact'|trans }}" />
+    </div>
+  </div>
+</form>
