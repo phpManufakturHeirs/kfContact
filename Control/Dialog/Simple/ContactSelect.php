@@ -49,7 +49,7 @@ class ContactSelect extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'select' => isset($options['template']['select']) ? $options['template']['select'] : 'bootstrap/pattern/admin/simple/select.contact.twig'
+                'select' => isset($options['template']['select']) ? $options['template']['select'] : 'pattern/admin/simple/select.contact.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact',

@@ -42,8 +42,8 @@ class ContactCompany extends Backend {
         $this->SimpleContactCompany = new SimpleContactCompany($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'alert' => 'bootstrap/pattern/alert.twig',
-                'contact' => 'bootstrap/admin/edit.contact.twig'
+                'alert' => 'pattern/alert.twig',
+                'contact' => 'admin/edit.contact.twig'
             ),
             'route' => array(
                 'action' => '/admin/contact/backend/company/edit?usage='.self::$usage,

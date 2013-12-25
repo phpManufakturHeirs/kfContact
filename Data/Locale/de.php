@@ -171,16 +171,26 @@ return array(
         => 'Graf',
     'Edit categories'
         => 'Kategorien bearbeiten',
+    'Edit category'
+        => 'Kategorie bearbeiten',
+    'Edit contact'
+        => 'Kontakt bearbeiten',
     'Edit extra fields'
-        => 'Zusätzliche Felder bearbeiten',
+        => 'Zusatzfelder bearbeiten',
+    'Edit extra field'
+        => 'Zusatzfeld bearbeiten',
     'Edit tags'
         => 'Markierungen bearbeiten',
+    'Edit tag'
+        => 'Markierung bearbeiten',
     'Edit the category %category_type_name%'
         => 'Die Kategorie %category_type_name% bearbeiten',
     'Edit the <i>#tag</i> %tag_name%'
         => 'Die Markierung #tag <i>%tag_name%</i> bearbeiten',
     'Edit the title %title_identifier%'
         => 'Den Titel %title_identifier% bearbeiten',
+    'Edit title'
+        => 'Titel bearbeiten',
     'Edit titles'
         => 'Titel bearbeiten',
 

@@ -47,9 +47,9 @@ class Search extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'bootstrap/pattern/admin/simple/list.contact.json',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
-                'search' => isset($options['template']['search']) ? $options['template']['search'] : 'bootstrap/pattern/admin/simple/list.search.twig'
+                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'pattern/admin/simple/list.contact.json',
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
+                'search' => isset($options['template']['search']) ? $options['template']['search'] : 'pattern/admin/simple/list.search.twig'
             ),
             'route' => array(
                 'contact' => array(

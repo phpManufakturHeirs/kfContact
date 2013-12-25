@@ -28,7 +28,7 @@ class About extends Backend {
         $extension = $this->app['utils']->readJSON(MANUFAKTUR_PATH.'/Contact/extension.json');
 
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
-            '@phpManufaktur/Contact/Template', 'bootstrap/admin/about.twig'),
+            '@phpManufaktur/Contact/Template', 'admin/about.twig'),
             array(
                 'usage' => self::$usage,
                 'toolbar' => $this->getToolbar('about'),

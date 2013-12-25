@@ -54,8 +54,8 @@ class CategoryEdit extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
-                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'bootstrap/pattern/admin/simple/edit.category.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
+                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'pattern/admin/simple/edit.category.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/category/edit',

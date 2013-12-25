@@ -49,8 +49,8 @@ class ContactCompany extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
-                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'bootstrap/pattern/admin/simple/edit.contact.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
+                'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'pattern/admin/simple/edit.contact.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact/company',
@@ -586,6 +586,7 @@ class ContactCompany extends Dialog {
             self::$options['template']['namespace'], self::$options['template']['contact']),
             array(
                 'message' => $this->getMessage(),
+                'alert' => $this->getAlert(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
                 'extra' => $extra,

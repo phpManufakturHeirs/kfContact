@@ -52,9 +52,9 @@ class ContactList extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'bootstrap/pattern/admin/simple/list.contact.json',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
-                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'bootstrap/pattern/admin/simple/list.contact.twig'
+                'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'pattern/admin/simple/list.contact.json',
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/admin/simple/list.contact.twig'
             ),
             'route' => array(
                 'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/simple/contact/list/page/{page}?order={order}&direction={direction}',

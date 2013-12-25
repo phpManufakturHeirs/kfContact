@@ -42,8 +42,8 @@ class ContactPerson extends Backend {
         $this->SimpleContactPerson = new SimpleContactPerson($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'message' => 'bootstrap/pattern/alert.twig',
-                'contact' => 'bootstrap/admin/edit.contact.twig'
+                'message' => 'pattern/alert.twig',
+                'contact' => 'admin/edit.contact.twig'
             ),
             'route' => array(
                 'action' => '/admin/contact/backend/person/edit?usage='.self::$usage,

@@ -45,8 +45,8 @@ class TagEdit extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
-                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'bootstrap/admin/simple/edit.tag.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
+                'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'admin/simple/edit.tag.twig'
             ),
             'route' => array(
                 'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/tag/edit',

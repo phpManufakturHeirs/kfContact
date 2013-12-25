@@ -1,0 +1,67 @@
+{#
+  Contact
+
+  @author Team phpManufaktur <team@phpmanufaktur.de>
+  @link https://kit2.phpmanufaktur.de
+  @link https://github.com/phpManufaktur/kitFramework/wiki
+  @copyright 2013 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+  @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+#}
+{% if extra.usage == 'framework' %}
+  {% set template_namespace = '@phpManufaktur/Basic/Template' %}
+  {% set template_file = 'framework/body.twig' %}
+{% else %}
+  {% set template_namespace = '@phpManufaktur/Contact/Template' %}
+  {% set template_file = 'admin/body.twig' %}
+{% endif %}
+{% extends getTemplateFile(template_namespace, template_file) %}
+{% block stylesheet %}
+  {{ parent() }}
+  {% if form.contact_type.vars.value == 'PERSON' %}
+    <link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" media="screen, projection" />
+  {% endif %}
+  {% if fileExists(MANUFAKTUR_PATH ~ '/Contact/Template/' ~ FRAMEWORK_TEMPLATES.0 ~ '/css/admin.min.css') %}
+    <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL ~ '/Contact/Template/' ~ FRAMEWORK_TEMPLATES.0 ~ '/css/admin.min.css' }}" media="screen, projection" />
+  {% else %}
+    <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL ~ '/Contact/Template/default/css/admin.min.css' }}" media="screen, projection" />
+  {% endif %}
+{% endblock stylesheet %}
+{% block title %}{{ 'Contact Administration - Create or edit contact'|trans }}{% endblock %}
+
+{% block content %}
+  <div class="container">
+    
+    {% include '@phpManufaktur/Contact/Template/default/admin/toolbar.twig' with {toolbar: extra.toolbar} %}
+    
+    <div class="height-15"></div>
+    
+    {% include '@phpManufaktur/Contact/Template/default/pattern/admin/simple/edit.contact.twig' %}
+
+  </div>
+{% endblock content %}
+{% block footer_jquery %}
+  {{ parent() }}
+  {% if form.contact_type.vars.value == 'PERSON' %}
+    <script type="text/javascript" src="{{ LIBRARY_URL }}/jquery/ui/1.10.3/ui/minified/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ LIBRARY_URL }}/jquery/ui/1.10.3/ui/i18n/jquery-ui-i18n.js"></script>
+  {% endif %}
+{% endblock footer_jquery %}
+{% block footer %}
+  {{ parent() }}
+  <script type="text/javascript">
+    if (typeof 'jQuery' !== 'undefined') {
+      $(document).ready(function() {
+        {% if form.contact_type.vars.value == 'PERSON' %}
+          $.datepicker.setDefaults($.datepicker.regional['{{ app.translator.locale }}']);
+          $('#form_person_birthday').datepicker({ 
+            changeMonth: true,
+            changeYear: true,
+            minDate: '-100Y',
+            maxDate: -1,
+            yearRange: '{{ ('now'|date('Y'))-100 }}:{{ 'now'|date('Y') }}'
+          });        
+        {% endif %}
+      });
+    }
+  </script>
+{% endblock footer %}

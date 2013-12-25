@@ -42,8 +42,8 @@ class TagList extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
-                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'bootstrap/pattern/simple/list.tag.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/simple/list.tag.twig'
             ),
             'route' => array(
                 'create' => isset($options['route']['create']) ? $options['route']['create'] : '/admin/contact/simple/tag/edit',

@@ -24,7 +24,7 @@ class Alert
     private static $alert_template =  null;
 
     const ORIGIN_ALERT_NAMESPACE = '@phpManufaktur/Contact/Template';
-    const ORIGIN_ALERT_TEMPLATE = 'bootstrap/pattern/alert.twig';
+    const ORIGIN_ALERT_TEMPLATE = 'pattern/alert.twig';
 
     const ALERT_TYPE_INFO = 'alert-info';
     const ALERT_TYPE_SUCCESS = 'alert-success';

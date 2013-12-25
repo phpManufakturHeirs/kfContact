@@ -42,8 +42,8 @@ class ExtraFieldList extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'bootstrap/pattern/alert.twig',
-                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'bootstrap/pattern/simple/list.extra.twig'
+                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
+                'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/simple/list.extra.twig'
             ),
             'route' => array(
                 'edit' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/extra/edit/id/{type_id}',

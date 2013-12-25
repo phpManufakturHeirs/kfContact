@@ -42,8 +42,8 @@ class ContactSelect extends Backend {
         $this->SimpleContactSelect = new SimpleContactSelect($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'alert' => 'bootstrap/pattern/admin/alert.twig',
-                'select' => 'bootstrap/admin/select.contact.twig'
+                'alert' => 'pattern/admin/alert.twig',
+                'select' => 'admin/select.contact.twig'
             ),
             'route' => array(
                 'action' => '/admin/contact/backend/select?usage='.self::$usage,

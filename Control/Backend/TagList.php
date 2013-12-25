@@ -42,8 +42,8 @@ class TagList extends Backend {
         $this->SimpleTagList = new SimpleTagList($this->app, array(
             'template' => array(
                 'namespace' => '@phpManufaktur/Contact/Template',
-                'alert' => 'bootstrap/pattern/alert.twig',
-                'list' => 'bootstrap/admin/list.tag.twig'
+                'alert' => 'pattern/alert.twig',
+                'list' => 'admin/list.tag.twig'
             ),
             'route' => array(
                 'create' => '/admin/contact/backend/tag/edit?usage='.self::$usage,
