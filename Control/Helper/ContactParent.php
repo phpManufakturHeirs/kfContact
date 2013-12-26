@@ -11,7 +11,7 @@
 
 namespace phpManufaktur\Contact\Control\Helper;
 
-use phpManufaktur\Contact\Control\Alert;
+use phpManufaktur\Basic\Control\Pattern\Alert;
 
 class ContactParent extends Alert
 {

@@ -53,7 +53,6 @@ class ContactList extends Dialog {
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
                 'settings' => isset($options['template']['settings']) ? $options['template']['settings'] : 'pattern/admin/simple/list.contact.json',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
                 'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/admin/simple/list.contact.twig'
             ),
             'route' => array(
@@ -139,7 +138,6 @@ class ContactList extends Dialog {
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             self::$options['template']['namespace'], self::$options['template']['list']),
             array(
-                'message' => $this->getMessage(),
                 'alert' => $this->getAlert(),
                 'list' => $list,
                 'columns' => self::$columns,

@@ -43,8 +43,6 @@ class TitleEdit extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
                 'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'pattern/admin/simple/edit.title.twig'
             ),
             'route' => array(

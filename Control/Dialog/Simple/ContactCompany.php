@@ -48,8 +48,6 @@ class ContactCompany extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
                 'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'pattern/admin/simple/edit.contact.twig'
             ),
             'route' => array(
@@ -563,10 +561,6 @@ class ContactCompany extends Dialog {
                     $this->setAlert("The contact process has not returned a status message",
                         array(), self::ALERT_TYPE_WARNING);
                 }
-                else {
-                    // use the return status messages
-                    $this->setAlertUnformatted($this->ContactControl->getAlert());
-                }
 
                 // get the values of the new or updated record
                 $contact = $this->ContactControl->select(self::$contact_id, 'COMPANY');
@@ -585,7 +579,6 @@ class ContactCompany extends Dialog {
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             self::$options['template']['namespace'], self::$options['template']['contact']),
             array(
-                'message' => $this->getMessage(),
                 'alert' => $this->getAlert(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],

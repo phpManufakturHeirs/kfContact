@@ -42,8 +42,6 @@ class TitleList extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'message' => isset($options['template']['message']) ? $options['template']['message'] : 'backend/message.twig',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
                 'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/admin/simple/list.title.twig'
             ),
             'route' => array(

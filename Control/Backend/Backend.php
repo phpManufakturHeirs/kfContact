@@ -12,7 +12,7 @@
 namespace phpManufaktur\Contact\Control\Backend;
 
 use Silex\Application;
-use phpManufaktur\Contact\Control\Alert;
+use phpManufaktur\Basic\Control\Pattern\Alert;
 
 class Backend extends Alert {
 

@@ -42,7 +42,6 @@ class CategoryList extends Dialog {
         $this->setOptions(array(
             'template' => array(
                 'namespace' => isset($options['template']['namespace']) ? $options['template']['namespace'] : '@phpManufaktur/Contact/Template',
-                'alert' => isset($options['template']['alert']) ? $options['template']['alert'] : 'pattern/alert.twig',
                 'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/admin/simple/list.category.twig'
             ),
             'route' => array(
@@ -78,7 +77,6 @@ class CategoryList extends Dialog {
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             self::$options['template']['namespace'], self::$options['template']['list']),
             array(
-                'message' => $this->getMessage(),
                 'alert' => $this->getAlert(),
                 'route' => self::$options['route'],
                 'categories' => $categories,
