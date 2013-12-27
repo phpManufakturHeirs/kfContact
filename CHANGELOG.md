@@ -6,6 +6,10 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.30** - 2013-12-27
+
+* changed the Contact Backend to Bootstrap 3 
+
 **2.0.29** - 2013-12-20
 
 * improved import from previous KeepInTouch installations

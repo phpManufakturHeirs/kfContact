@@ -240,6 +240,25 @@ class Update
     }
 
     /**
+     * Release 2.0.30
+     */
+    protected function release_2030()
+    {
+        $files = array(
+            '/Contact/Template/default/backend',
+            '/Contact/Template/default/font-awesome',
+            '/Contact/Control/Import/Dialog.php'
+        );
+        foreach ($files as $file) {
+            // remove no longer needed directories and files
+            if ($this->app['filesystem']->exists(MANUFAKTUR_PATH.$file)) {
+                $this->app['filesystem']->remove(MANUFAKTUR_PATH.$file);
+                $this->app['monolog']->addInfo(sprintf('[Contact Update] Removed file or directory %s', $file));
+            }
+        }
+    }
+
+    /**
      * Execute all available update steps
      *
      * @param Application $app
@@ -269,6 +288,10 @@ class Update
             // Release 2.0.21
             $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.21');
             $this->release_2021();
+
+            // Release 2.0.30
+            $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.30');
+            $this->release_2030();
 
             // Create Configuration if not exists - only constructor needed
             $Configuration = new Configuration($app);
