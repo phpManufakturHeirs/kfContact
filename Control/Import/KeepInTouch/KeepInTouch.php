@@ -14,7 +14,7 @@ namespace phpManufaktur\Contact\Control\Import\KeepInTouch;
 use Silex\Application;
 use phpManufaktur\Contact\Data\Import\KeepInTouch\KeepInTouch as KeepInTouchData;
 use phpManufaktur\Contact\Control\Contact;
-use phpManufaktur\Contact\Control\Alert;
+use phpManufaktur\Basic\Control\Pattern\Alert;
 
 class KeepInTouch extends Alert {
 
@@ -65,7 +65,7 @@ class KeepInTouch extends Alert {
                 array('%release%' => self::$kit_release, '%count%' => $records), self::ALERT_TYPE_INFO);
         }
         else {
-            $this->setMessage('There exists no KeepInTouch installation at the parent CMS!', array(), self::ALERT_TYPE_WARNING);
+            $this->setAlert('There exists no KeepInTouch installation at the parent CMS!', array(), self::ALERT_TYPE_WARNING);
         }
 
         $this->app['session']->set('KIT_IMPORT_CONTACTS_DETECTED', $records);

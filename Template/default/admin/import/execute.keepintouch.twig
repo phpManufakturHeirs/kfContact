@@ -14,18 +14,22 @@
 
 {% block content %}
   <div class="container">
-    <h1>{{ 'Import contacts from KeepInTouch (KIT)'|trans }}</h1>
+    <div class="panel panel-primary">
+      <div class="panel-heading">{{ 'Import contacts from KeepInTouch (KIT)'|trans }}</div>
+      <div class="panel-body">
 
-    {{ alert }}
+        {{ alert }}
 
-    {% if app.translator.locale == 'de' %}
-      {# german translation #}
-      <p>Es existieren <b>{{ contacts.detected }}</b> KeepInTouch Datensätze, die in kitFramework <i>Contact</i> importiert werden können.</p>
-      <p>Tatsächlich wurden <b>{{ contacts.imported }}</b> Datensätze importiert. Hierbei wurden alle Datensätze übersprungen, die bereits in <i>Contact</i> existieren.</p>
-    {% else %}
-      {# english translation #}
-      <p>Detected <b>{{ contacts.detected }}</b> KeepInTouch contact records which can imported to kitFramework <i>Contact</i>.</p>
-      <p>Really imported where <b>{{ contacts.imported }}</b>. Skipped records which are already exists.</p>
-    {% endif %}
+        {% if app.translator.locale == 'de' %}
+          {# german translation #}
+          <p>Es existieren <b>{{ contacts.detected }}</b> KeepInTouch Datensätze, die in kitFramework <i>Contact</i> importiert werden können.</p>
+          <p>Tatsächlich wurden <b>{{ contacts.imported }}</b> Datensätze importiert. Hierbei wurden alle Datensätze übersprungen, die bereits in <i>Contact</i> existieren.</p>
+        {% else %}
+          {# english translation #}
+          <p>Detected <b>{{ contacts.detected }}</b> KeepInTouch contact records which can imported to kitFramework <i>Contact</i>.</p>
+          <p>Really imported where <b>{{ contacts.imported }}</b>. Skipped records which are already exists.</p>
+        {% endif %}
+      </div>
+    </div>
   </div>  
 {% endblock content %}
