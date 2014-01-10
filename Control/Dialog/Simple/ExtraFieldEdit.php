@@ -146,7 +146,7 @@ class ExtraFieldEdit extends Dialog {
                     if (preg_match_all('/[^A-Z0-9_$]/', $type_name, $matches)) {
                         // name check fail
                         $this->setAlert('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
-                            array('%identifier%' => $this->app['tranlator']->trans('Extra field')), self::ALERT_TYPE_WARNING);
+                            array('%identifier%' => $this->app['translator']->trans('Extra field')), self::ALERT_TYPE_WARNING);
                     }
                     elseif ($this->ExtraType->existsTypeName($type_name)) {
                         // the tag already exists
