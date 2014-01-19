@@ -583,7 +583,8 @@ class ContactCompany extends Dialog {
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
                 'extra' => $extra,
-                'extra_info' => $extra_info
+                'extra_info' => $extra_info,
+                'usage' => isset($extra['usage']) ? $extra['usage'] : $this->app['request']->get('usage', 'framework')
             ));
     }
 }

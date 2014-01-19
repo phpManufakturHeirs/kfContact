@@ -78,7 +78,8 @@ class ExtraFieldList extends Dialog {
                 'alert' => $this->getAlert(),
                 'route' => self::$options['route'],
                 'fields' => $fields,
-                'extra' => $extra
+                'extra' => $extra,
+                'usage' => isset($extra['usage']) ? $extra['usage'] : $this->app['request']->get('usage', 'framework')
             ));
     }
 }

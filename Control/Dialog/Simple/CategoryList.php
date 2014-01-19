@@ -80,7 +80,8 @@ class CategoryList extends Dialog {
                 'alert' => $this->getAlert(),
                 'route' => self::$options['route'],
                 'categories' => $categories,
-                'extra' => $extra
+                'extra' => $extra,
+                'usage' => isset($extra['usage']) ? $extra['usage'] : $this->app['request']->get('usage', 'framework')
             ));
     }
 }

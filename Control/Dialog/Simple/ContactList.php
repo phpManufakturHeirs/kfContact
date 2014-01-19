@@ -146,7 +146,8 @@ class ContactList extends Dialog {
                 'last_page' => self::$max_pages,
                 'order_by' => $order_by,
                 'order_direction' => strtolower($order_direction),
-                'extra' => $extra
+                'extra' => $extra,
+                'usage' => isset($extra['usage']) ? $extra['usage'] : $this->app['request']->get('usage', 'framework')
             ));
     }
 }

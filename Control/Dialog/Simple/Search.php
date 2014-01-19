@@ -116,7 +116,8 @@ class Search extends Dialog {
                 'list' => $contacts,
                 'columns' => self::$columns,
                 'route' => self::$options['route'],
-                'extra' => $extra
+                'extra' => $extra,
+                'usage' => isset($extra['usage']) ? $extra['usage'] : $this->app['request']->get('usage', 'framework')
             ));
     }
 }

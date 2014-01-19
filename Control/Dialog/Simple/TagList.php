@@ -79,7 +79,8 @@ class TagList extends Dialog {
                 'alert' => $this->getAlert(),
                 'route' => self::$options['route'],
                 'tags' => $tags,
-                'extra' => $extra
+                'extra' => $extra,
+                'usage' => isset($extra['usage']) ? $extra['usage'] : $this->app['request']->get('usage', 'framework')
             ));
     }
 }

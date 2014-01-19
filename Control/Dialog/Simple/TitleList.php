@@ -79,7 +79,8 @@ class TitleList extends Dialog {
                 'alert' => $this->getAlert(),
                 'route' => self::$options['route'],
                 'titles' => $titles,
-                'extra' => $extra
+                'extra' => $extra,
+                'usage' => isset($extra['usage']) ? $extra['usage'] : $this->app['request']->get('usage', 'framework')
             ));
     }
 }

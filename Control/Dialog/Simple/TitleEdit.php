@@ -221,7 +221,8 @@ class TitleEdit extends Dialog {
                 'alert' => $this->getAlert(),
                 'form' => $form->createView(),
                 'route' => self::$options['route'],
-                'extra' => $extra
+                'extra' => $extra,
+                'usage' => isset($extra['usage']) ? $extra['usage'] : $this->app['request']->get('usage', 'framework')
             ));
     }
 
