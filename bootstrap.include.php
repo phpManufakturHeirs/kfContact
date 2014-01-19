@@ -15,6 +15,7 @@ global $app;
 use phpManufaktur\Basic\Control\CMS\EmbeddedAdministration;
 use phpManufaktur\Contact\Control\Contact;
 
+// grant the ROLE hierarchy for the CONTACT ROLES
 $roles = $app['security.role_hierarchy'];
 if (!in_array('ROLE_CONTACT_ADMIN', $roles)) {
     $roles['ROLE_ADMIN'][] = 'ROLE_CONTACT_ADMIN';
@@ -22,6 +23,7 @@ if (!in_array('ROLE_CONTACT_ADMIN', $roles)) {
     $app['security.role_hierarchy'] = $roles;
 }
 
+// add a access point for CONTACT
 $entry_points = $app['security.role_entry_points'];
 if (!in_array('ROLE_CONTACT_ADMIN', $entry_points)) {
     $entry_points['ROLE_CONTACT_ADMIN'] = array(
@@ -34,6 +36,14 @@ if (!in_array('ROLE_CONTACT_ADMIN', $entry_points)) {
         )
     );
     $app['security.role_entry_points'] = $entry_points;
+}
+
+// add all ROLES provided and used by CONTACT
+$roles_provided = $app['security.roles_provided'];
+if (!in_array(array('ROLE_CONTACT_ADMIN', 'ROLE_CONTACT_EDIT'), $roles_provided)) {
+    $roles_provided[] = 'ROLE_CONTACT_ADMIN';
+    $roles_provided[] = 'ROLE_CONTACT_EDIT';
+    $app['security.roles_provided'] = $roles_provided;
 }
 
 // share the CONTACT CONTROL
