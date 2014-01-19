@@ -15,6 +15,27 @@ global $app;
 use phpManufaktur\Basic\Control\CMS\EmbeddedAdministration;
 use phpManufaktur\Contact\Control\Contact;
 
+$roles = $app['security.role_hierarchy'];
+if (!in_array('ROLE_CONTACT_ADMIN', $roles)) {
+    $roles['ROLE_ADMIN'][] = 'ROLE_CONTACT_ADMIN';
+    $roles['ROLE_CONTACT_ADMIN'][] = 'ROLE_CONTACT_EDIT';
+    $app['security.role_hierarchy'] = $roles;
+}
+
+$entry_points = $app['security.role_entry_points'];
+if (!in_array('ROLE_CONTACT_ADMIN', $entry_points)) {
+    $entry_points['ROLE_CONTACT_ADMIN'] = array(
+        'route' => '/admin/contact/backend/list',
+        'name' => 'Contact',
+        'info' => '',
+        'icon' => array(
+            'path' => MANUFAKTUR_PATH.'/Contact/extension.jpg',
+            'url' => MANUFAKTUR_URL.'/Contact/extension.jpg'
+        )
+    );
+    $app['security.role_entry_points'] = $entry_points;
+}
+
 // share the CONTACT CONTROL
 $app['contact'] = $app->share(function($app) {
     return new Contact($app);
