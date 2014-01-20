@@ -143,6 +143,8 @@ return array(
         => 'Kontakt anlegen',
     'Customer'
         => 'Kunde',
+    'Customer relationship management for the kitFramework'
+        => 'Kontakt- und Adressverwaltung (CRM) für das kitFramework',
 
     'DE'
         => 'Deutschland',

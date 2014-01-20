@@ -25,18 +25,32 @@ if (!in_array('ROLE_CONTACT_ADMIN', $roles)) {
 
 // add a access point for CONTACT
 $entry_points = $app['security.role_entry_points'];
+/*
 if (!in_array('ROLE_CONTACT_ADMIN', $entry_points)) {
     $entry_points['ROLE_CONTACT_ADMIN'] = array(
-        'route' => '/admin/contact/backend/list',
-        'name' => 'Contact',
-        'info' => '',
-        'icon' => array(
-            'path' => MANUFAKTUR_PATH.'/Contact/extension.jpg',
-            'url' => MANUFAKTUR_URL.'/Contact/extension.jpg'
+        array(
+            'route' => '/admin/contact/backend/list',
+            'name' => 'Contact',
+            'info' => 'Customer relationship management for the kitFramework',
+            'icon' => array(
+                'path' => MANUFAKTUR_PATH.'/Contact/extension.jpg',
+                'url' => MANUFAKTUR_URL.'/Contact/extension.jpg'
+            )
         )
     );
     $app['security.role_entry_points'] = $entry_points;
 }
+*/
+$entry_points['ROLE_ADMIN'][] = array(
+    'route' => '/admin/contact/backend/list',
+    'name' => 'Contact',
+    'info' => 'Customer relationship management for the kitFramework',
+    'icon' => array(
+        'path' => '/extension/phpmanufaktur/phpManufaktur/Contact/extension.jpg',
+        'url' => MANUFAKTUR_URL.'/Contact/extension.jpg'
+    )
+);
+$app['security.role_entry_points'] = $entry_points;
 
 // add all ROLES provided and used by CONTACT
 $roles_provided = $app['security.roles_provided'];
