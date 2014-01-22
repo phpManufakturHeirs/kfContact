@@ -6,6 +6,12 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.31** - 2014-01-22
+
+* fixed a path to `bootstrap.min.js`
+* added parameter `usage` to all 'simple' templates to avoid problems with global handling/embedding
+* add security role hierarchy and security entry points 
+
 **2.0.30** - 2013-12-27
 
 * changed the Contact Backend to Bootstrap 3 
