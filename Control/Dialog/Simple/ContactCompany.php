@@ -529,8 +529,7 @@ class ContactCompany extends Dialog {
         $contact = $this->ContactControl->select(self::$contact_id, 'COMPANY');
 
         if ($this->ContactControl->isAlert()) {
-            $this->setAlert(strip_tags($this->ContactControl->getMessage()),
-                array(), self::ALERT_TYPE_WARNING);
+            $this->setAlertUnformatted($this->ContactControl->getAlert());
         }
 
         // get the form fields
