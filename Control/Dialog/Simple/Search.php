@@ -94,7 +94,7 @@ class Search extends Dialog {
     public function exec($extra = null)
     {
         if (null == ($search = $this->app['request']->get('search'))) {
-            $this->setAlert('Please specify a search term!');
+            $this->setAlert('Please specify a search term!', array(), self::ALERT_TYPE_WARNING);
             $contacts = array();
         }
         else {
