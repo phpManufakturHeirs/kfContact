@@ -6,6 +6,11 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.32** - 2014-02-16
+
+* added `FORMS` for `Contact`
+* introduce the kitCommand `~~ contact ~~` 
+
 **2.0.31** - 2014-01-22
 
 * fixed a path to `bootstrap.min.js`
