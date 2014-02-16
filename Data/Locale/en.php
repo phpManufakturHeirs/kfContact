@@ -16,6 +16,29 @@ if ('á' != "\xc3\xa1") {
 
 return array(
 
+    'Address city'
+        => 'City',
+    'Address street'
+        => 'Street',
+    'Address zip'
+        => 'ZIP',
+
+    'Communication email'
+        => 'Email',
     'contact_id'
-        => 'Contact ID'
+        => 'Contact ID',
+
+    'FEMALE'
+        => 'Femaile',
+
+    'MALE'
+        => 'Male',
+
+    'Person first name'
+        => 'First name',
+    'Person gender'
+        => 'Gender',
+    'Person last name'
+        => 'Last name',
+
 );

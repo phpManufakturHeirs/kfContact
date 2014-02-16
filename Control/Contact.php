@@ -1226,6 +1226,28 @@ class Contact extends ContactParent
     }
 
     /**
+     * Validate the given $tag_name. Remove spaces and replace them with a
+     * underscore, uppercase and return the prepared tag name as reference.
+     * Set a Alert message if the check fails
+     *
+     * @param string $tag_name
+     * @param string reference $prepared_tag_name
+     * @return boolean
+     */
+    public function validateTagName($tag_name, &$prepared_tag_name)
+    {
+        $prepared_tag_name = str_replace(' ', '_', strtoupper($tag_name));
+        $matches = array();
+        if (preg_match_all('/[^A-Z0-9_$]/', $prepared_tag_name, $matches)) {
+            // name check fail
+            $this->setAlert('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
+                array('%identifier%' => 'Tag'), self::ALERT_TYPE_WARNING);
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Create a new Tag Type with the given name and description
      *
      * @param string $tag_name

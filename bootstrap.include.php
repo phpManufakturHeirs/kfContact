@@ -217,3 +217,19 @@ $app->match('/admin/contact/backend/title/edit',
     'phpManufaktur\Contact\Control\Backend\TitleEdit::controller');
 $app->match('/admin/contact/backend/title/edit/id/{title_id}',
     'phpManufaktur\Contact\Control\Backend\TitleEdit::controller');
+
+/**
+ * kitCommands
+ */
+
+$command->post('/contact',
+    // create the iFrame and execute route /contact/action
+    'phpManufaktur\Contact\Control\Command\Action::ControllerCreateIFrame')
+    ->setOption('info', MANUFAKTUR_PATH.'/Contact/command.contact.json');
+
+$app->get('/contact/action',
+    'phpManufaktur\Contact\Control\Command\Action::ControllerAction');
+
+$app->post('/contact/form/check',
+    'phpManufaktur\Contact\Control\Command\Form::ControllerFormAction');
+

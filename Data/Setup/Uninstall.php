@@ -34,6 +34,7 @@ use phpManufaktur\Contact\Data\Contact\ExtraType;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\Message;
 use phpManufaktur\Basic\Control\CMS\UninstallAdminTool;
+use phpManufaktur\Contact\Data\Contact\Form;
 
 class Uninstall
 {
@@ -125,6 +126,10 @@ class Uninstall
             $Message = new Message($app);
             $Message->dropTable();
             $app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_message`');
+
+            $Form = new Form($app);
+            $Form->dropTable();
+            $app['monolog']->addInfo('[Contact Uninstall] Drop table `contact_form`');
 
             $app['monolog']->addInfo('[Contact Uninstall] Dropped all tables successfull');
 

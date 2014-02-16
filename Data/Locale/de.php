@@ -37,6 +37,12 @@ return array(
         => 'Zusatz',
     'Address'
         => 'Adresse',
+    'Address city'
+        => 'Stadt',
+    'Address street'
+        => 'Straße',
+    'Address zip'
+        => 'PLZ',
     'address_city'
         => 'Stadt',
     'address_country_code'
@@ -97,6 +103,8 @@ return array(
         => 'Anklicken um die Spalte absteigend zu sortieren',
     'Communication'
         => 'Kommunikation',
+    'Communication email'
+        => 'E-Mail',
     'communication_email'
         => 'E-Mail',
     'communication_phone'
@@ -196,18 +204,28 @@ return array(
     'Edit titles'
         => 'Titel bearbeiten',
 
+    'Failed to send a email with the subject <b>%subject%</b> to the addresses: <b>%failed%</b>.'
+        => 'Eine E-Mail mit dem Betreff <b>%subject%</b> konnte an die folgenden Adressaten nicht übermittelt werden: <b>%failed%</b>.',
     'FEMALE'
         => 'Frau',
     'female'
         => 'Frau',
+    'Fields of type `select`, `radio` or `checkbox` need one or more values defined as array in `choices`!'
+        => 'Felder vom Typ `select`, `radio` oder `checkbox` benötigen einen oder mehrere Werte, die als Array in `choices` übergeben werden!',
     'First name'
         => 'Vorname',
+    'Forms'
+        => 'Formulare',
     'FR'
         => 'Frankreich',
 
     'Gender'
         => 'Geschlecht',
 
+    "I'm a sample header"
+        => 'Ich bin ein Beispiel für eine Überschrift',
+    'I accept that this software is provided under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>.'
+        => 'Ich akzeptiere, dass diese Software unter der <a href="http://opensource.org/licenses/MIT" target="_blank">MIT Lizenz</a> veröffentlicht wurde.',
     'Identifier'
         => 'Bezeichner',
     'Import contacts from KeepInTouch (KIT)'
@@ -232,12 +250,20 @@ return array(
         => 'Herr',
     'male'
         => 'Herr',
+    'mandatory field'
+        => 'Pflichtfeld',
     'Merchant'
         => 'Händler',
+    'Missing the field definitions in `form.json`!'
+        => 'In der `form.json` wurden keine Feld Definitionen gefunden!',
     "Missing the %identifier%! The ID should be set to -1 if you insert a new record."
         => 'Das Feld <b>%identifier%</b> fehlt! Diese ID sollte auf -1 gesetzt sein, wenn Sie einen neuen Datensatz einfügen möchten.',
     'Missing the key %field_name%, it must always set and not empty!'
         => 'Der Schlüssel %field_name% muss immer gesetzt werden und darf nicht leer sein!',
+    'Missing the `name` field in the definition!'
+        => 'Bei den Definitionen für die Eingabefelder ist die Angabe des `name` Feld Pflicht!',
+    'Missing the `type` field in the definition!'
+        => 'Bei den Definitionen für die Eingabefelder ist die Angabe des `type` Feld Pflicht!',
 
     'Nick name'
         => 'Spitzname',
@@ -255,6 +281,14 @@ return array(
         => 'Ungeklärt',
     'PERSON'
         => 'Person',
+    'Person first name'
+        => 'Vorname',
+    'Person gender'
+        => 'Anrede',
+    'Person last name'
+        => 'Nachname',
+    'Person nick name'
+        => 'Spitzname',
     'person_birthday'
         => 'Geburtstag',
     'person_first_name'
@@ -284,12 +318,16 @@ return array(
         => 'Kurzbezeichnung',
     'Short name (translated)'
         => 'Kurzbezeichnung (Übersetzung)',
+    'Sorry, but there occured a problem while processing the form. We have informed the webmaster.'
+        => 'Entschuldigung, während der Verarbeitung des Formulars ist ein Problem aufgetreten. Wir haben den Webmaster informiert.',
     'Start import from KeepInTouch'
         => 'Den Import aus KeepInTouch starten',
     'State'
         => 'Bundesland',
     'Street'
         => 'Straße',
+    'Submission from form %form%'
+        => 'Übermittlung vom Formular %form%',
 
     'Tag'
         => 'Markierung',
@@ -369,10 +407,16 @@ return array(
         => 'Der Typ %type% mit dem Wert %value% ist für die primäre Kommunikation mit dem Kontakt festgelegt und kann nicht gelöscht werden!',
     "The update returned 'FALSE' but no message ..."
         => "Die Aktualisierungsfunktion hat den Datensatz <b>nicht</b> aktualisiert und keinen Grund dafür mitgeteilt.",
+    'The URL %url% is not valid, accepted is a pattern like http://example.com or https://www.example.com.'
+        => 'Die URL %url% ist nicht gültig. Akzeptiert werden nur vollständige URL Angaben wie z.B. http://example.com oder https://www.example.com',
     'The zip %zip% is not valid!'
         => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
     'There exists no KeepInTouch installation at the parent CMS!'
         => 'Es existiert keine KeepInTouch Installation auf dem übergeordneten Content Management System!',
+    'This is a sample panel text whith some unnecessary content'
+        => 'Dies ist ein Beispiel für einen Panel Text mit etwas sinnfreiem Inhalt.',
+    'This tag will be assigned to all user-defined `Contact` forms.'
+        => 'Diese Markierung wird allen benutzerdefinierten `Contact` Formularen hinzugefügt.',
     'Title'
         => 'Titel',
     'title_id'

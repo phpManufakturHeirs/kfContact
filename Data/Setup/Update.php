@@ -20,6 +20,7 @@ use phpManufaktur\Contact\Data\Contact\Message;
 use phpManufaktur\Contact\Data\Contact\Overview;
 use phpManufaktur\Contact\Control\Configuration;
 use phpManufaktur\Basic\Control\CMS\InstallAdminTool;
+use phpManufaktur\Contact\Data\Contact\Form;
 
 class Update
 {
@@ -259,6 +260,18 @@ class Update
     }
 
     /**
+     * Release 2.0.32
+     */
+    protected function release_2032()
+    {
+        if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_form')) {
+            $Form = new Form($this->app);
+            $Form->createTable();
+            $this->app['monolog']->addInfo('[Contact Update] Create table `contact_form`');
+        }
+    }
+
+    /**
      * Execute all available update steps
      *
      * @param Application $app
@@ -292,6 +305,10 @@ class Update
             // Release 2.0.30
             $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.30');
             $this->release_2030();
+
+            // Release 2.0.32
+            $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.32');
+            $this->release_2032();
 
             // Create Configuration if not exists - only constructor needed
             $Configuration = new Configuration($app);
