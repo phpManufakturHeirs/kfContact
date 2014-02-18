@@ -31,6 +31,7 @@
         "green":"Select the green one",
         "blue":"Select the blue one"
       },
+      "value":"green",
       "required":true
     },
     "message":{
