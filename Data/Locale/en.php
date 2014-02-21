@@ -40,5 +40,7 @@ return array(
         => 'Gender',
     'Person last name'
         => 'Last name',
+    'Person nick name'
+        => 'Nickname',
 
 );
