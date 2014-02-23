@@ -607,4 +607,49 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Create a list of CONTACT NAMES for use with form.factory / Twig
+     *
+     * @param array $tags optional, select only contacts with these tags
+     * @param array $status select contacts in contact_status
+     * @throws \Exception
+     * @return Ambigous <boolean, array >
+     */
+    public function selectContactIdentifiersForSelect($no_contact_at_top=true, $tags=array(), $status=array('ACTIVE'))
+    {
+        try {
+            $contact = self::$table_name;
+            $tag_table = FRAMEWORK_TABLE_PREFIX.'contact_tag';
+
+            $in_status = "('".implode("','", $status)."')";
+
+            if (is_array($tags) && !empty($tags)) {
+                $in_tags = "('".implode("','", $tags)."')";
+                $SQL = "SELECT `$contact`.`contact_id`, `$contact`.`contact_name` FROM `$contact`, `$tag_table` "
+                    ."WHERE `$contact`.`contact_id`=`$tag_table`.`contact_id` AND `$tag_table`.`tag_name` IN $in_tags "
+                    ."AND `contact_status` IN $in_status ORDER BY `contact_name` ASC";
+            }
+            else {
+                $SQL = "SELECT `contact_id`,`contact_name` FROM `$contact` WHERE `contact_status` IN $in_status "
+                    ."ORDER BY `contact_name` ASC";
+            }
+
+            $results = $this->app['db']->fetchAll($SQL);
+
+            $select = array();
+            if ($no_contact_at_top) {
+                $select[-1] = '- no contact selected -';
+            }
+            if (is_array($results)) {
+                foreach ($results as $result) {
+                    $select[$result['contact_id']] = $this->app['utils']->unsanitizeText($result['contact_name']);
+                }
+
+            }
+            return (!empty($select)) ? $select : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }

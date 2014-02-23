@@ -21,6 +21,8 @@ return array(
         => '- neuer Kontakt -',
     '- new tag -'
         => '- neue Markierung -',
+    '- no contact selected -'
+        => '- kein Kontakt ausgewählt -',
     '- please select -'
         => '- bitte auswählen -',
     'active'

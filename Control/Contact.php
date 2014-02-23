@@ -1321,5 +1321,17 @@ class Contact extends ContactParent
         return $this->ContactData->getStatus($login);
     }
 
+    /**
+     * Create a list of CONTACT NAMES for use with form.factory / Twig
+     *
+     * @param array $tags optional, select only contacts with these tags
+     * @param array $status select contacts in contact_status
+     * @throws \Exception
+     * @return Ambigous <boolean, array>
+     */
+    public function selectContactIdentifiersForSelect($no_contact_at_top=true, $tags=array(), $status=array('ACTIVE'))
+    {
+        return $this->ContactData->selectContactIdentifiersForSelect($no_contact_at_top, $tags, $status);
+    }
 }
 
