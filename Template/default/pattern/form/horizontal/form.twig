@@ -22,60 +22,59 @@
 {% endblock %}
   
 {% block content %}
-    
-    {% if config.header.text is defined and config.header.text|length > 0 %}
-      {# show a headline above the form - use <h2> if not defined another level #}
-      <h{{ config.header.level|default(2) }}>{{ config.header.text|trans }}</h{{ config.header.level|default(2) }}>
-    {% endif %}
-       
-    {# all alerts and messages will be prompted here! #}  
-    {{ basic.alert }}
-      
-    {% if config.panel.text is defined and config.panel.text|length > 0 %}
-      {# show the panel text defined in the form.json #}
-      <div class="panel panel-default">
-        <div class="panel-body">
-          {{ config.panel.text|trans }}
-        </div>
-      </div>
-    {% endif %}  
-    
-    {# assign the bootstrap 3 theming for horizontal forms to the Symfony Form Factory output #}  
-    {% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form/horizontal/form.fields.horizontal.twig' %}
-    
-    <div class="row">
-      <div class="col-xs-9">
-        <form id="sample_contact" action="{{ route.action }}" class="form-horizontal" method="post" role="form" {{ form_enctype(form) }}>
-          
-          {# loop through all form fields from the form.json #}
-          {{ form_widget(form) }}     
-          
-          {% if (reCaptchaIsActive() and config.recaptcha.enabled is not defined) or (config.recaptch.enabled is defined and config.recaptcha.enabled) %}
-            {# if the reCaptcha service is active and enabled by form.json ask for a captcha #}
-            <div class="form-group">
-              <div class="col-xs-offset-3 col-xs-6">
-                {{ reCaptcha() }}
-              </div>
-            </div>
-          {% endif %}
-          
-          <div class="form-group">
-            <div class="col-xs-offset-3 col-xs-6">
-              <button type="submit" class="btn btn-default form-control">{{ 'Submit'|trans }}</button>
-            </div>
-          </div>
-          
-          {% if config.required.hint is not defined or config.required.hint %}
-            {# show a hint for the mandatory fields #}
-            <div class="form-group">
-              <div class="col-xs-offset-3 col-xs-6 small text-muted">
-                <span class="required">*</span> {{ 'mandatory field'|trans }}
-              </div>
-            </div>
-          {% endif %}
-        </form>
-      </div>
+  <!-- {{ _self.getTemplateName() }} -->
+  {% if config.header.text is defined and config.header.text|length > 0 %}
+    {# show a headline above the form - use <h2> if not defined another level #}
+  <h{{ config.header.level|default(2) }}>{{ config.header.text|trans }}</h{{ config.header.level|default(2) }}>
+  {% endif %}
+
+  {# all alerts and messages will be prompted here! #}  
+  {{ basic.alert }}
+
+  {% if config.panel.text is defined and config.panel.text|length > 0 %}
+    {# show the panel text defined in the form.json #}
+  <div class="panel panel-default">
+    <div class="panel-body">
+        {{ config.panel.text|trans }}
     </div>
-    
+  </div>
+  {% endif %}  
+
+  {# assign the bootstrap 3 theming for horizontal forms to the Symfony Form Factory output #}  
+  {% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form/horizontal/form.fields.horizontal.twig' %}
+
+  <div class="row">
+    <div class="col-xs-9">
+      <form id="sample_contact" action="{{ route.action }}" class="form-horizontal" method="post" role="form" {{ form_enctype(form) }}>
+
+        {# loop through all form fields from the form.json #}
+        {{ form_widget(form) }}     
+
+        {% if (reCaptchaIsActive() and config.recaptcha.enabled is not defined) or (config.recaptch.enabled is defined and config.recaptcha.enabled) %}
+          {# if the reCaptcha service is active and enabled by form.json ask for a captcha #}
+        <div class="form-group">
+          <div class="col-xs-offset-3 col-xs-6">
+              {{ reCaptcha() }}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+          <div class="col-xs-offset-3 col-xs-6">
+            <button type="submit" class="btn btn-default form-control">{{ 'Submit'|trans }}</button>
+          </div>
+        </div>
+
+        {% if config.required.hint is not defined or config.required.hint %}
+          {# show a hint for the mandatory fields #}
+        <div class="form-group">
+          <div class="col-xs-offset-3 col-xs-6 small text-muted">
+            <span class="required">*</span> {{ 'mandatory field'|trans }}
+          </div>
+        </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
 {% endblock content %}
-    

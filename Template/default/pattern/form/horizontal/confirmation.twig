@@ -22,7 +22,7 @@
 {% endblock %}
   
 {% block content %}
-    
+  <!-- {{ _self.getTemplateName() }} -->  
   {% if config.confirmation.text is defined and config.confirmation.text|length > 0 %}
     
     {# show the confirmation text from the form.json #}
