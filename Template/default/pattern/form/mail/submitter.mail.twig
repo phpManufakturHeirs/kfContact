@@ -15,7 +15,7 @@
     <p>Übermittelte Kontakt Daten:</p>
     <p>{% for field, value in contact_data %}
       {% if loop.index > 1 %}<br />{% endif %}
-      {{ field }} => {{ value }}
+      {{ field|humanize|trans }} => {{ value|trans }}
     {% endfor %}</p>
   {% endif %}
       
@@ -23,7 +23,7 @@
     <p>Übermittelte Formular Daten:</p>
     <p>{% for field, value in form_data %}
       {% if loop.index > 1 %}<br />{% endif %}
-      {{ field }} => {{ value }}
+      {{ field|humanize|trans }} => {{ value|trans }}
     {% endfor %}</p>  
   {% endif %}
   
@@ -37,7 +37,7 @@
     <p>Submitted Contact data:</p>
     <p>{% for field, value in contact_data %}
       {% if loop.index > 1 %}<br />{% endif %}
-      {{ field }} => {{ value }}
+      {{ field|humanize|trans }} => {{ value|trans }}
     {% endfor %}</p>
   {% endif %}
       
@@ -45,7 +45,7 @@
     <p>Submitted Form data:</p>
     <p>{% for field, value in form_data %}
       {% if loop.index > 1 %}<br />{% endif %}
-      {{ field }} => {{ value }}
+      {{ field|humanize|trans }} => {{ value|trans }}
     {% endfor %}</p>  
   {% endif %}
   
