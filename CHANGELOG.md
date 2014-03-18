@@ -6,6 +6,10 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.34** - 2014-03-18
+
+* added form `sample_newsletter` to show Newsletter Subscriptions
+
 **2.0.33** - 2014-02-24
 
 * added `selectContactIdentifiersForSelect()` to `$app['contact']`
