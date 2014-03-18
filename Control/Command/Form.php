@@ -55,7 +55,7 @@ class Form extends Basic
         //'address_area',
         //'address_state',
         //'address_country_code',
-        //'tags'
+        'tags'
     );
 
     /**
@@ -193,12 +193,13 @@ class Form extends Basic
 
                 switch ($field['type']) {
                     case 'person_gender':
+                        $value = isset($field['value']) ? $field['value'] : 'MALE';
                         $settings = array(
                             'choices' => array('MALE' => 'MALE', 'FEMALE' => 'FEMALE'),
                             'expanded' => false,
                             'multiple' => false,
                             'empty_value' => isset($field['empty_value']) ? $field['empty_value'] : '- please select -',
-                            'data' => isset($data[$field['type']]) ? $data[$field['type']] : 'MALE',
+                            'data' => isset($data[$field['type']]) ? $data[$field['type']] : $value,
                             'label' => isset($field['label']) ? $field['label'] : $this->app['utils']->humanize($field['type']),
                             'required' => isset($field['required']) ? $field['required'] : true
                         );
@@ -208,8 +209,9 @@ class Form extends Basic
                         $form->add($field['type'], 'choice', $settings);
                         break;
                     case 'communication_email':
+                        $value = isset($field['value']) ? $field['value'] : '';
                         $settings = array(
-                            'data' => isset($data[$field['type']]) ? $data[$field['type']] : '',
+                            'data' => isset($data[$field['type']]) ? $data[$field['type']] : $value,
                             'label' => isset($field['label']) ? $field['label'] : $this->app['utils']->humanize($field['type']),
                             'required' => true
                         );
@@ -218,6 +220,18 @@ class Form extends Basic
                         }
                         $form->add($field['type'], 'email', $settings);
                         break;
+                    case 'tags':
+                        // set the contact TAGS
+                        if (isset($field['value'])) {
+                            $value = is_array($field['value']) ? implode(',', $field['value']) : $field['value'];
+                        }
+                        else {
+                            $value = null;
+                        }
+                        $form->add($field['type'], 'hidden', array(
+                            'data' => $value
+                        ));
+                        break;
                     case 'person_first_name':
                     case 'person_last_name':
                     case 'person_nick_name':
@@ -225,8 +239,9 @@ class Form extends Basic
                     case 'address_street':
                     case 'address_zip':
                     case 'address_city':
+                        $value = isset($field['value']) ? $field['value'] : '';
                         $settings = array(
-                            'data' => isset($data[$field['type']]) ? $data[$field['type']] : '',
+                            'data' => isset($data[$field['type']]) ? $data[$field['type']] : $value,
                             'label' => isset($field['label']) ? $field['label'] : $this->app['utils']->humanize($field['type']),
                             'required' => isset($field['required']) ? $field['required'] : true
                         );
@@ -393,6 +408,9 @@ class Form extends Basic
                             break;
                         case 'person_gender':
                             $contact_data[$field['name']] = isset($data[$field['name']]) ? $data[$field['name']] : 'MALE';
+                            break;
+                        case 'tags':
+                            $contact_data[$field['name']] = isset($data[$field['name']]) ? $data[$field['name']] : '';
                             break;
                         case 'person_first_name':
                         case 'person_last_name':
@@ -569,7 +587,36 @@ class Form extends Basic
                     'This tag will be assigned to all user-defined `Contact` forms.');
             }
 
-            $tags = array('FORMS');
+            $tags = array();
+            $tags[] = 'FORMS';
+
+            if (isset($contact_data['tags']) && !empty($contact_data['tags'])) {
+                // check user defined TAGS
+                if (false !== strpos($contact_data['tags'], ',')) {
+                    $user_tags = explode(',', $contact_data['tags']);
+                    foreach ($user_tags as $user_tag) {
+                        $user_tag = strtoupper(trim($user_tag));
+                        if (!empty($user_tag)) {
+                            // check the TAG
+                            $tag_name = null;
+                            if (!$this->app['contact']->validateTagName($user_tag, $tag_name)) {
+                                // failed the tag name check!
+                                $this->app['monolog']->addDebug('The user defined TAG '.$user_tag.' failed the tag name check!');
+                                continue;
+                            }
+                            if (!$this->app['contact']->existsTagName($tag_name)) {
+                                // create the TAG
+                                $this->app['contact']->createTagName($tag_name,
+                                    sprintf('This tag was automatically generated for the form %s', self::$form_name));
+                            }
+                            $tags[] = $tag_name;
+                        }
+                    }
+                }
+                else {
+                    $tags[] = strtoupper(trim($contact_data['tags']));
+                }
+            }
 
             if (isset(self::$form_config['tags']) && is_array(self::$form_config['tags'])) {
                 foreach (self::$form_config['tags'] as $key => $tag) {

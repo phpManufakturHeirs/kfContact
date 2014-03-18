@@ -326,6 +326,8 @@ return array(
         => 'Den Import aus KeepInTouch starten',
     'State'
         => 'Bundesland',
+    "Stay in touch, read our newsletter!"
+        => 'Bleiben Sie mit uns in Kontakt, abonnieren Sie unseren Newsletter!',
     'Street'
         => 'Straße',
     'Submission from form %form%'
