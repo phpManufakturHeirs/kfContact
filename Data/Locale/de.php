@@ -23,8 +23,6 @@ return array(
         => '- neue Markierung -',
     '- no contact selected -'
         => '- kein Kontakt ausgewählt -',
-    '- please select -'
-        => '- bitte auswählen -',
     'active'
         => 'Aktiv',
     'Add a new category'
