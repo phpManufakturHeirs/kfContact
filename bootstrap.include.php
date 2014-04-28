@@ -50,11 +50,6 @@ $app['contact'] = $app->share(function($app) {
     return new Contact($app);
 });
 
-// scan the /Locale directory and add all available languages
-$app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale');
-// scan the /Locale/Custom directory and add all available languages
-$app['utils']->addLanguageFiles(MANUFAKTUR_PATH.'/Contact/Data/Locale/Custom');
-
 $app->get('/admin/contact/setup',
     // setup
     'phpManufaktur\Contact\Data\Setup\Setup::exec');
