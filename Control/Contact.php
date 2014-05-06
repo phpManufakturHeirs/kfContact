@@ -33,6 +33,7 @@ use phpManufaktur\Contact\Data\Contact\Protocol;
 use phpManufaktur\Contact\Data\Contact\Extra;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
+use phpManufaktur\Contact\Data\Contact\Message;
 
 class Contact extends ContactParent
 {
@@ -53,6 +54,7 @@ class Contact extends ContactParent
     protected $ExtraCategory = null;
     protected $ExtraType = null;
     protected $Extra = null;
+    protected $Message = null;
 
     protected static $ContactBlocks = array(
         'contact' => array(
@@ -103,6 +105,8 @@ class Contact extends ContactParent
         $this->Extra = new Extra($this->app);
         $this->ExtraCategory = new ExtraCategory($this->app);
         $this->ExtraType = new ExtraType($this->app);
+        // Messages
+        $this->Message = new Message($app);
     }
 
     /**
@@ -1332,6 +1336,66 @@ class Contact extends ContactParent
     public function selectContactIdentifiersForSelect($no_contact_at_top=true, $tags=array(), $status=array('ACTIVE'))
     {
         return $this->ContactData->selectContactIdentifiersForSelect($no_contact_at_top, $tags, $status);
+    }
+
+    /**
+     * Search for contacts with the given search term. Multiple terms separated
+     * by a space will be concat as OR condition, but you can also use AND as as
+     * a separator to concat the terms with AND.
+     *
+     * @param string $search_term
+     * @param array $tags default null - restrict search to the given tags
+     * @param string $status by default 'DELETED'
+     * @param string $status_operator by default '!='
+     * @param string $order_by by default 'order_name'
+     * @param string $order_direction by default 'ASC'
+     * @throws \Exception
+     * @return Ambigous <boolean, array > return false if no hit, overview records otherwise
+     */
+    public function searchContact($search_term, $tags=null, $status='DELETED', $status_operator='!=', $order_by='order_name', $order_direction='ASC')
+    {
+        return $this->Overview->searchContact($search_term, $tags, $status, $status_operator, $order_by, $order_direction);
+    }
+
+    /**
+     * Insert a Message record, assigned to the Contact ID and the calling Application
+     *
+     * @param integer $contact_id
+     * @param string $subject
+     * @param string $message
+     * @param string $application_name - the name of the Application
+     * @param string $application_marker_type - internal identifier name for the Application
+     * @param unknown $application_marker_id - internal identifier ID for the Application
+     * @param string $date - message date
+     * @param string $status - status, default 'ACTIVE'
+     * @param string $type - message type, 'TEXT' (default) or 'HTML'
+     * @return number - ID of the inserted message
+     */
+    public function addMessage(
+        $contact_id,
+        $subject,
+        $message,
+        $application_name='unknown',
+        $application_marker_type = 'unknown',
+        $application_marker_id = -1,
+        $date = null,
+        $status = 'ACTIVE',
+        $type = 'TEXT')
+    {
+        $data = array(
+            'contact_id' => $contact_id,
+            'application_name' => $application_name,
+            'application_marker_type' => $application_marker_type,
+            'application_marker_id' => $application_marker_id,
+            'message_title' => $subject,
+            'message_type' => $type,
+            'message_content' => $message,
+            'message_date' => is_null($date) ? date('Y-m-d H:i:s') : $date,
+            'message_status' => $status
+        );
+        $message_id = -1;
+        $this->Message->insert($data, $message_id);
+        return $message_id;
     }
 }
 
