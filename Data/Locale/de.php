@@ -27,6 +27,8 @@ return array(
         => 'Aktiv',
     'Add a new category'
         => 'Eine neue Kategorie erstellen',
+    'Add a new contact'
+        => 'Einen neuen Kontakt erstellen',
     'Add a new extra field'
         => 'Ein neues Zusatzfeld erstellen',
     'Add a new tag'
@@ -312,6 +314,10 @@ return array(
 
     'Search'
         => 'Suche',
+    'Search contact'
+        => 'Kontakt suchen',
+    'Select contact'
+        => 'Kontakt auswählen',
     'Select contact type'
         => 'Kontakt Typ',
     'Short name'
