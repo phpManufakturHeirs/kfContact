@@ -6,6 +6,11 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.35** - 2014-05-07
+
+* all language files are now loaded by the BASIC extension
+* added functions `searchContact()` and  `addMessage()` to `$app['contact']`
+
 **2.0.34** - 2014-03-18
 
 * added form `sample_newsletter` to show Newsletter Subscriptions
