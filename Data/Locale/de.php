@@ -109,6 +109,8 @@ return array(
         => 'E-Mail',
     'communication_email'
         => 'E-Mail',
+    'Communication phone'
+        => 'Telefon',
     'communication_phone'
         => 'Telefon',
     'Company'
