@@ -27,67 +27,6 @@ class Update
     protected $app = null;
     protected $db_config = null;
 
-    /**
-     * Check if the give column exists in the table
-     *
-     * @param string $table
-     * @param string $column_name
-     * @return boolean
-     */
-    protected function columnExists($table, $column_name)
-    {
-        try {
-            $query = $this->app['db']->query("DESCRIBE `$table`");
-            while (false !== ($row = $query->fetch())) {
-                if ($row['Field'] == $column_name) return true;
-            }
-            return false;
-        } catch (\Doctrine\DBAL\DBALException $e) {
-            throw new \Exception($e);
-        }
-    }
-
-    /**
-     * Check if the given $table exists
-     *
-     * @param string $table
-     * @throws \Exception
-     * @return boolean
-     */
-    protected function tableExists($table)
-    {
-        try {
-            $query = $this->app['db']->query("SHOW TABLES LIKE '$table'");
-            return (false !== ($row = $query->fetch())) ? true : false;
-        } catch (\Doctrine\DBAL\DBALException $e) {
-            throw new \Exception($e);
-        }
-    }
-
-    /**
-     * Check if the $value exists in the ENUM array of the $field
-     *
-     * @param string $table
-     * @param string $field
-     * @param string $value
-     * @throws \Exception
-     * @return boolean|NULL NULL if ENUM not exists in $field or TRUE|FALSE for $value
-     */
-    protected function enumValueExists($table, $field, $value)
-    {
-        try {
-            $SQL = "SHOW COLUMNS FROM `$table` WHERE FIELD = '$field'";
-            $result = $this->app['db']->fetchAssoc($SQL);
-            if (isset($result['Type']) && (false !== strpos($result['Type'], "enum('"))) {
-                $enum = str_replace(array("enum('", "')", "''"), array('', '', "'"), $result['Type']);
-                $check = explode("','", $enum);
-                return in_array($value, $check);
-            }
-            return null;
-        } catch (\Doctrine\DBAL\DBALException $e) {
-            throw new \Exception($e);
-        }
-    }
 
     /**
      * Release 2.0.13
@@ -95,21 +34,21 @@ class Update
     protected function release_2013()
     {
         try {
-            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_protocol')) {
+            if (!$this->app['db.utils']->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_protocol')) {
                 // create protocol table
                 $Protocol = new Protocol($this->app);
                 $Protocol->createTable();
                 $this->app['monolog']->addInfo('[Contact Update] Create table `contact_protocol`');
             }
 
-            if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_contact', 'contact_since')) {
+            if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_contact', 'contact_since')) {
                 // add field contact_since in contact_contact
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_contact` ADD `contact_since` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `contact_type`";
                 $this->app['db']->query($SQL);
                 $this->app['monolog']->addInfo('[Contact Update] Add field `contact_since` to table `contact_contact`');
             }
 
-            if ($this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_person', 'person_contact_since')) {
+            if ($this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_person', 'person_contact_since')) {
                 // move data from `person_contact_since` to `contact_since`
                 $SQL = "SELECT `contact_id`, `person_contact_since` FROM `".FRAMEWORK_TABLE_PREFIX."contact_person`";
                 $results = $this->app['db']->fetchAll($SQL);
@@ -128,39 +67,39 @@ class Update
                 $this->app['monolog']->addInfo('[Contact Update] Deleted column `person_contact_since`');
             }
 
-            if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_originator')) {
+            if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_originator')) {
                 // add field `note_originator`
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_note` ADD `note_originator` VARCHAR(64) NOT NULL DEFAULT 'SYSTEM' AFTER `note_content`";
                 $this->app['db']->query($SQL);
                 $this->app['monolog']->addInfo('[Contact Update] Add field `note_originator` to table `contact_note`');
             }
 
-            if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_date')) {
+            if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_note', 'note_date')) {
                 // add field `note_date`
                 $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_note` ADD `note_date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `note_originator`";
                 $this->app['db']->query($SQL);
                 $this->app['monolog']->addInfo('[Contact Update] Add field `note_date` to table `contact_note`');
             }
 
-            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_type')) {
+            if (!$this->app['db.utils']->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_type')) {
                 $ExtraType = new ExtraType($this->app);
                 $ExtraType->createTable();
                 $this->app['monolog']->addInfo('[Contact Update] Create table `contact_extra_type`');
             }
 
-            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_category')) {
+            if (!$this->app['db.utils']->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_category')) {
                 $ExtraCategory = new ExtraCategory($this->app);
                 $ExtraCategory->createTable();
                 $this->app['monolog']->addInfo('[Contact Update] Create table `contact_extra_category`');
             }
 
-            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra')) {
+            if (!$this->app['db.utils']->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_extra')) {
                 $Extra = new Extra($this->app);
                 $Extra->createTable();
                 $this->app['monolog']->addInfo('[Contact Update] Create table `contact_extra`');
             }
 
-            if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_message')) {
+            if (!$this->app['db.utils']->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_message')) {
                 $Message = new Message($this->app);
                 $Message->createTable();
                 $this->app['monolog']->addInfo('[Contact Update] Create table `contact_message`');
@@ -178,14 +117,14 @@ class Update
     protected function release_2014()
     {
         $has_changed = false;
-        if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'address_area')) {
+        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'address_area')) {
             // add field `adress_area`
             $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `address_area` VARCHAR(128) NOT NULL DEFAULT '' AFTER `address_city`";
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo('[Contact Update] Add field `address_area` to table `contact_overview`');
             $has_changed = true;
         }
-        if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'address_state')) {
+        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'address_state')) {
             // add field `adress_area`
             $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `address_state` VARCHAR(128) NOT NULL DEFAULT '' AFTER `address_area`";
             $this->app['db']->query($SQL);
@@ -206,14 +145,14 @@ class Update
      */
     protected function release_2015()
     {
-        if (false === ($this->enumValueExists(FRAMEWORK_TABLE_PREFIX.'contact_contact', 'contact_status', 'PENDING'))) {
+        if (false === ($this->app['db.utils']->enumValueExists(FRAMEWORK_TABLE_PREFIX.'contact_contact', 'contact_status', 'PENDING'))) {
             // add PENDING to contact_status
             $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_contact` CHANGE `contact_status` `contact_status` ENUM('ACTIVE', 'LOCKED', 'PENDING', 'DELETED') NOT NULL DEFAULT 'ACTIVE'";
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo('[Contact Update] Add ENUM value PENDING to field `contact_status` in table `contact_contact`');
         }
 
-        if (false === ($this->enumValueExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'contact_status', 'PENDING'))) {
+        if (false === ($this->app['db.utils']->enumValueExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'contact_status', 'PENDING'))) {
             // add PENDING to contact_status
             $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` CHANGE `contact_status` `contact_status` ENUM('ACTIVE', 'LOCKED', 'PENDING', 'DELETED') NOT NULL DEFAULT 'ACTIVE'";
             $this->app['db']->query($SQL);
@@ -227,7 +166,7 @@ class Update
      */
     protected function release_2021()
     {
-        if (!$this->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'contact_login')) {
+        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'contact_login')) {
             // add field
             $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `contact_login` VARCHAR(64) NOT NULL DEFAULT '' AFTER `contact_id`";
             $this->app['db']->query($SQL);
@@ -264,10 +203,45 @@ class Update
      */
     protected function release_2032()
     {
-        if (!$this->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_form')) {
+        if (!$this->app['db.utils']->tableExists(FRAMEWORK_TABLE_PREFIX.'contact_form')) {
             $Form = new Form($this->app);
             $Form->createTable();
             $this->app['monolog']->addInfo('[Contact Update] Create table `contact_form`');
+        }
+    }
+
+    /**
+     * Release 2.0.36
+     */
+    protected function release_2036()
+    {
+        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_category_type', 'category_type_access')) {
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_category_type` ADD `category_type_access` ENUM('ADMIN','PUBLIC') NOT NULL DEFAULT 'ADMIN' AFTER `category_type_id`";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add field `category_type_access` to table `contact_category_type`');
+        }
+        $rebuild_overview = false;
+        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'category_id')) {
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `category_id` INT(11) NOT NULL DEFAULT -1 AFTER `address_country_code`";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add field `category_id` to table `contact_overview`');
+            $rebuild_overview = true;
+        }
+        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'category_name')) {
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `category_name` VARCHAR(64) NOT NULL DEFAULT '' AFTER `category_id`";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add field `category_name` to table `contact_overview`');
+            $rebuild_overview = true;
+        }
+        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'category_access')) {
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `category_access` ENUM('ADMIN','PUBLIC') NOT NULL DEFAULT 'ADMIN' AFTER `category_name`";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add field `category_access` to table `contact_overview`');
+            $rebuild_overview = true;
+        }
+        if ($rebuild_overview) {
+            $Overview = new Overview($this->app);
+            $Overview->rebuildOverview();
         }
     }
 
@@ -309,6 +283,9 @@ class Update
             // Release 2.0.32
             $this->app['monolog']->addInfo('[Contact Update] Execute update for release 2.0.32');
             $this->release_2032();
+
+            // Release 2.0.36
+            $this->release_2036();
 
             // Create Configuration if not exists - only constructor needed
             $Configuration = new Configuration($app);
