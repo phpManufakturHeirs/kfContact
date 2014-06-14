@@ -275,7 +275,7 @@ EOD;
             $insert = array();
             foreach ($data as $key => $value) {
                 if ($key == 'category_type_id') continue;
-                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             $this->app['db']->insert(self::$table_name, $insert);
             $category_type_id = $this->app['db']->lastInsertId();
