@@ -18,62 +18,57 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Action extends Basic
 {
+    protected static $parameter = null;
 
     /**
-     * Controller to create the iFrame for executing the Contact kitCommand,
-     * execute the route /contact/action
-     *
-     * @param Application $app
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Basic\Control\kitCommand\Basic::initParameters()
      */
-    public function ControllerCreateIFrame(Application $app)
+    protected function initParameters(Application $app, $parameter_id=-1)
     {
-        $this->initParameters($app);
-        return $this->createIFrame('/contact/action');
+        parent::initParameters($app, $parameter_id);
+
+        self::$parameter = $this->getCommandParameters();
+
+        // check the CMS GET parameters
+        $GET = $this->getCMSgetParameters();
+        if (isset($GET['command']) && ($GET['command'] == 'contact') && isset($GET['action'])) {
+            foreach ($GET as $key => $value) {
+                if ($key == 'command') continue;
+                self::$parameter[$key] = $value;
+            }
+            $this->setCommandParameters(self::$parameter);
+        }
+
+        // grant that the 'action' value is a lower string
+        self::$parameter['action'] = isset(self::$parameter['action']) ? strtolower(self::$parameter['action']) : 'none';
     }
 
     /**
      * Action handler for the kitCommand ~~ contact ~~
      *
      * @param Application $app
-     * @throws \Exception
-     * @return string dialog or result
      */
     public function ControllerAction(Application $app)
     {
-        try {
-            $this->initParameters($app);
-            // get the kitCommand parameters
-            $parameters = $this->getCommandParameters();
+        $this->initParameters($app);
 
-            // check the CMS GET parameters
-            $GET = $this->getCMSgetParameters();
-            if (isset($GET['command']) && ($GET['command'] == 'contact')) {
-                foreach ($GET as $key => $value) {
-                    if ($key == 'command') continue;
-                    $parameters[$key] = $value;
-                }
-                $this->setCommandParameters($parameters);
-            }
-            if (!isset($parameters['action'])) {
-                // there is no 'mode' parameter set, so we show the "Welcome" page
-                $subRequest = Request::create('/basic/help/contact/welcome', 'GET');
+        switch (self::$parameter['action']) {
+            case 'form':
+                // handle a form - using iFrame
+                return $this->createIFrame('/contact/form');
+            case 'list':
+                // handle a contact list  - no iFrame!
+                $subRequest = Request::create('/contact/list', 'GET');
                 return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
-            }
-
-            switch (strtolower($parameters['action'])) {
-                case 'form':
-                    // handle a form
-                    $Form = new Form();
-                    return $Form->ControllerFormAction($app);
-                default:
-                    // unknown action
-                    $this->setAlert('The action <b>%action%</b> is unknown, please check the parameters for the kitCommand!',
-                        array('%action%' => $parameters['action']), self::ALERT_TYPE_WARNING);
-                    return $this->promptAlert();
-            }
-
-        } catch (\Exception $e) {
-            throw new \Exception($e);
+            case 'none':
+                // missing the action parameter, show the welcome page!
+                return $this->createIFrame('/basic/help/contact/welcome');
+            default:
+                // unknown action parameter!
+                $this->setAlert('The action <b>%action%</b> is unknown, please check the parameters for the kitCommand!',
+                    array('%action%' => self::$parameter['action']), self::ALERT_TYPE_WARNING);
+                return $this->createIFrame('/basic/alert/'.base64_encode($this->getAlert()));
         }
     }
 
