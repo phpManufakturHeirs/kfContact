@@ -94,6 +94,12 @@ class CategoryEdit extends Dialog {
             'read_only' => ($category['category_type_id'] > 0) ? true : false,
             'data' => $category['category_type_name']
         ))
+        ->add('category_type_access', 'choice', array(
+            'choices' => array('ADMIN' => 'ADMIN', 'PUBLIC' => 'PUBLIC'),
+            'empty_value' => '- please select -',
+            'multiple' => false,
+            'data' => $category['category_type_access']
+        ))
         ->add('category_type_description', 'textarea', array(
             'label' => 'Category description',
             'required' => false,
@@ -225,7 +231,8 @@ class CategoryEdit extends Dialog {
                     if ($category['category_type_id'] > 0) {
                         // update the record
                         $data = array(
-                            'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : ''
+                            'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : '',
+                            'category_type_access' => $category['category_type_access']
                         );
                         $this->CategoryTypeData->update($data, self::$category_type_id);
                         $this->setAlert('The category %category_type_name% was successfull updated',
@@ -244,7 +251,8 @@ class CategoryEdit extends Dialog {
                             // insert the record
                             $data = array(
                                 'category_type_name' => $category_type_name,
-                                'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : ''
+                                'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : '',
+                                'category_type_access' => $category['category_type_access']
                             );
                             $this->CategoryTypeData->insert($data, self::$category_type_id);
                             $this->setAlert('The category %category_type_name% was successfull inserted.',

@@ -218,13 +218,14 @@ $app->match('/admin/contact/backend/title/edit/id/{title_id}',
  */
 
 $command->post('/contact',
-    // create the iFrame and execute route /contact/action
-    'phpManufaktur\Contact\Control\Command\Action::ControllerCreateIFrame')
+    // the general action controller for all 'contact' kitCommands
+    'phpManufaktur\Contact\Control\Command\Action::ControllerAction')
     ->setOption('info', MANUFAKTUR_PATH.'/Contact/command.contact.json');
 
-$app->get('/contact/action',
-    'phpManufaktur\Contact\Control\Command\Action::ControllerAction');
-
+$app->get('/contact/form',
+    'phpManufaktur\Contact\Control\Command\Form::ControllerFormAction');
 $app->post('/contact/form/check',
     'phpManufaktur\Contact\Control\Command\Form::ControllerFormAction');
 
+$app->get('/contact/list',
+    'phpManufaktur\Contact\Control\Command\ContactList::ControllerList');

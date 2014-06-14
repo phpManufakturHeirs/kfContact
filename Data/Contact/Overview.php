@@ -24,6 +24,7 @@ class Overview
     protected $Person = null;
     protected $Communication = null;
 
+
     /**
      * Constructor
      *
@@ -80,6 +81,9 @@ class Overview
         `address_area` VARCHAR(128) NOT NULL DEFAULT '',
         `address_state` VARCHAR(128) NOT NULL DEFAULT '',
         `address_country_code` VARCHAR(8) NOT NULL DEFAULT '',
+        `category_id` INT(11) NOT NULL DEFAULT -1,
+        `category_name` VARCHAR(64) NOT NULL DEFAULT '',
+        `category_access` ENUM('ADMIN','PUBLIC') NOT NULL DEFAULT 'ADMIN',
         `tags` VARCHAR(512) NOT NULL DEFAULT '',
         `order_name` VARCHAR(256) NOT NULL DEFAULT '',
         `timestamp` TIMESTAMP,
@@ -212,6 +216,22 @@ EOD;
                 }
             }
 
+            // get the category information
+            $SQL = "SELECT `category_type_id` FROM `".FRAMEWORK_TABLE_PREFIX."contact_category` WHERE `contact_id`=$contact_id";
+            $result = $this->app['db']->fetchColumn($SQL);
+            $category_type_id = (is_numeric($result) && ($result > 0)) ? $result : -1;
+            $category_type_name = '';
+            $category_type_access = 'ADMIN';
+
+            if ($category_type_id > 0) {
+                $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_category_type` WHERE `category_type_id`=$category_type_id";
+                $result = $this->app['db']->fetchAssoc($SQL);
+                if (is_array($result)) {
+                    $category_type_name = $result['category_type_name'];
+                    $category_type_access = $result['category_type_access'];
+                }
+            }
+
             $record = array(
                 'contact_id' => $contact_id,
                 'contact_login' => $contact['contact_login'],
@@ -237,7 +257,10 @@ EOD;
                 'address_state' => isset($address['address_state']) ? $address['address_state'] : '',
                 'address_country_code' => isset($address['address_country_code']) ? $address['address_country_code'] : '',
                 'order_name' => $order_name,
-                'tags' => implode(',', $tags)
+                'tags' => implode(',', $tags),
+                'category_id' => $category_type_id,
+                'category_name' => $category_type_name,
+                'category_access' => $category_type_access
             );
 
             // prepare the data record

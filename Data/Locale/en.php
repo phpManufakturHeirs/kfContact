@@ -23,6 +23,8 @@ return array(
     'Address zip'
         => 'ZIP',
 
+    'Category type access'
+        => 'Category access',
     'Communication email'
         => 'Email',
     'contact_id'

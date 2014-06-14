@@ -1397,5 +1397,25 @@ class Contact extends ContactParent
         $this->Message->insert($data, $message_id);
         return $message_id;
     }
+
+    /**
+     * Get the category access type for the given contact ID
+     *
+     * @param integer $contact_id
+     */
+    public function getAccessType($contact_id)
+    {
+        return $this->ContactData->getAccessType($contact_id);
+    }
+
+    /**
+     * Check if the given contact ID is a PUBLIC accessible contact record
+     *
+     * @param integer $contact_id
+     */
+    public function isPublic($contact_id)
+    {
+        return $this->ContactData->isPublic($contact_id);
+    }
 }
 

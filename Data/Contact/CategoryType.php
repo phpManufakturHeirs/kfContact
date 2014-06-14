@@ -41,6 +41,7 @@ class CategoryType
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `category_type_id` INT(11) NOT NULL AUTO_INCREMENT,
+        `category_type_access` ENUM('ADMIN','PUBLIC') NOT NULL DEFAULT 'ADMIN',
         `category_type_name` VARCHAR(64) NOT NULL DEFAULT '',
         `category_type_description` VARCHAR(255) NOT NULL DEFAULT '',
         PRIMARY KEY (`category_type_id`),

@@ -652,4 +652,33 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Get the category access type for the given contact ID
+     *
+     * @param integer $contact_id
+     */
+    public function getAccessType($contact_id)
+    {
+        try {
+            $category_type = FRAMEWORK_TABLE_PREFIX.'contact_category_type';
+            $category = FRAMEWORK_TABLE_PREFIX.'contact_category';
+            $SQL = "SELECT `category_type_access` FROM `$category_type`, `$category` WHERE `$category_type`.`category_type_id`=`$category`.`category_type_id` AND `contact_id`=$contact_id";
+            $result = $this->app['db']->fetchColumn($SQL);
+            return (is_string($result)) ? $result : 'ADMIN';
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Check if the given contact ID is a PUBLIC accessible contact record
+     *
+     * @param integer $contact_id
+     */
+    public function isPublic($contact_id)
+    {
+        $access = $this->getAccessType($contact_id);
+        return ($access == 'PUBLIC');
+    }
 }

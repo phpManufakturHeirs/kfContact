@@ -175,6 +175,12 @@ class ContactPerson extends Dialog {
             'data' => isset($contact['category'][0]['category_type_name']) ? $contact['category'][0]['category_type_name'] : ''
         ))
 
+        ->add('category_access', 'text', array(
+            'data' => $this->app['translator']->trans($this->app['contact']->getAccessType($contact['contact']['contact_id'])),
+            'required' => false,
+            'read_only' => true
+        ))
+
         ->add('tag', 'choice', array(
             'choices' => $this->ContactControl->getTagArrayForTwig(),
             'expanded' => true,

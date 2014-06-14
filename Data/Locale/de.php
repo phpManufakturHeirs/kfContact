@@ -53,6 +53,8 @@ return array(
         => 'Straße',
     'address_zip'
         => 'PLZ',
+    'ADMIN'
+        => 'Administrator',
     'Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.'
         => 'Erlaubte Zeichen für den %identifier% Bezeichner sind A-Z, 0-9 und der Unterstrich. Der Bezeichner wird stets in Großbuchstaben umgewandelt.',
     'Area'
@@ -81,6 +83,8 @@ return array(
         => 'Kategorien',
     'Category'
         => 'Kategorie',
+    'Category access'
+        => 'Kategorie Zugriff',
     'Category description'
         => 'Kategorie Beschreibung',
     'Category description (translated)'
@@ -89,6 +93,8 @@ return array(
         => 'Kategorie Bezeichner',
     'Category name (translated)'
         => 'Kategorie Bezeichner (Übersetzung)',
+    'Category type access'
+        => 'Kategorie Zugriff',
     'Category type list'
         => 'Übersicht über die Kategorien',
     'Change to the overview'
@@ -313,6 +319,8 @@ return array(
         => 'Bitte geben Sie einen Suchbegriff ein!',
     'prof'
         => 'Prof.',
+    'PUBLIC'
+        => 'Öffentlich',
 
     'Search'
         => 'Suche',
