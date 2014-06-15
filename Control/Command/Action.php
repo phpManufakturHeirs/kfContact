@@ -59,8 +59,11 @@ class Action extends Basic
                 return $this->createIFrame('/contact/form');
             case 'list':
                 // handle a contact list  - no iFrame!
+                /*
                 $subRequest = Request::create('/contact/list', 'GET');
                 return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+                */
+                return $this->createIFrame('/contact/list');
             case 'none':
                 // missing the action parameter, show the welcome page!
                 return $this->createIFrame('/basic/help/contact/welcome');

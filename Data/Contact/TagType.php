@@ -251,4 +251,28 @@ EOD;
         }
     }
 
+    /**
+     * Select the tag typ by the given tag name
+     *
+     * @param string $tag_type_name
+     * @throws \Exception
+     * @return array|boolean
+     */
+    public function selectByName($tag_type_name)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `tag_type_name`='$tag_type_name'";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            if (is_array($result) && isset($result['tag_type_name'])) {
+                $tag = array();
+                foreach ($result as $key => $value) {
+                    $tag[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+                return $tag;
+            }
+            return false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }
