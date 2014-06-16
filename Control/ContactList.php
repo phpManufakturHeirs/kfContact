@@ -27,9 +27,6 @@ class ContactList extends ContactParent
 
     public function selectAll()
     {
-        $count = $this->Overview->count(array('ACTIVE','LOCKED'));
-        echo "$count<br>";
-        echo ceil($count/3);
         return $this->Overview->selectAll();
     }
 

@@ -135,6 +135,8 @@ return array(
         => 'ID',
     'Contact'
         => 'Kontakt',
+    'Contact id'
+        => 'ID',
     'Contact name'
         => 'Kontakt Bezeichner',
     'contact_name'
@@ -270,6 +272,8 @@ return array(
         => 'Das Feld <b>%identifier%</b> fehlt! Diese ID sollte auf -1 gesetzt sein, wenn Sie einen neuen Datensatz einfügen möchten.',
     'Missing the key %field_name%, it must always set and not empty!'
         => 'Der Schlüssel %field_name% muss immer gesetzt werden und darf nicht leer sein!',
+    'Missing the parameter <b>%parameter%</b>, please check the kitCommand expression!'
+        => 'Vermisse den Parameter <b>%parameter%</b>, bitte prüfen Sie den kitCommand Ausdruck!',
     'Missing the `name` field in the definition!'
         => 'Bei den Definitionen für die Eingabefelder ist die Angabe des `name` Feld Pflicht!',
     'Missing the `type` field in the definition!'
@@ -286,6 +290,8 @@ return array(
 
     'Options'
         => 'Optionen',
+    'Order name'
+        => 'Bezeichnung',
 
     'pending'
         => 'Ungeklärt',
@@ -435,6 +441,8 @@ return array(
         => 'Dies ist ein Beispiel für einen Panel Text mit etwas sinnfreiem Inhalt.',
     'This tag will be assigned to all user-defined `Contact` forms.'
         => 'Diese Markierung wird allen benutzerdefinierten `Contact` Formularen hinzugefügt.',
+    'The value of the parameter contact_id must be an integer value and greater than 0'
+        => 'Der Wert für den Parameter <i>contact_id</i> muss eine Ganzzahl größer als Null sein!',
     'Title'
         => 'Titel',
     'title_id'

@@ -15,12 +15,12 @@ use Silex\Application;
 use phpManufaktur\Basic\Control\kitCommand\Basic;
 use phpManufaktur\Contact\Data\Contact\ContactFilter;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
-use phpManufaktur\Contact\Data\Contact\TagType;
 
 class ContactList extends Basic
 {
     protected static $parameter = null;
     protected static $filter = null;
+    protected static $config = null;
 
     /**
      * (non-PHPdoc)
@@ -115,13 +115,14 @@ class ContactList extends Basic
                         case 'order_direction':
                             self::$filter[$key] = (strtoupper($value) == 'DESC') ? 'DESC' : 'ASC';
                             break;
-                        case 'rows_per_page':
+                        case 'limit':
                             self::$filter[$key] = intval($value);
                             break;
                         case 'state':
                             $states = (strpos($value, ',')) ? explode(',', $value) : array($value);
                             $state_array = array();
                             foreach ($states as $state) {
+                                // IMPORTANT! special chars are probably encoded, set explicit UTF-8!
                                 $state_array[] = mb_convert_encoding(html_entity_decode(trim($state)), 'UTF-8');;
                             }
                             self::$filter[$key] = $state_array;
@@ -150,7 +151,9 @@ class ContactList extends Basic
                             self::$filter[$key] = $zip_array;
                             break;
                         default:
-                            self::$filter[$key] = trim($value);
+                            // uh? unknown filter!
+                            $this->setAlert('The filter %filter% is unknown, please check the kitCommand!',
+                                array('%filter%' => $key), self::ALERT_TYPE_WARNING);
                             break;
                     }
                 }
@@ -159,30 +162,38 @@ class ContactList extends Basic
 
         // grant the filter keys
         self::$filter['category'] = isset(self::$filter['category']) ? self::$filter['category'] : null;
+        self::$filter['city'] = isset(self::$filter['city']) ? self::$filter['city'] : null;
         self::$filter['contact_type'] = isset(self::$filter['contact_type']) ? self::$filter['contact_type'] : array("'PERSON'","'COMPANY'");
+        self::$filter['country'] = isset(self::$filter['country']) ? self::$filter['country'] : null;
+        self::$filter['limit'] = isset(self::$filter['limit']) ? self::$filter['limit'] : 100;
         self::$filter['order_by'] = isset(self::$filter['order_by']) ? self::$filter['order_by'] : array('order_name');
         self::$filter['order_direction'] = isset(self::$filter['order_direction']) ? self::$filter['order_direction'] : 'ASC';
-        self::$filter['rows_per_page'] = isset(self::$filter['rows_per_page']) ? self::$filter['rows_per_page'] : 100;
+        self::$filter['state'] = isset(self::$filter['state']) ? self::$filter['state'] : null;
         self::$filter['tag'] = isset(self::$filter['tag']) ? self::$filter['tag'] : null;
         self::$filter['zip'] = isset(self::$filter['zip']) ? self::$filter['zip'] : null;
-        self::$filter['city'] = isset(self::$filter['city']) ? self::$filter['city'] : null;
-        self::$filter['state'] = isset(self::$filter['state']) ? self::$filter['state'] : null;
+
+        // read the list.contact.json
+        $config_path = $app['utils']->getTemplateFile('@phpManufaktur/Contact/Template',
+            'command/list.contact.json', $this->getPreferredTemplateStyle(), true);
+        self::$config = $app['utils']->readJSON($config_path);
     }
+
+
 
     public function ControllerList(Application $app)
     {
         $this->initParameters($app);
-//print_r(self::$filter);
+
         $Filter = new ContactFilter($app);
-        $contacts = $Filter->filter(self::$filter, 0);
-            /*self::$filter['rows_per_page'],
-            self::$filter['order_by'], self::$filter['order_direction'],
-            null, 'ACTIVE', 'PUBLIC', self::$filter['categories']);*/
+        $contacts = $Filter->filter(self::$filter);
 
-        echo "<pre>";
-        print_r($contacts);
-        echo "</pre>";
-
-        return __METHOD__;
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            '@phpManufaktur/Contact/Template', 'command/list.contact.twig',
+            $this->getPreferredTemplateStyle()),
+            array(
+                'basic' => $this->getBasicSettings(),
+                'contacts' => $contacts,
+                'columns' => self::$config['columns'],
+            ));
     }
 }

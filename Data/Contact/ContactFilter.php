@@ -22,20 +22,31 @@ class ContactFilter
         $this->app = $app;
     }
 
-    public function filter($filter, $limit_from=0)
+    /**
+     * Contact filter
+     *
+     * @param array $filter
+     * @throws \Exception
+     * @return Ambigous <boolean, array>
+     */
+    public function filter($filter)
     {
         try {
+            // base SQL - access only PUBLIC and ACTIVE contacts
             $SQL = "SELECT * FROM `".FRAMEWORK_TABLE_PREFIX."contact_overview` WHERE `category_access`='PUBLIC' AND ".
                 "`contact_status`='ACTIVE'";
 
+            // filter for the category ID
             if (isset($filter['category']) && is_array($filter['category']) && !empty($filter['category'])) {
                 $SQL .= " AND `category_id` IN (".implode(',', $filter['category']).")";
             }
 
+            // filter the contact type 'PERSON' or 'COMPANY'
             if (isset($filter['contact_type']) && is_array($filter['contact_type']) && !empty($filter['contact_type'])) {
                 $SQL .= " AND `contact_type` IN (".implode(',', $filter['contact_type']).")";
             }
 
+            // filter the tag's
             if (isset($filter['tag']) && is_array($filter['tag']) && !empty($filter['tag'])) {
                 $SQL .= " AND (";
                 $start = true;
@@ -49,6 +60,7 @@ class ContactFilter
                 $SQL .= ")";
             }
 
+            // filter the zip's
             if (isset($filter['zip']) && is_array($filter['zip']) && !empty($filter['zip'])) {
                 $SQL .= " AND (";
                 $start = true;
@@ -62,6 +74,7 @@ class ContactFilter
                 $SQL .= ")";
             }
 
+            // filter for the city
             if (isset($filter['city']) && is_array($filter['city']) && !empty($filter['city'])) {
                 $SQL .= " AND (";
                 $start = true;
@@ -75,6 +88,7 @@ class ContactFilter
                 $SQL .= ")";
             }
 
+            // filter for states
             if (isset($filter['state']) && is_array($filter['state']) && !empty($filter['state'])) {
                 $SQL .= " AND (";
                 $start = true;
@@ -88,21 +102,19 @@ class ContactFilter
                 $SQL .= ")";
             }
 
+            // filter for country codes
             if (isset($filter['country']) && is_array($filter['country']) && !empty($filter['country'])) {
                 $SQL .= " AND `address_country_code` IN (".implode(',', $filter['country']).")";
             }
-
 
             // ... and the tail of the SQL query:
             if (isset($filter['order_by']) && is_array($filter['order_by']) && !empty($filter['order_by'])) {
                 $SQL .= " ORDER BY ".implode(', ',$filter['order_by']);
                 $SQL .= isset($filter['order_direction']) ? " ".$filter['order_direction'] : " ASC";
             }
-            if (isset($filter['rows_per_page'])) {
-                $SQL .= " LIMIT $limit_from, ".$filter['rows_per_page'];
+            if (isset($filter['limit'])) {
+                $SQL .= " LIMIT ".$filter['limit'];
             }
-
-echo "$SQL<br>";
 
             $results = $this->app['db']->fetchAll($SQL);
 
