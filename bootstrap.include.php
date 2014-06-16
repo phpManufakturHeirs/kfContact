@@ -232,6 +232,8 @@ $app->get('/contact/list',
 
 $app->get('/contact/view',
     'phpManufaktur\Contact\Control\Command\ContactView::ControllerView');
+$app->get('/contact/register',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegister');
 
 // permanent link for public contact ID's
 $app->get('/contact/public/view/id/{contact_id}',

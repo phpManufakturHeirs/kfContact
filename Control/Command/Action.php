@@ -55,16 +55,16 @@ class Action extends Basic
 
         switch (self::$parameter['action']) {
             case 'form':
-                // handle a form - using iFrame
+                // handle contact forms
                 return $this->createIFrame('/contact/form');
             case 'list':
-                // handle a contact list  - no iFrame!
-                /*
-                $subRequest = Request::create('/contact/list', 'GET');
-                return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
-                */
+                // show contact list
                 return $this->createIFrame('/contact/list');
+            case 'register':
+                // register a new contact record
+                return $this->createIFrame('/contact/register');
             case 'view':
+                // show a specific contact record
                 return $this->createIFrame('/contact/view');
             case 'none':
                 // missing the action parameter, show the welcome page!
