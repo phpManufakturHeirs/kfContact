@@ -7,3 +7,9 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 */
 
+.form-horizontal,
+.form-group,
+.container-fluid {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}

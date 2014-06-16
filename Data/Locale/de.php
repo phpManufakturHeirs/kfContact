@@ -186,6 +186,8 @@ return array(
         => 'Beschreibung (Übersetzung)',
     'Detected a KeepInTouch installation (Release: %release%) with %count% active or locked contacts.'
         => 'Es wurde eine KeepInTouch Installation (Release: %release%) mit %count% aktiven oder gesperrten Kontakten gefunden.',
+    'Determine contact type'
+        => 'Kontakt Typ festlegen',
     'doc'
         => 'Dr.',
 
@@ -292,6 +294,8 @@ return array(
         => 'Optionen',
     'Order name'
         => 'Bezeichnung',
+    'Organization'
+        => 'Organisation',
 
     'pending'
         => 'Ungeklärt',
