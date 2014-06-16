@@ -12,11 +12,11 @@
 namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
-use phpManufaktur\Contact\Control\ContactList as ContactListControl;
+use phpManufaktur\Contact\Data\Contact\Overview;
 
 class ContactList extends Dialog {
 
-    protected $ContactListControl = null;
+    protected $Overview = null;
     protected static $columns = null;
     protected static $rows_per_page = null;
     protected static $select_status = null;
@@ -47,7 +47,7 @@ class ContactList extends Dialog {
     {
         parent::initialize($app);
 
-        $this->ContactListControl = new ContactListControl($this->app);
+        $this->Overview = new Overview($app);
 
         $this->setOptions(array(
             'template' => array(
@@ -89,6 +89,37 @@ class ContactList extends Dialog {
     }
 
     /**
+     * Get the contact list in paging mode
+     *
+     * @param integer $list_page
+     * @param integer $rows_per_page
+     * @param string $select_status
+     * @param integer $max_pages
+     * @param string $order_by
+     * @param string $order_direction
+     * @param array $select_type
+     * @return NULL|Ambigous <multitype:, boolean, multitype:multitype:unknown  >
+     */
+    protected function getList(&$list_page, $rows_per_page, $select_status=null, &$max_pages=null, $order_by=null, $order_direction='ASC', $select_type=null)
+    {
+        // count rows
+        $count_rows = $this->Overview->count($select_status, $select_type);
+        if ($count_rows < 1) {
+            return null;
+        }
+        $max_pages = ceil($count_rows/$rows_per_page);
+        if ($list_page < 1) {
+            $list_page = 1;
+        }
+        if ($list_page > $max_pages) {
+            $list_page = $max_pages;
+        }
+        $limit_from = ($list_page * $rows_per_page) - $rows_per_page;
+
+        return $this->Overview->selectList($limit_from, $rows_per_page, $select_status, $order_by, $order_direction, $select_type);
+    }
+
+    /**
      * Set the current page for the table
      *
      * @param integer $page
@@ -126,7 +157,7 @@ class ContactList extends Dialog {
         $order_by = explode(',', $this->app['request']->get('order', implode(',', self::$order_by)));
         $order_direction = $this->app['request']->get('direction', self::$order_direction);
 
-        $list = $this->ContactListControl->getList(
+        $list = $this->getList(
             self::$current_page,
             self::$rows_per_page,
             self::$select_status,
