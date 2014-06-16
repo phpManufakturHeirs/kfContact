@@ -220,6 +220,12 @@ class Update
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo('[Contact Update] Add field `category_type_access` to table `contact_category_type`');
         }
+        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_category_type', 'category_type_target_url')) {
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_category_type` ADD `category_type_target_url` TEXT NOT NULL AFTER `category_type_access`";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add field `category_type_target_url` to table `contact_category_type`');
+        }
+
         $rebuild_overview = false;
         if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_overview', 'category_id')) {
             $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_overview` ADD `category_id` INT(11) NOT NULL DEFAULT -1 AFTER `address_country_code`";

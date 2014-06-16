@@ -229,3 +229,10 @@ $app->post('/contact/form/check',
 
 $app->get('/contact/list',
     'phpManufaktur\Contact\Control\Command\ContactList::ControllerList');
+
+$app->get('/contact/view',
+    'phpManufaktur\Contact\Control\Command\ContactView::ControllerView');
+
+// permanent link for public contact ID's
+$app->get('/contact/public/view/id/{contact_id}',
+    'phpManufaktur\Contact\Control\PermanentLink::ControllerPublicViewID');

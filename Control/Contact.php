@@ -34,6 +34,7 @@ use phpManufaktur\Contact\Data\Contact\Extra;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
 use phpManufaktur\Contact\Data\Contact\Message;
+use phpManufaktur\Contact\Data\Contact\Category;
 
 class Contact extends ContactParent
 {
@@ -270,11 +271,13 @@ class Contact extends ContactParent
                         array('%contact_id%' => $identifier), self::ALERT_TYPE_WARNING);
                     return $this->getDefaultRecord($contact_type);
                 }
+
                 if (false === ($contact = $this->ContactData->selectContact(self::$contact_id))) {
                     $this->setAlert("Can't read the contact with the ID %contact_id% - it is possibly deleted.",
                         array('%contact_id%' => $identifier), self::ALERT_TYPE_WARNING);
                     return $this->getDefaultRecord($contact_type);
                 }
+
                 return $contact;
             }
         }
@@ -1412,10 +1415,36 @@ class Contact extends ContactParent
      * Check if the given contact ID is a PUBLIC accessible contact record
      *
      * @param integer $contact_id
+     * @return boolean
      */
     public function isPublic($contact_id)
     {
         return $this->ContactData->isPublic($contact_id);
+    }
+
+    /**
+     * Check if the contact record for the given Contact ID is ACTIVE
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     * @return boolean
+     */
+    public function isActive($contact_id)
+    {
+        return $this->ContactData->isActive($contact_id);
+    }
+
+    /**
+     * Select the Category Target URL for the given contact ID
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     * @return Ambigous <string, boolean>
+     */
+    public function getCategoryTargetURL($contact_id)
+    {
+        $CategoryData = new Category($this->app);
+        return $CategoryData->selectTargetURL($contact_id);
     }
 }
 

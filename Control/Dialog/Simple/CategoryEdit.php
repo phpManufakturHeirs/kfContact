@@ -15,6 +15,7 @@ use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
+use phpManufaktur\Basic\Data\CMS\Page;
 
 
 /**
@@ -85,6 +86,13 @@ class CategoryEdit extends Dialog {
         // get the extra fields for this group
         $extra_field_ids = $this->ExtraCategory->selectTypeIDByCategoryTypeID(self::$category_type_id);
 
+        $CMSPage = new Page($this->app);
+        $pagelist = $CMSPage->getPageLinkList();
+        $links = array();
+        foreach ($pagelist as $link) {
+            $links[$link['complete_link']] = $link['complete_link'];
+        }
+
         $form = $this->app['form.factory']->createBuilder('form', $category)
         ->add('category_type_id', 'hidden', array(
             'data' => $category['category_type_id']
@@ -99,6 +107,14 @@ class CategoryEdit extends Dialog {
             'empty_value' => '- please select -',
             'multiple' => false,
             'data' => $category['category_type_access']
+        ))
+        ->add('category_type_target_url', 'choice', array(
+            'choices' => $links,
+            'empty_value' => '- please select -',
+            'expanded' => false,
+            'required' => false,
+            'label' => 'Target URL',
+            'data' => $category['category_type_target_url']
         ))
         ->add('category_type_description', 'textarea', array(
             'label' => 'Category description',
@@ -232,7 +248,8 @@ class CategoryEdit extends Dialog {
                         // update the record
                         $data = array(
                             'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : '',
-                            'category_type_access' => $category['category_type_access']
+                            'category_type_access' => $category['category_type_access'],
+                            'category_type_target_url' => $category['category_type_target_url']
                         );
                         $this->CategoryTypeData->update($data, self::$category_type_id);
                         $this->setAlert('The category %category_type_name% was successfull updated',
@@ -252,7 +269,8 @@ class CategoryEdit extends Dialog {
                             $data = array(
                                 'category_type_name' => $category_type_name,
                                 'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : '',
-                                'category_type_access' => $category['category_type_access']
+                                'category_type_access' => $category['category_type_access'],
+                                'category_type_target_url' => $category['category_type_target_url']
                             );
                             $this->CategoryTypeData->insert($data, self::$category_type_id);
                             $this->setAlert('The category %category_type_name% was successfull inserted.',

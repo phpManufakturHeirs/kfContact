@@ -681,4 +681,22 @@ EOD;
         $access = $this->getAccessType($contact_id);
         return ($access == 'PUBLIC');
     }
+
+    /**
+     * Check if the contact record for the given Contact ID is ACTIVE
+     *
+     * @param integer $contact_id
+     * @throws \Exception
+     * @return boolean
+     */
+    public function isActive($contact_id)
+    {
+        try {
+            $SQL = "SELECT `contact_status` FROM `".self::$table_name."` WHERE `contact_id`=$contact_id";
+            $status = $this->app['db']->fetchColumn($SQL);
+            return ($status == 'ACTIVE');
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }
