@@ -18,6 +18,7 @@
   <link rel="canonical" url="{{ FRAMEWORK_URL ~ '/contact/public/id/' ~ contact.contact.contact_id }}">
 {% endblock %}  
 {% block content %}
+  <!-- {{ _self.getTemplateName() }} -->
   {# need the parent to enable prompting messages #}
   {{ parent() }}
   <div class="row">

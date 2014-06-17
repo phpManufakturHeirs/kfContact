@@ -26,7 +26,7 @@ class Update
 {
     protected $app = null;
     protected $db_config = null;
-
+    protected $Configuration = null;
 
     /**
      * Release 2.0.13
@@ -249,6 +249,25 @@ class Update
             $Overview = new Overview($this->app);
             $Overview->rebuildOverview();
         }
+
+        $config = $this->Configuration->getConfiguration();
+        if (!isset($config['command'])) {
+            $config['command'] = array(
+                'register' => array(
+                    'field' => array(
+                        'required' => array(
+                            'person_gender',
+                            'person_last_name',
+                        ),
+                        'unused' => array(
+                            'person_title',
+                        )
+                    )
+                )
+            );
+            $this->Configuration->setConfiguration($config);
+            $this->Configuration->saveConfiguration();
+        }
     }
 
     /**
@@ -262,6 +281,9 @@ class Update
     {
         try {
             $this->app = $app;
+
+            // Create Configuration if not exists - only constructor needed
+            $this->Configuration = new Configuration($app);
 
             // get Doctrine settings
             $this->db_config = $this->app['utils']->readConfiguration(FRAMEWORK_PATH . '/config/doctrine.cms.json');
@@ -293,8 +315,6 @@ class Update
             // Release 2.0.36
             $this->release_2036();
 
-            // Create Configuration if not exists - only constructor needed
-            $Configuration = new Configuration($app);
 
             // setup kit_framework_contact as Add-on in the CMS
             $admin_tool = new InstallAdminTool($app);

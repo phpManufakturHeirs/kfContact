@@ -234,6 +234,10 @@ $app->get('/contact/view',
     'phpManufaktur\Contact\Control\Command\ContactView::ControllerView');
 $app->match('/contact/register',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegister');
+$app->post('/contact/register/category/check',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterCategoryCheck');
+$app->post('/contact/register/data/check',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterContactCheck');
 
 // permanent link for public contact ID's
 $app->get('/contact/public/view/id/{contact_id}',

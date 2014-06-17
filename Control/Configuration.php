@@ -46,6 +46,22 @@ class Configuration
                     'CH',
                     'AT'
                 )
+            ),
+            'command' => array(
+                'register' => array(
+                    'field' => array(
+                        'required' => array(
+                            'person_gender',
+                            'person_last_name',
+                        ),
+                        'unused' => array(
+                            'person_title',
+                            'person_nick_name',
+                            'communication_cell',
+                            'communication_fax',
+                        )
+                    )
+                )
             )
         );
     }

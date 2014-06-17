@@ -39,8 +39,14 @@ return array(
         => 'Zusatz',
     'Address'
         => 'Adresse',
+    'Address area'
+        => 'Bezirk',
     'Address city'
         => 'Stadt',
+    'Address country code'
+        => 'Land',
+    'Address state'
+        => 'Bundesland',
     'Address street'
         => 'Straße',
     'Address zip'
@@ -95,6 +101,8 @@ return array(
         => 'Kategorie Bezeichner (Übersetzung)',
     'Category type access'
         => 'Kategorie Zugriff',
+    'Category type id'
+        => 'Kategorie',
     'Category type list'
         => 'Übersicht über die Kategorien',
     'Change to the overview'
@@ -111,10 +119,14 @@ return array(
         => 'Anklicken um die Spalte absteigend zu sortieren',
     'Communication'
         => 'Kommunikation',
+    'Communication cell'
+        => 'Mobil',
     'Communication email'
         => 'E-Mail',
     'communication_email'
         => 'E-Mail',
+    'Communication fax'
+        => 'Telefax',
     'Communication phone'
         => 'Telefon',
     'communication_phone'
@@ -147,8 +159,12 @@ return array(
         => 'Login',
     'contact_type'
         =>'Typ',
+    'Contact data submitted'
+        => 'Kontaktdaten übermittelt',
     "Contact insert fail, but the process does not return the reason!"
         => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
+    'Contact Type: %type%'
+        => 'Kontakt Typ: %type%',
     '%count% hits for the search term </i>%search%</i>.'
         => '%count% Treffer für den Suchbegriff <i>%search%</i>.',
     'Country'
@@ -220,9 +236,7 @@ return array(
 
     'Failed to send a email with the subject <b>%subject%</b> to the addresses: <b>%failed%</b>.'
         => 'Eine E-Mail mit dem Betreff <b>%subject%</b> konnte an die folgenden Adressaten nicht übermittelt werden: <b>%failed%</b>.',
-    'FEMALE'
-        => 'Frau',
-    'female'
+    'Female'
         => 'Frau',
     'Fields of type `select`, `radio` or `checkbox` need one or more values defined as array in `choices`!'
         => 'Felder vom Typ `select`, `radio` oder `checkbox` benötigen einen oder mehrere Werte, die als Array in `choices` übergeben werden!',
@@ -260,9 +274,7 @@ return array(
     'Long name (translated)'
         => 'Langbezeichnung (Übersetzung)',
 
-    'MALE'
-        => 'Herr',
-    'male'
+    'Male'
         => 'Herr',
     'mandatory field'
         => 'Pflichtfeld',
@@ -301,6 +313,8 @@ return array(
         => 'Ungeklärt',
     'PERSON'
         => 'Person',
+    'Person birthday'
+        => 'Geburtstag',
     'Person first name'
         => 'Vorname',
     'Person gender'
@@ -336,6 +350,8 @@ return array(
         => 'Suche',
     'Search contact'
         => 'Kontakt suchen',
+    'Select category'
+        => 'Kategorie festlegen',
     'Select contact'
         => 'Kontakt auswählen',
     'Select contact type'
