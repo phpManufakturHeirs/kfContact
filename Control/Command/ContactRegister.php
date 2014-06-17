@@ -13,6 +13,7 @@ namespace phpManufaktur\Contact\Control\Command;
 
 use Silex\Application;
 use phpManufaktur\Basic\Control\kitCommand\Basic;
+use Symfony\Component\Form\FormFactory;
 
 /**
  * Class ContactRegister
@@ -21,6 +22,7 @@ use phpManufaktur\Basic\Control\kitCommand\Basic;
 class ContactRegister extends Basic
 {
     protected $app = null;
+    protected static $contact_type = null;
 
     /**
      * (non-PHPdoc)
@@ -35,7 +37,7 @@ class ContactRegister extends Basic
     /**
      * Get the Form to select the contact type
      *
-     *
+     * @return FormFactory
      */
     protected function getFormSelectContactType()
     {
@@ -50,15 +52,27 @@ class ContactRegister extends Basic
         ->getForm();
     }
 
-    public function ControllerRegisterPerson(Application $app)
+    protected function getFormContactData($data=array())
     {
+        $form = $this->app['form.factory']->createBuilder('form')
+        ->add('contact_id', 'hidden', array(
+            'data' => isset($data['contact_id']) ? $data['contact_id'] : -1
+        ))
+        ->add('contact_type', 'hidden', array(
+            'data' => self::$contact_type
+        ));
+
+        return $form->getForm();
+    }
+
+    public function ControllerRegisterContact(Application $app, $contact_type)
+    {
+        $this->initialize($app);
+        self::$contact_type = $contact_type;
+
         return __METHOD__;
     }
 
-    public function ControllerRegisterCompany(Application $app)
-    {
-        return __METHOD__;
-    }
 
     /**
      * @param Application $app
@@ -80,11 +94,11 @@ class ContactRegister extends Basic
 
                 if ($contact['contact_type'] == 'PERSON') {
                     // create a new PERSON contact
-                    return $this->ControllerRegisterPerson($app);
+                    return $this->ControllerRegisterContact($app, 'PERSON');
                 }
                 else {
                     // create a new COMPANY contact
-                    return $this->ControllerRegisterCompany($app);
+                    return $this->ControllerRegisterContact($app, 'COMPANY');
                 }
             }
             else {
