@@ -13,8 +13,7 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Overview;
-use phpManufaktur\Contact\Control\ContactList as ContactListControl;
-
+use phpManufaktur\Contact\Control\Dialog\Simple\ContactList as ContactListControl;
 
 class Search extends Dialog {
 

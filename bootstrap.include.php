@@ -17,7 +17,8 @@ $roles = $app['security.role_hierarchy'];
 if (!in_array('ROLE_CONTACT_ADMIN', $roles)) {
     $roles['ROLE_ADMIN'][] = 'ROLE_CONTACT_ADMIN';
     $roles['ROLE_CONTACT_ADMIN'] = array(
-        'ROLE_CONTACT_EDIT'
+        'ROLE_CONTACT_EDIT',
+        'ROLE_CONTACT_EDIT_OWN'
     );
     $app['security.role_hierarchy'] = $roles;
 }
@@ -35,15 +36,22 @@ $entry_points['ROLE_ADMIN'][] = array(
 );
 $app['security.role_entry_points'] = $entry_points;
 
-/*
 // add all ROLES provided and used by CONTACT
+$roles = array(
+    'ROLE_CONTACT_ADMIN',
+    'ROLE_CONTACT_EDIT',
+    'ROLE_CONTACT_EDIT_OWN'
+);
 $roles_provided = $app['security.roles_provided'];
-if (!in_array(array('ROLE_CONTACT_ADMIN', 'ROLE_CONTACT_EDIT'), $roles_provided)) {
-    $roles_provided[] = 'ROLE_CONTACT_ADMIN';
-    $roles_provided[] = 'ROLE_CONTACT_EDIT';
+if (!in_array($roles, $roles_provided)) {
+    foreach ($roles as $role) {
+        if (!in_array($role, $roles_provided)) {
+            $roles_provided[] = $role;
+        }
+    }
     $app['security.roles_provided'] = $roles_provided;
 }
-*/
+
 
 // share the CONTACT CONTROL
 $app['contact'] = $app->share(function($app) {
@@ -232,12 +240,21 @@ $app->get('/contact/list',
 
 $app->get('/contact/view',
     'phpManufaktur\Contact\Control\Command\ContactView::ControllerView');
-$app->match('/contact/register',
+$app->get('/contact/register',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegister');
 $app->post('/contact/register/category/check',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterCategoryCheck');
+$app->post('/contact/register/tags/check',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterTagsCheck');
 $app->post('/contact/register/data/check',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterContactCheck');
+$app->get('/contact/register/activate/user/{guid}',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterActivation');
+$app->get('contact/register/activate/admin/{guid}',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterActivationAdmin');
+$app->get('contact/register/reject/admin/{guid}',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterRejectAdmin');
+
 
 // permanent link for public contact ID's
 $app->get('/contact/public/view/id/{contact_id}',

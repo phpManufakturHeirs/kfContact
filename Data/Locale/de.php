@@ -155,6 +155,10 @@ return array(
         => 'Bezeichner',
     'Contact login'
         => 'Kontakt Anmeldename',
+    'Contact pending'
+        => 'Kontaktdaten werden geprüft',
+    'Contact published'
+        => 'Kontaktdaten veröffentlicht',
     'contact_login'
         => 'Login',
     'contact_type'
@@ -267,6 +271,8 @@ return array(
         => 'Nachname',
     'locked'
         => 'Gesperrt',
+    'Locked'
+        => 'Gesperrt',
     'login_name'
         => 'Kontakt Anmeldename',
     'Long name'
@@ -300,6 +306,8 @@ return array(
     'No hits for the search term <i>%search%</i>!'
         => 'Keine Treffer für den Suchbegriff <i>%search%</i>!',
     'Note'
+        => 'Notiz',
+    'Note content'
         => 'Notiz',
 
     'Options'
@@ -337,6 +345,8 @@ return array(
         => 'Telefon',
     'Please define a short name for the title!'
         => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
+    'Please select one #tag at minimum!'
+        => 'Bitte wählen Sie mindestens eine Markierung aus!',
     'Please select the type of contact you want to create. Be aware that you can not change the contact type if the record is created.'
         => 'Bitte legen Sie den Typ des neuen Kontakt fest. Bitte beachten Sie, dass Sie den Typ nicht mehr ändern können wenn der Datensatz angelegt ist.',
     'Please specify a search term!'
@@ -345,6 +355,11 @@ return array(
         => 'Prof.',
     'PUBLIC'
         => 'Öffentlich',
+    'Publish a contact'
+        => 'Kontaktdaten freigeben',
+
+    'Register a contact'
+        => 'Kontaktdaten bestätigen',
 
     'Search'
         => 'Suche',
@@ -356,12 +371,16 @@ return array(
         => 'Kontakt auswählen',
     'Select contact type'
         => 'Kontakt Typ',
+    'Select tags'
+        => 'Markierungen auswählen',
     'Short name'
         => 'Kurzbezeichnung',
     'Short name (translated)'
         => 'Kurzbezeichnung (Übersetzung)',
     'Sorry, but there occured a problem while processing the form. We have informed the webmaster.'
         => 'Entschuldigung, während der Verarbeitung des Formulars ist ein Problem aufgetreten. Wir haben den Webmaster informiert.',
+    'Sorry, but we have a problem. Please contact the webmaster and tell him to check the status of the email address %email%.'
+        => 'Entschuldigung, wir haben ein Problem. Bitte wenden Sie sich an den Webmaster und bitten Sie ihn, den Status der E-Mail Adresse %email% zu überprüfen!',
     'Start import from KeepInTouch'
         => 'Den Import aus KeepInTouch starten',
     'State'
@@ -455,6 +474,10 @@ return array(
         => 'Die URL %url% ist nicht gültig. Akzeptiert werden nur vollständige URL Angaben wie z.B. http://example.com oder https://www.example.com',
     'The zip %zip% is not valid!'
         => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
+    'There exists already a contact record for you, but the status of this record is <strong>%status%</strong>. Please contact the webmaster to activate the existing record.'
+        => 'Es existiert bereits ein Adressdatensatz für Sie, der Status dieses Datensatz ist jedoch auf <strong>%status%</strong> gesetzt. Bitte setzen Sie sich mit dem Webmaster in Verbindung um den Datensatz freizugeben.',
+    'There exists already a contact record for you, but this record is assigned to a <strong>%type%</strong> and can not be changed. Please use the same type or contact the webmaster.'
+        => 'Es existiert bereits ein Adressdatensatz für Sie, dieser ist jedoch einer <strong>%type%</strong> zugeordnet, der Typ kann nicht geändert werden. Bitte verwenden Sie den gleichen Kontakttyp oder kontaktieren Sie den Webmaster, damit dieser den Datensatz ändert.',
     'There exists no KeepInTouch installation at the parent CMS!'
         => 'Es existiert keine KeepInTouch Installation auf dem übergeordneten Content Management System!',
     'This is a sample panel text whith some unnecessary content'
@@ -463,6 +486,7 @@ return array(
         => 'Diese Markierung wird allen benutzerdefinierten `Contact` Formularen hinzugefügt.',
     'The value of the parameter contact_id must be an integer value and greater than 0'
         => 'Der Wert für den Parameter <i>contact_id</i> muss eine Ganzzahl größer als Null sein!',
+
     'Title'
         => 'Titel',
     'title_id'

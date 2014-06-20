@@ -34,7 +34,9 @@ class Action extends Basic
         $GET = $this->getCMSgetParameters();
         if (isset($GET['command']) && ($GET['command'] == 'contact') && isset($GET['action'])) {
             foreach ($GET as $key => $value) {
-                if ($key == 'command') continue;
+                if ($key == 'command') {
+                    continue;
+                }
                 self::$parameter[$key] = $value;
             }
             $this->setCommandParameters(self::$parameter);
@@ -54,6 +56,27 @@ class Action extends Basic
         $this->initParameters($app);
 
         switch (self::$parameter['action']) {
+            case 'confirm_register':
+                // confirm a contact registration
+                if (!isset(self::$parameter['guid'])) {
+                    $this->setAlert('Invalid Activation, missing the GUID!', array(), self::ALERT_TYPE_DANGER);
+                    return $this->createIFrame('/basic/alert/'.base64_encode($this->getAlert()));
+                }
+                return $this->createIFrame('/contact/register/activate/user/'.self::$parameter['guid']);
+            case 'confirm_publish':
+                // publish a contact
+                if (!isset(self::$parameter['guid'])) {
+                    $this->setAlert('Invalid Activation, missing the GUID!', array(), self::ALERT_TYPE_DANGER);
+                    return $this->createIFrame('/basic/alert/'.base64_encode($this->getAlert()));
+                }
+                return $this->createIFrame('/contact/register/activate/admin/'.self::$parameter['guid']);
+            case 'confirm_reject':
+                // reject a contact
+                if (!isset(self::$parameter['guid'])) {
+                    $this->setAlert('Invalid Activation, missing the GUID!', array(), self::ALERT_TYPE_DANGER);
+                    return $this->createIFrame('/basic/alert/'.base64_encode($this->getAlert()));
+                }
+                return $this->createIFrame('/contact/register/reject/admin/'.self::$parameter['guid']);
             case 'form':
                 // handle contact forms
                 return $this->createIFrame('/contact/form');

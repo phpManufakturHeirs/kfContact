@@ -60,7 +60,7 @@
       {% if attr.prefix is defined %}
         <span class="prefix-block">{{ attr.prefix|trans }}</span>
       {% endif %}
-      <input type="{{ type }}" class="form-control" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+      <input type="{{ type }}" class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
       {% if attr.help is defined %}
         <span class="help-block">{{ attr.help|trans }}</span>
       {% endif %}
@@ -75,7 +75,12 @@
       {% if attr.prefix is defined %}
         <span class="prefix-block">{{ attr.prefix|trans }}</span>
       {% endif %}
-      <textarea class="form-control" rows="3" {{ block('widget_attributes') }}>{{ value }}</textarea>
+      {% if attr.type is defined and attr.type == 'html' %}
+        {{ CKEditor(id, full_name, value, '100%', '150px',
+          MANUFAKTUR_URL ~ '/Contact/Template/default/command/ckeditor.simple.js') }}  
+      {% else %}  
+        <textarea class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" rows="3" {{ block('widget_attributes') }}>{{ value }}</textarea>
+      {% endif %}
       {% if attr.help is defined %}
         <span class="help-block">{{ attr.help|trans }}</span>
       {% endif %}

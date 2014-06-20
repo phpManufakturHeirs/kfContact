@@ -53,13 +53,21 @@ class Configuration
                         'required' => array(
                             'person_gender',
                             'person_last_name',
+                            'company_name'
                         ),
                         'unused' => array(
                             'person_title',
-                            'person_nick_name',
-                            'communication_cell',
-                            'communication_fax',
+                            "person_birthday",
+                            "person_nick_name",
+                            "communication_cell",
+                            "communication_fax",
+                            "address_area",
+                            "address_state",
+                            "note_content",
                         )
+                    ),
+                    'publish' => array(
+                        'activation' => 'admin'
                     )
                 )
             )

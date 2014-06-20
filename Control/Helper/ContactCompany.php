@@ -124,7 +124,7 @@ class ContactCompany extends ContactParent
         $changed = array();
 
         foreach ($new_data as $key => $value) {
-            if ($key === 'company_id') continue;
+            if ($key == 'company_id') continue;
             if (isset($old_data[$key]) && ($old_data[$key] != $value)) {
                 $changed[$key] = $value;
             }

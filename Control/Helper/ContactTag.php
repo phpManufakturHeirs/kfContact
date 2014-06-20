@@ -34,11 +34,24 @@ class ContactTag extends ContactParent
         $this->TagType = new TagType($this->app);
     }
 
+    /**
+     * Return the default record
+     *
+     * @return multitype:number string
+     */
     public function getDefaultRecord()
     {
         return $this->Tag->getDefaultRecord();
     }
 
+    /**
+     * Validate the given Tag - use this function before inserting a new tag
+     *
+     * @param array $tag_data
+     * @param array $contact_data
+     * @param array $option
+     * @return boolean
+     */
     public function validate(&$tag_data, $contact_data=array(), $option=array())
     {
         // tag name must be set

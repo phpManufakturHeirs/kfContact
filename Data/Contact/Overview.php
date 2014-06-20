@@ -317,7 +317,12 @@ EOD;
     public function select($contact_id)
     {
         try {
-            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id` = '$contact_id'";
+            if (filter_var($contact_id, FILTER_VALIDATE_INT)) {
+                $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_id` = '$contact_id'";
+            }
+            else {
+                $SQL = "SELECT * FROM `".self::$table_name."` WHERE `contact_login` = '$contact_id'";
+            }
             $result = $this->app['db']->fetchAssoc($SQL);
             $overview = array();
             foreach ($result as $key => $value) {

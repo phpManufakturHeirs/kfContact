@@ -261,9 +261,9 @@ EOD;
     public function selectByName($tag_type_name)
     {
         try {
-            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `tag_type_name`='$tag_type_name'";
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `tag_name`='$tag_type_name'";
             $result = $this->app['db']->fetchAssoc($SQL);
-            if (is_array($result) && isset($result['tag_type_name'])) {
+            if (is_array($result) && isset($result['tag_name'])) {
                 $tag = array();
                 foreach ($result as $key => $value) {
                     $tag[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
