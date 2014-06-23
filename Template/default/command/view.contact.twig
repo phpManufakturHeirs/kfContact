@@ -18,6 +18,7 @@
   <link rel="canonical" url="{{ FRAMEWORK_URL ~ '/contact/public/id/' ~ contact.contact.contact_id }}">
 {% endblock %}  
 {% block content %}
+  
   <!-- {{ _self.getTemplateName() }} -->
   {# need the parent to enable prompting messages #}
   {{ parent() }}
@@ -79,5 +80,13 @@
       <div class="col-sm-8">{{ extra.extra_value }}</div>
     </div>
   {% endfor %}  
-
+  
+  {% if parameter.edit is defined and parameter.edit == true %}
+    <div class="row">
+      <div class="col-sm-12 text-right">
+        <a href="{{ FRAMEWORK_URL ~ '/contact/owner/login?contact_id=' ~ contact.contact.contact_id ~ '&pid=' ~ basic.pid }}"><i class="fa fa-pencil-square-o"></i></a>
+      </div>
+    </div>
+  {% endif %}
+  
 {% endblock %}

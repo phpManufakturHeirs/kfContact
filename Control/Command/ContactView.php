@@ -42,8 +42,18 @@ class ContactView extends Basic
         self::$parameter['map'] = isset(self::$parameter['map']) ?
             (empty(self::$parameter['map']) || (self::$parameter['map'] == 1) ||
                 (strtolower(self::$parameter['map'] == 'true'))) ? true : false : false;
+
+        self::$parameter['edit'] = isset(self::$parameter['edit']) ?
+            (empty(self::$parameter['edit']) || (self::$parameter['edit'] == 1) ||
+                (strtolower(self::$parameter['edit'] == 'true'))) ? true : false : false;
     }
 
+    /**
+     * Controller for the class ContactView
+     *
+     * @param Application $app
+     * @return mixed
+     */
     public function ControllerView(Application $app)
     {
         $this->initParameters($app);

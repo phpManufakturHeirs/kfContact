@@ -260,12 +260,18 @@ return array(
         => 'Ich akzeptiere, dass diese Software unter der <a href="http://opensource.org/licenses/MIT" target="_blank">MIT Lizenz</a> veröffentlicht wurde.',
     'Identifier'
         => 'Bezeichner',
+    'If you are the owner of the contact record you can change or update the data, please login. If you have never got any account information please select "Forgot password?"'
+        => 'Falls Sie der Inhaber des Kontaktdatensatz sind können Sie die Daten jederzeit aktualisieren oder ändern, bitte melden Sie sich an. Falls Sie bisher keine Zugangsdaten erhalten haben, wählen Sie bitte "Haben Sie ihr Passwort vergessen?".',
+    'If you have never got a password or still forgot it, you can order a link to create a new one. Just type in the email address which is assigned to the contact record you want zu change or update and we will send youn an email.'
+        => 'Falls Sie bisher kein Passwort erhalten oder das Passwort verloren haben, können Sie einen Link anfordern um ein neues Passwort zu erstellen. Geben Sie einfach die E-Mail Adresse an, die dem Kontaktdatensatz zugeordnet ist den Sie ändern oder aktualisieren möchten, wir senden Ihnen einen Link zu.',
     'Import contacts from KeepInTouch (KIT)'
         => 'Kontakte aus KeepInTouch (KIT) importieren',
     "Inserted the new contact with the ID %contact_id%."
         => 'Es wurde ein neuer Kontakt mit der ID %contact_id% hinzugefügt',
     'Intern'
         => 'Intern',
+    'Invalid GUID, can not evaluate the desired account!'
+        => 'Ungültiger Aktivierungslink! Die GUID wurde möglichweise bereits verwendet.',
 
     'Last name'
         => 'Nachname',
@@ -428,6 +434,12 @@ return array(
         => 'Der Kontakt <b>Login</b> muss gesetzt sein!',
     "The contact name %name% already exists! The update has still executed, please check if you really want this duplicate name."
         => "Der Kontakt Name <b>%name%</b> wird bereits verwendet! Der Datensatz wurde trotzdem aktualisiert, bitte prüfen Sie ob sie den doppelten Eintrag beibehalten möchten.",
+    'The contact record has been successfull inserted.'
+        => 'Der Kontaktdatensatz wurde erfolgreich eingefügt.',
+    'The contact record has been successfull updated'
+        => 'Der Kontaktdatensatz wurde erfolgreich aktualisiert',
+    'The contact record is now published, the submitter has received an email with further information.'
+        => 'Der Kontaktdatensatz wurde veröffentlicht, dem Übermittler wurde eine E-Mail mit weiteren Informationen zugesendet.',
     'The contact record must contain a email address or a login name as unique identifier!'
         => 'Der Kontakt Datensatz muss eine E-Mail Adresse oder einen Anmeldenamen (Login) für eine eindeutige Identifizierung enthalten!',
     "The contact record was not changed!"
@@ -464,6 +476,8 @@ return array(
         => 'Der Datensatz mit der ID %id% wurde erfolgreich aktualisiert.',
     'The record with the ID %id% was successfull deleted.'
         => 'Der Datensatz mit der ID %id% wurde erfolgreich gelöscht.',
+    'The submitted contact record will be proofed and published as soon as possible, we will send you an email!'
+        => 'Der übermittelte Kontaktdatensatz wird so rasch wie möglich geprüft und veröffentlicht, wir melden uns bei Ihnen per E-Mail!',
     'The tag type %tag_name% already exists!'
         => 'Die Markierung %tag_name% existiert bereits und kann nicht erneut eingefügt werden!',
     "The %type% entry %value% is marked for primary communication and can not removed!"
@@ -498,6 +512,11 @@ return array(
 
     'Unchecked'
         => '- ungeprüft -',
+
+    'You are authenticated but not allowed to edit this contact'
+        => 'Sie sind angemeldet, verfügen jedoch nicht über die Berechtigung diesen Kontaktdatensatz zu bearbeiten!',
+    'Your contact record is now published, we have send you a confirmation mail with further information.'
+        => 'Ihr Kontaktdatensatz wurde veröffentlicht, wir haben Ihnen eine E-Mail mit weiteren Informationen zugesendet.',
 
     'Zip'
         => 'Postleitzahl'

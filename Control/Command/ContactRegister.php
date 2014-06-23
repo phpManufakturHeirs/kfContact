@@ -493,6 +493,36 @@ class ContactRegister extends Basic
                     $data['company_department'] : $existing_contact['company'][0]['company_department'];
             }
 
+            if (isset($existing_contact['communication']) && is_array($existing_contact['communication'])) {
+                foreach ($existing_contact['communication'] as $communication) {
+                    switch ($communication['communication_type']) {
+                        case 'EMAIL':
+                            if ($communication['communication_usage'] == 'PRIMARY') {
+                                $data['communication_email_id'] = $communication['communication_id'];
+                            }
+                            break;
+                        case 'PHONE':
+                            if ($communication['communication_type'] == 'PRIMARY') {
+                                $data['communication_phone_id'] = $communication['communication_id'];
+                                $data['communication_phone'] = (isset($data['communication_phone']) && !empty($data['communication_phone']) && ($data['communication_phone'] != $communication['communication_value'])) ? $data['communication_phone'] : $communication['communication_value'];
+                            }
+                            break;
+                        case 'CELL':
+                            if ($communication['communication_type'] == 'BUSINESS') {
+                                $data['communication_cell_id'] = $communication['communication_id'];
+                                $data['communication_cell'] = (isset($data['communication_cell']) && !empty($data['communication_cell']) && ($data['communication_cell'] != $communication['communication_value'])) ? $data['communication_cell'] : $communication['communication_value'];
+                            }
+                            break;
+                        case 'FAX':
+                            if ($communication['communication_type'] == 'BUSINESS') {
+                                $data['communication_fax_id'] = $communication['communication_id'];
+                                $data['communication_fax'] = (isset($data['communication_fax']) && !empty($data['communication_fax']) && ($data['communication_fax'] != $communication['communication_value'])) ? $data['communication_fax'] : $communication['communication_value'];
+                            }
+                            break;
+                    }
+                }
+            }
+
             $data['note_id'] = isset($existing_contact['note'][0]['note_id']) ? $existing_contact['note'][0]['note_id'] : -1;
             if ($data['note_id'] > 0) {
                 $data['note_content'] = (isset($data['note_content']) && !empty($data['note_content']) && ($data['note_content'] != $existing_contact['note'][0]['note_content'])) ?
@@ -581,6 +611,44 @@ class ContactRegister extends Basic
             );
         }
 
+        $contact['communication'][] = array(
+            'communication_id' => $data['communication_email_id'],
+            'contact_id' => $data['contact_id'],
+            'communication_type' => 'EMAIL',
+            'communication_usage' => 'PRIMARY',
+            'communication_value' => $data['communication_email']
+        );
+
+        if (isset($data['communication_phone']) && !empty($data['communication_phone'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_phone_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'PHONE',
+                'communication_usage' => 'PRIMARY',
+                'communication_value' => $data['communication_phone']
+            );
+        }
+
+        if (isset($data['communication_cell']) && !empty($data['communication_cell'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_cell_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'CELL',
+                'communication_usage' => 'BUSINESS',
+                'communication_value' => $data['communication_cell']
+            );
+        }
+
+        if (isset($data['communication_fax']) && !empty($data['communication_fax'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_fax_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'FAX',
+                'communication_usage' => 'BUSINESS',
+                'communication_value' => $data['communication_fax']
+            );
+        }
+
         $contact['note'] = array(
             array(
                 'note_id' => isset($data['note_id']) ? $data['note_id'] : -1,
@@ -643,10 +711,12 @@ class ContactRegister extends Basic
                 // problem inserting - an Alert will be set by the contact interface
                 return false;
             }
+            $contact['contact_id'] = $data['contact_id'];
+            $data = $contact;
             // clear all Alerts from the contact interface!
             $this->clearAlert();
 
-            $this->setAlert('success!');
+            $this->setAlert('The contact record has been successfull inserted.');
         }
         else {
             $mode = 'UPDATE';
@@ -654,15 +724,23 @@ class ContactRegister extends Basic
                 // problem updating - an Alert will be set by the contact interface
                 return false;
             }
+            $data = $contact;
+
             // clear all Alerts from the contact interface!
             $this->clearAlert();
 
-            $this->setAlert('successs update');
+            $this->setAlert('The contact record has been successfull updated');
         }
 
         return true;
     }
 
+    /**
+     * Send the activation link to the submitter
+     *
+     * @param integer $contact_id
+     * @return boolean
+     */
     protected function sendActivationLink($contact_id)
     {
         $contact = $this->app['contact']->selectOverview($contact_id);
@@ -673,8 +751,8 @@ class ContactRegister extends Basic
                 $contact['contact_login'],
                 $contact['communication_email'],
                 $this->app['utils']->createPassword(),
-                $contact['order_name'],
-                implode(',', $allowed_roles)
+                implode(',', $allowed_roles),
+                $contact['order_name']
             );
         }
         else {
@@ -744,9 +822,9 @@ class ContactRegister extends Basic
                 $mode = 'INSERT';
                 if ($this->checkContactData($contact, $mode)) {
                     // contact data are ok - send confirmation mails and say goodbye ...
-                    //if ($mode == 'INSERT') {
+                    if ($mode == 'INSERT') {
                         $this->sendActivationLink($contact['contact_id']);
-                    //}
+                    }
                     return $this->app['twig']->render($this->app['utils']->getTemplateFile(
                         '@phpManufaktur/Contact/Template', 'command/register.contact.submitted.twig',
                         $this->getPreferredTemplateStyle()),
@@ -1020,6 +1098,15 @@ class ContactRegister extends Basic
         return $this->promptAlert();
     }
 
+    /**
+     * Action to perform the publishing of the contact record - update record, send
+     * mail to the submitter a.s.o.
+     *
+     * @param unknown $account
+     * @param unknown $contact
+     * @param string $published_by
+     * @return \phpManufaktur\Basic\Control\Pattern\rendered
+     */
     protected function publishContact($account, $contact, $published_by='user')
     {
         // activate the contact
@@ -1058,6 +1145,9 @@ class ContactRegister extends Basic
             return $this->promptAlert();
         }
 
+        // clear all existing alerts
+        $this->clearAlert();
+
         if ($published_by == 'user') {
             $this->setAlert('Your contact record is now published, we have send you a confirmation mail with further information.',
                 array(), self::ALERT_TYPE_SUCCESS);
@@ -1068,6 +1158,13 @@ class ContactRegister extends Basic
         return $this->promptAlert();
     }
 
+    /**
+     * Controller for the Activation of a contact record by the admin
+     *
+     * @param Application $app
+     * @param string $guid
+     * @return \phpManufaktur\Basic\Control\Pattern\rendered
+     */
     public function ControllerRegisterActivationAdmin(Application $app, $guid)
     {
         // don't use initParameters() of this class - we won't check parameters!
@@ -1088,6 +1185,12 @@ class ContactRegister extends Basic
         return $this->publishContact($account, $contact, 'admin');
     }
 
+    /**
+     * Controller to check the Activation by GUID
+     *
+     * @param Application $app
+     * @param string $guid
+     */
     public function ControllerRegisterActivation(Application $app, $guid)
     {
         // don't use initParameters() of this class - we won't check parameters!

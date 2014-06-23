@@ -22,6 +22,26 @@ if (!in_array('ROLE_CONTACT_ADMIN', $roles)) {
     );
     $app['security.role_hierarchy'] = $roles;
 }
+if (!in_array('ROLE_CONTACT_EDIT', $roles)) {
+    $roles['ROLE_CONTACT_EDIT'] = array(
+        'ROLE_CONTACT_EDIT_OWN'
+    );
+    $app['security.role_hierarchy'] = $roles;
+}
+
+$rules = $app['security.access_rules'];
+$rule_exists = false;
+foreach ($rules as $rule) {
+    if ($rule[0] === '^/contact/owner/edit') {
+        $rule_exists = true;
+    }
+}
+if (!$rule_exists) {
+    $rules[] = array('^/contact/owner/edit', 'ROLE_CONTACT_EDIT_OWN');
+    $rules[] = array('^/contact/edit', 'ROLE_CONTACT_EDIT');
+    $app['security.access_rules'] = $rules;
+}
+
 
 // add a entry point for CONTACT
 $entry_points = $app['security.role_entry_points'];
@@ -240,7 +260,8 @@ $app->get('/contact/list',
 
 $app->get('/contact/view',
     'phpManufaktur\Contact\Control\Command\ContactView::ControllerView');
-$app->get('/contact/register',
+
+$app->match('/contact/register',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegister');
 $app->post('/contact/register/category/check',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterCategoryCheck');
@@ -255,6 +276,14 @@ $app->get('contact/register/activate/admin/{guid}',
 $app->get('contact/register/reject/admin/{guid}',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterRejectAdmin');
 
+// protected area - need ROLE_CONTACT_EDIT_OWN
+$app->get('/contact/owner/login',
+    'phpManufaktur\Contact\Control\Command\ContactEdit::ControllerLogin');
+$app->post('/contact/owner/login/check',
+    'phpManufaktur\Contact\Control\Command\ContactEdit::ControllerLoginCheck');
+
+$app->get('/contact/owner/edit/id/{contact_id}',
+    'phpManufaktur\Contact\Control\Command\ContactEdit::ControllerEdit');
 
 // permanent link for public contact ID's
 $app->get('/contact/public/view/id/{contact_id}',
