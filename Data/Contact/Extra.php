@@ -107,6 +107,17 @@ EOD;
         }
     }
 
+    /**
+     * Inster a new record
+     *
+     * @param integer $contact_id
+     * @param integer $category_id
+     * @param string $category_type_name
+     * @param integer $extra_type_id
+     * @param mixed $value
+     * @param integer reference $extra_id
+     * @throws \Exception
+     */
     public function insert($contact_id, $category_id, $category_type_name, $extra_type_id, $value=null, &$extra_id=-1)
     {
         try {
@@ -141,6 +152,13 @@ EOD;
         }
     }
 
+    /**
+     * Delete an Extra record by the given Contact ID and Category ID
+     *
+     * @param integer $contact_id
+     * @param integer $category_id
+     * @throws \Exception
+     */
     public function delete($contact_id, $category_id)
     {
         try {
@@ -150,6 +168,14 @@ EOD;
         }
     }
 
+    /**
+     * Select a Extra record by Contact ID and Category ID
+     *
+     * @param integer $contact_id
+     * @param integer $category_id
+     * @return boolean|array
+     * @throws \Exception
+     */
     public function select($contact_id, $category_id)
     {
         try {
@@ -201,6 +227,13 @@ EOD;
         }
     }
 
+    /**
+     * Update an Extra record
+     *
+     * @param integer $extra_id
+     * @param array $data
+     * @throws \Exception
+     */
     public function update($extra_id, $data)
     {
         try {
