@@ -16,12 +16,18 @@ use phpManufaktur\Basic\Control\kitCommand\Basic;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\FormFactory;
+use phpManufaktur\Contact\Control\Pattern\Form\Contact as ContactForm;
 
 class ContactEdit extends Basic
 {
     protected static $parameter = null;
     protected static $contact_id = null;
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Basic\Control\kitCommand\Basic::initParameters()
+     */
     protected function initParameters(Application $app, $parameter_id=-1)
     {
         parent::initParameters($app, $parameter_id);
@@ -53,6 +59,11 @@ class ContactEdit extends Basic
         return false;
     }
 
+    /**
+     * Get the form for the login dialog
+     *
+     * @return FormFactory
+     */
     protected function getFormLogin()
     {
         return $this->app['form.factory']->createBuilder('form')
@@ -72,6 +83,13 @@ class ContactEdit extends Basic
             ->getForm();
     }
 
+    /**
+     * Controller to prompt the login dialog if the user is not authenticated or
+     * is not allowed to edit this contact record
+     *
+     * @param Application $app
+     * @return string
+     */
     public function ControllerLogin(Application $app)
     {
         $this->initParameters($app);
@@ -91,6 +109,12 @@ class ContactEdit extends Basic
             ));
     }
 
+    /**
+     * Controller to check the user login
+     *
+     * @param Application $app
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function ControllerLoginCheck(Application $app)
     {
         $this->initParameters($app);
@@ -152,14 +176,39 @@ class ContactEdit extends Basic
             ));
     }
 
+    /**
+     * Main controller to edit the given contact record with the desired ID
+     *
+     * @param Application $app
+     * @param integer $contact_id
+     * @return string
+     */
     public function ControllerEdit(Application $app, $contact_id)
     {
+        // init the parent and parameters
         $this->initParameters($app);
         self::$contact_id = $contact_id;
+
+
+        // important: check the authentication!
         if (!$this->isAuthenticated()) {
             return $this->ControllerLogin($app);
         }
 
+        $ContactForm = new ContactForm($app);
+        $data = $ContactForm->selectContactRecord(self::$contact_id);
+
+        if (false === ($form = $ContactForm->getFormContact(array('category_type_id' => 2)))) {
+            return $this->promptAlert();
+        }
+
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            '@phpManufaktur/Contact/Template', 'command/edit.contact.twig',
+            $this->getPreferredTemplateStyle()),
+            array(
+                'basic' => $this->getBasicSettings(),
+                'form' => $form->createView()
+            ));
         return __METHOD__;
     }
 
