@@ -96,7 +96,7 @@ return array(
     'Category description (translated)'
         => 'Kategorie Beschreibung (Übersetzung)',
     'Category name'
-        => 'Kategorie Bezeichner',
+        => 'Kategorie',
     'Category name (translated)'
         => 'Kategorie Bezeichner (Übersetzung)',
     'Category type access'
@@ -161,6 +161,12 @@ return array(
         => 'Kontaktdaten veröffentlicht',
     'contact_login'
         => 'Login',
+    'Contact since'
+        => 'Kontakt seit',
+    'Contact status'
+        => 'Status',
+    'Contact timestamp'
+        => 'Letzte Änderung',
     'contact_type'
         =>'Typ',
     'Contact data submitted'

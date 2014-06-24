@@ -29,7 +29,7 @@
   {# assign the bootstrap 3 theming for horizontal forms to the Symfony Form Factory output #}  
   {% form_theme form '@phpManufaktur/Contact/Template/default/command/form.fields.horizontal.twig' %}
 
-  <form action="{{ FRAMEWORK_URL ~ '/contact/owner/login/check?pid=' ~ basic.pid }}" class="form-horizontal" method="post" role="form">
+  <form action="{{ FRAMEWORK_URL ~ '/contact/owner/edit/check?pid=' ~ basic.pid }}" class="form-horizontal" method="post" role="form">
     {# loop through all form fields from the form.json #}
     {{ form_widget(form) }}     
 
@@ -38,25 +38,23 @@
         <button class="btn btn-default" type="submit">{{ 'Submit'|trans }}</button>
       </div>
     </div>
-  </form>    
-{% endblock %}
+  </form>   
+        
+{% endblock content %}
 {% block footer_jquery %}
   {{ parent() }}
   <script type="text/javascript" src="{{ LIBRARY_URL }}/jquery/ui/latest/ui/minified/jquery-ui.min.js"></script>
   <script type="text/javascript" src="{{ LIBRARY_URL }}/jquery/ui/latest/ui/minified/i18n/jquery-ui-i18n.min.js"></script>
 {% endblock footer_jquery %}
-{% block footer %}
-  
+{% block footer %}  
   {# the CKEditor need extra space - loop through the form and search for attr.type == 'html' #}
   {% set iframe_add_height = 0 %}
   {% for item in form %}
     {% if item.vars.attr.type is defined and item.vars.attr.type == 'html' %}
       {% set iframe_add_height = iframe_add_height + 150 %}
     {% endif %}
-  {% endfor %}  
-  
-  {{ parent() }}
-  
+  {% endfor %}    
+  {{ parent() }}  
   <script type="text/javascript">
     if (typeof 'jQuery' !== 'undefined') {
       $(document).ready(function() {

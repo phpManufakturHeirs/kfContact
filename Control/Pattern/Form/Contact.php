@@ -53,6 +53,13 @@ class Contact extends Alert
         self::$config = $Config->getConfiguration();
     }
 
+    /**
+     * Select the contact record for the given contact ID. Prepare and return 
+     * data array for usage with the contact form
+     * 
+     * @param integer $contact_id
+     * @return boolean|array
+     */
     public function selectContactRecord($contact_id)
     {
         $data = array();
@@ -66,9 +73,16 @@ class Contact extends Alert
             $data[$key] = $value;
         }
 
+        // get the category
+        if (isset($contact['category'][0]['category_type_id'])) {
+            $data['category_name'] = $contact['category'][0]['category_type_name'];
+            $data['category_type_id'] = $contact['category'][0]['category_type_id'];
+        }
+
         // get the person section
         if (isset($contact['person'][0]) && ($contact['person'][0]['person_id'] > 0)) {
             foreach ($contact['person'][0] as $key => $value) {
+                if ($key == 'contact_id') continue;
                 $data[$key] = $value;
             }
         }
@@ -76,6 +90,7 @@ class Contact extends Alert
         // get the company section
         if (isset($contact['company'][0]) && ($contact['company'][0]['company_id'])) {
             foreach ($contact['company'][0] as $key => $value) {
+                if ($key == 'contact_id') continue;
                 $data[$key] = $value;
             }
         }
@@ -233,12 +248,18 @@ class Contact extends Alert
             }
         }
 
+        if (isset($contact['note'][0]) && is_array($contact['note'][0])) {
+            $data['note_id'] = $contact['note'][0]['note_id'];
+            $data['note'] = $contact['note'][0]['note_content'];
+        }
 
+        if (isset($contact['extra_fields']) && is_array($contact['extra_fields'])) {
+            foreach ($contact['extra_fields'] as $extra) {
+                $data['extra_'.strtolower($extra['extra_type_name'])] = $extra['extra_value'];
+            }
+        }
 
-        echo "<pre>";
-        print_r($contact);
-        print_r($data);
-        echo "</pre>";
+        return $data;
     }
 
     /**
@@ -256,8 +277,9 @@ class Contact extends Alert
             $field = self::$config['pattern']['form']['contact']['field'];
         }
 
-        if (!isset($field['predefined']) || !isset($field['visible']) || !isset($field['hidden']) || !isset($field['required'])) {
-            $this->setAlert('Missing one or more keys in the field definition array! At least are needed: predefined, visible, hidden, required',
+        if (!isset($field['predefined']) || !isset($field['visible']) || !isset($field['hidden']) ||
+            !isset($field['required']) || !isset($field['readonly'])) {
+            $this->setAlert('Missing one or more keys in the field definition array! At least are needed: predefined, visible, hidden, required, readonly',
                 array(), self::ALERT_TYPE_DANGER);
             return false;
         }
@@ -279,9 +301,52 @@ class Contact extends Alert
         $ExtraType = new ExtraType($this->app);
         $ExtraCategory = new ExtraCategory($this->app);
 
+        reset($field);
+
         // loop through the visible fields
         foreach ($field['visible'] as $visible) {
             switch ($visible) {
+                case 'contact_id':
+                case 'contact_type':
+                    $form->add($visible, 'text', array(
+                        'read_only' => true,
+                        'required' => false,
+                        'data' => $this->app['translator']->trans($this->app['utils']->humanize($data[$visible]))
+                    ));
+                    break;
+                case 'contact_since':
+                case 'contact_timestamp':
+                    $form->add($visible, 'text', array(
+                        'read_only' => true,
+                        'required' => false,
+                        'data' => isset($data[$visible]) ? date($this->app['translator']->trans('DATETIME_FORMAT'), strtotime($data[$visible])) : null
+                    ));
+                    break;
+                case 'contact_status':
+                    $form->add($visible, 'choice', array(
+                        'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'PENDING' => 'pending', 'DELETED' => 'deleted'),
+                        'empty_value' => false,
+                        'required' => in_array($visible, $field['required']),
+                        'read_only' => in_array($visible, $field['readonly']),
+                        'data' => isset($data[$visible]) ? $data[$visible] : 'ACTIVE'
+                    ));
+                    break;
+                case 'category_name':
+                    $form->add($visible, 'choice', array(
+                        'choices' => $this->app['contact']->getCategoryArrayForTwig(),
+                        'empty_value' => '- please select -',
+                        'required' => in_array($visible, $field['required']),
+                        'read_only' => in_array($visible, $field['readonly']),
+                        'data' => isset($data[$visible]) ? $data[$visible] : null
+                    ));
+                    break;
+                case 'category_access':
+                    $form->add($visible, 'text', array(
+                        'data' => $this->app['translator']->trans($this->app['contact']->getAccessType($data['contact_id'])),
+                        'required' => false,
+                        'read_only' => true
+                    ));
+                    break;
                 case 'tags':
                     // contact tags
                     if (isset($field['predefined']['tags']) && is_array($field['predefined']['tags'])) {
@@ -305,6 +370,7 @@ class Contact extends Alert
                         'choices' => $tags,
                         'multiple' => true,
                         'expanded' => true,
+                        'read_only' => in_array($visible, $field['readonly']),
                         'data' => (isset($data[$visible]) && is_array($data[$visible])) ? $data[$visible] : null
                     ));
                     break;
@@ -316,6 +382,7 @@ class Contact extends Alert
                         'required' => in_array($visible, $field['required']),
                         'choices' => array('MALE' => 'Male', 'FEMALE' => 'Female'),
                         'expanded' => true,
+                        'read_only' => in_array($visible, $field['readonly']),
                         'data' => isset($data[$visible]) ? $data[$visible] : 'MALE'
                     ));
                     break;
@@ -327,6 +394,7 @@ class Contact extends Alert
                         'choices' => $this->app['contact']->getTitleArrayForTwig(),
                         'empty_value' => '- please select -',
                         'required' => in_array($visible, $field['required']),
+                        'read_only' => in_array($visible, $field['readonly']),
                         'data' => isset($data[$visible]) ? $data[$visible] : null
                     ));
                     break;
@@ -336,7 +404,8 @@ class Contact extends Alert
                     }
                     $form->add($visible, 'text', array(
                         'required' => in_array($visible, $field['required']),
-                        'data' => isset($data[$visible]) ? $data[$visible] : '',
+                        'read_only' => in_array($visible, $field['readonly']),
+                        'data' => (isset($data[$visible]) && ($data[$visible] != '0000-00-00')) ? date($this->app['translator']->trans('DATE_FORMAT'), strtotime($data[$visible])) : '',
                         'attr' => array('class' => 'datepicker')
                     ));
                     break;
@@ -349,6 +418,7 @@ class Contact extends Alert
                     ));
                     $form->add($visible, 'text', array(
                         'required' => in_array($visible, $field['required']),
+                        'read_only' => in_array($visible, $field['readonly']),
                         'data' => isset($data[$visible]) ? $data[$visible] : ''
                     ));
                     break;
@@ -357,16 +427,18 @@ class Contact extends Alert
                         'required' => in_array($visible, $field['required']),
                         'choices' => $this->app['contact']->getCountryArrayForTwig(),
                         'empty_value' => '- please select -',
+                        'read_only' => in_array($visible, $field['readonly']),
                         'data' => isset($data[$visible]) ? $data[$visible] : '',
                         'preferred_choices' => self::$config['countries']['preferred']
                     ));
                     break;
-                case 'note_content':
+                case 'note':
                     $form->add('note_id', 'hidden', array(
                         'data' => isset($data['note_id']) ? $data['note_id'] : -1
                     ));
                     $form->add($visible, 'textarea', array(
                         'required' => in_array($visible, $field['required']),
+                        'read_only' => in_array($visible, $field['readonly']),
                         'data' => isset($data[$visible]) ? $data[$visible] : ''
                     ));
                     break;
@@ -379,6 +451,7 @@ class Contact extends Alert
                         if (false !== ($extra = $ExtraType->select($type_id))) {
                             $name = 'extra_'.strtolower($extra['extra_type_name']);
                             $extra_type = null;
+                            $value = isset($data[$name]) ? $data[$name] : null;
                             switch ($extra['extra_type_type']) {
                                 // determine the form type
                                 case 'TEXT':
@@ -393,6 +466,7 @@ class Contact extends Alert
                                 case 'DATE':
                                     $form_type = 'text';
                                     $class = "datepicker $name";
+                                    $value = (isset($data[$name]) && ($data[$name] != '0000-00-00')) ? date($this->app['translator']->trans('DATE_FORMAT'), strtotime($data[$name])) : '';
                                     break;
                                 default:
                                     $form_type = 'text';
@@ -402,12 +476,15 @@ class Contact extends Alert
                             $form->add($name, $form_type, array(
                                 'attr' => array('class' => $class, 'type' => $extra_type),
                                 'required' => in_array($name, $field['required']),
+                                'read_only' => in_array($name, $field['readonly']),
                                 'label' => $this->app['utils']->humanize($extra['extra_type_name']),
-                                'data' => isset($data[$name]) ? $data['name'] : null
+                                'data' => $value
                             ));
                         }
                     }
                     break;
+                case 'contact_name':
+                case 'contact_login':
                 case 'person_first_name':
                 case 'person_last_name':
                 case 'person_nick_name':
@@ -425,6 +502,7 @@ class Contact extends Alert
                     }
                     $form->add($visible, 'text', array(
                         'required' => in_array($visible, $field['required']),
+                        'read_only' => in_array($visible, $field['readonly']),
                         'data' => isset($data[$visible]) ? $data[$visible] : ''
                     ));
                     break;
@@ -435,6 +513,7 @@ class Contact extends Alert
                         if (false !== ($type = $ExtraCategory->selectTypebyNameAndCategory($name,
                             isset($data['category_type_id']) ? $data['category_type_id'] : -1))) {
                             $extra_type = null;
+                            $value = isset($data[$name]) ? $data[$name] : null;
                             switch ($type['extra_type_type']) {
                                 // determine the form type
                                 case 'TEXT':
@@ -449,6 +528,7 @@ class Contact extends Alert
                                 case 'DATE':
                                     $form_type = 'text';
                                     $class = "datepicker $name";
+                                    $value = (isset($data[$name]) && ($data[$name] != '0000-00-00')) ? date($this->app['translator']->trans('DATE_FORMAT'), strtotime($data[$name])) : '';
                                     break;
                                 default:
                                     $form_type = 'text';
@@ -458,8 +538,9 @@ class Contact extends Alert
                             $form->add($name, $form_type, array(
                                 'attr' => array('class' => $class, 'type' => $extra_type),
                                 'required' => in_array($name, $field['required']),
+                                'read_only' => in_array($name, $field['readonly']),
                                 'label' => $this->app['utils']->humanize($type['extra_type_name']),
-                                'data' => isset($data[$name]) ? $data['name'] : null
+                                'data' => $value
                             ));
                         }
                         else {

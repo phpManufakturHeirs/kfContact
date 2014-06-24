@@ -176,6 +176,60 @@ class ContactEdit extends Basic
             ));
     }
 
+
+    public function ControllerEditCheck(Application $app)
+    {
+        // init the parent and parameters
+        $this->initParameters($app);
+
+        // important: check the authentication!
+        if (!$this->isAuthenticated()) {
+            return $this->ControllerLogin($app);
+        }
+
+        // get the contact_id
+        $request = $this->app['request']->get('form');
+        self::$contact_id = (isset($request['contact_id'])) ? $request['contact_id'] : -1;
+
+        // get the contact form
+        $ContactForm = new ContactForm($app);
+        $data = $ContactForm->selectContactRecord(self::$contact_id);
+        if (false === ($form = $ContactForm->getFormContact($data))) {
+            return $this->promptAlert();
+        }
+
+        if ('POST' == $this->app['request']->getMethod()) {
+            // the form was submitted, bind the request
+            $form->bind($this->app['request']);
+            if ($form->isValid()) {
+                $data = $form->getData();
+                return 'process data';
+            }
+            else {
+                // general error (timeout, CSFR ...)
+                $this->setAlert('The form is not valid, please check your input and try again!',
+                    array(), self::ALERT_TYPE_DANGER);
+            }
+        }
+        else {
+            // general error (timeout, CSFR ...)
+            $this->setAlert('The form is not valid, please check your input and try again!',
+                array(), self::ALERT_TYPE_DANGER);
+        }
+
+        if (false === ($form = $ContactForm->getFormContact($data))) {
+            return $this->promptAlert();
+        }
+
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            '@phpManufaktur/Contact/Template', 'command/edit.contact.twig',
+            $this->getPreferredTemplateStyle()),
+            array(
+                'basic' => $this->getBasicSettings(),
+                'form' => $form->createView()
+            ));
+    }
+
     /**
      * Main controller to edit the given contact record with the desired ID
      *
@@ -195,10 +249,11 @@ class ContactEdit extends Basic
             return $this->ControllerLogin($app);
         }
 
+        // get the contact form
         $ContactForm = new ContactForm($app);
         $data = $ContactForm->selectContactRecord(self::$contact_id);
 
-        if (false === ($form = $ContactForm->getFormContact(array('category_type_id' => 2)))) {
+        if (false === ($form = $ContactForm->getFormContact($data))) {
             return $this->promptAlert();
         }
 
@@ -209,7 +264,6 @@ class ContactEdit extends Basic
                 'basic' => $this->getBasicSettings(),
                 'form' => $form->createView()
             ));
-        return __METHOD__;
     }
 
 

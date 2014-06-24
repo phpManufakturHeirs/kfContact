@@ -276,7 +276,7 @@ $app->get('contact/register/activate/admin/{guid}',
 $app->get('contact/register/reject/admin/{guid}',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterRejectAdmin');
 
-// protected area - need ROLE_CONTACT_EDIT_OWN
+// protected area /contact/owner/edit - need ROLE_CONTACT_EDIT_OWN
 $app->get('/contact/owner/login',
     'phpManufaktur\Contact\Control\Command\ContactEdit::ControllerLogin');
 $app->post('/contact/owner/login/check',
@@ -284,6 +284,8 @@ $app->post('/contact/owner/login/check',
 
 $app->get('/contact/owner/edit/id/{contact_id}',
     'phpManufaktur\Contact\Control\Command\ContactEdit::ControllerEdit');
+$app->post('/contact/owner/edit/check',
+    'phpManufaktur\Contact\Control\Command\ContactEdit::ControllerEditCheck');
 
 // permanent link for public contact ID's
 $app->get('/contact/public/view/id/{contact_id}',

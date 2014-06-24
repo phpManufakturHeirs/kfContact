@@ -93,11 +93,13 @@ class Configuration
                                 'address_zip',
                                 'address_city',
                                 'address_country_code',
-                                'note_content',
+                                'note',
                                 'extra_fields'
                             ),
                             'required' => array(
-                                'person_gender'
+                                'person_gender',
+                                'person_last_name',
+                                'company_name'
                             ),
                             'hidden' => array(
                                 'contact_id',
@@ -107,6 +109,10 @@ class Configuration
                                 'person_id',
                                 'company_id',
                                 'address_id'
+                            ),
+                            'readonly' => array(
+                                'contact_status',
+                                'category_name'
                             )
                         )
                     )

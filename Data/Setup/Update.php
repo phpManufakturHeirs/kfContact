@@ -252,19 +252,14 @@ class Update
 
         $config = $this->Configuration->getConfiguration();
         if (!isset($config['command'])) {
-            $config['command'] = array(
-                'register' => array(
-                    'field' => array(
-                        'required' => array(
-                            'person_gender',
-                            'person_last_name',
-                        ),
-                        'unused' => array(
-                            'person_title',
-                        )
-                    )
-                )
-            );
+            $default = $this->Configuration->getDefaultConfigArray();
+            $config['command'] = $default['command'];
+            $this->Configuration->setConfiguration($config);
+            $this->Configuration->saveConfiguration();
+        }
+        if (!isset($config['pattern'])) {
+            $default = $this->Configuration->getDefaultConfigArray();
+            $config['pattern'] = $default['pattern'];
             $this->Configuration->setConfiguration($config);
             $this->Configuration->saveConfiguration();
         }

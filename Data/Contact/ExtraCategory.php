@@ -191,7 +191,7 @@ EOD;
         }
     }
 
-    public function selectTypebyNameAndCategory($extra_name, $category_type_id)
+    public function selectTypeByNameAndCategory($extra_name, $category_type_id)
     {
         try {
             $ExtraType = FRAMEWORK_TABLE_PREFIX.'contact_extra_type';
