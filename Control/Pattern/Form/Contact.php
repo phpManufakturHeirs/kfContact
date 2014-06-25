@@ -19,6 +19,9 @@ use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
 use Carbon\Carbon;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\NumberParseException;
 
 class Contact extends Alert
 {
@@ -277,6 +280,56 @@ class Contact extends Alert
         return $data;
     }
 
+    protected function parsePhoneNumber($number, $country=null, $format=null)
+    {
+        if (self::$config['phonenumber']['parse']['enabled']) {
+            // parse the given phonenumber
+            try {
+                $phoneUtil = PhoneNumberUtil::getInstance();
+                $country = !is_null($country) ? strtoupper($country) : strtoupper(self::$config['phonenumber']['parse']['default_country']);
+                $prototype = $phoneUtil->parse($number, $country);
+                if (self::$config['phonenumber']['parse']['validate']) {
+                    if (!$phoneUtil->isValidNumber($prototype)) {
+                        $this->setAlert('The phone number %number% failed the validation, please check it!',
+                            array('%number%' => $number), self::ALERT_TYPE_WARNING);
+echo 'fail!';
+                        return false;
+                    }
+                }
+                if (self::$config['phonenumber']['parse']['format']) {
+                    $format = !is_null($format) ? strtoupper($format) : strtoupper(self::$config['phonenumber']['parse']['default_format']);
+                    switch ($format) {
+                        case 'INTERNATIONAL':
+                            $format_id = PhoneNumberFormat::INTERNATIONAL;
+                            break;
+                        case 'NATIONAL':
+                            $format_id = PhoneNumberFormat::NATIONAL;
+                            break;
+                        case 'E164':
+                            $format_id = PhoneNumberFormat::E164;
+                            break;
+                        case 'RFC3966':
+                            $format_id = PhoneNumberFormat::RFC3966;
+                            break;
+                        default:
+                            // unknown format
+                            $this->setAlert('Unknown phone number format <strong>%format%</strong>, please check the settings!',
+                                array('%format%' => $format), self::ALERT_TYPE_DANGER);
+                            return false;
+                    }
+                    $number = $phoneUtil->format($prototype, $format_id);
+                }
+                return $number;
+            } catch (NumberParseException $e) {
+                throw new \Exception($e);
+            }
+        }
+        else {
+            // parsing of phonenumbers is disabled, just return the $number
+            return $number;
+        }
+    }
+
     public function checkData($data, $field=array())
     {
         if (!is_array($field) || empty($field)) {
@@ -303,6 +356,7 @@ class Contact extends Alert
 
         if (($data['contact_id'] > 0) ||
             (false !== ($existing_id = $this->app['contact']->existsLogin($data['communication_email'])))) {
+
             $id = ($data['contact_id'] > 0) ? $data['contact_id'] : $existing_id;
             // select the existing record
             $existing_contact = $this->app['contact']->select($id);
@@ -354,8 +408,7 @@ class Contact extends Alert
             $data['address_zip'] = (isset($data['address_zip']) && !empty($data['address_zip']) && ($data['address_zip'] != $existing_contact['address'][0]['address_zip'])) ? $data['address_zip'] : $existing_contact['address'][0]['address_zip'];
             $data['address_area'] = (isset($data['address_area']) && !empty($data['address_area']) && ($data['address_area'] != $existing_contact['address'][0]['address_area'])) ? $data['address_area'] : $existing_contact['address'][0]['address_area'];
             $data['address_state'] = (isset($data['address_state']) && !empty($data['address_state']) && ($data['address_state'] != $existing_contact['address'][0]['address_state'])) ? $data['address_state'] : $existing_contact['address'][0]['address_state'];
-            $data['address_country_code'] = (isset($data['address_country_code']) && !empty($data['address_country_code']) && ($data['address_country_code'] != $existing_contact['address'][0]['address_country_code'])) ?
-            $data['address_country_code'] : $existing_contact['address'][0]['address_country_code'];
+            $data['address_country_code'] = (isset($data['address_country_code']) && !empty($data['address_country_code']) && ($data['address_country_code'] != $existing_contact['address'][0]['address_country_code'])) ? $data['address_country_code'] : $existing_contact['address'][0]['address_country_code'];
 
             if ($data['contact_type'] == 'PERSON') {
                 $data['person_id'] = (($data['person_id'] > 0) && ($data['person_id'] != $existing_contact['person'][0]['person_id'])) ? $data['person_id'] : $existing_contact['person'][0]['person_id'];
@@ -521,6 +574,7 @@ class Contact extends Alert
             )
         );
 
+
         if (!isset($birthday)) {
             if (isset($data['person_birthday']) && !empty($data['person_birthday']) && ($data['person_birthday'] != '0000-00-00')) {
                 $dt = Carbon::createFromFormat($this->app['translator']->trans('DATE_FORMAT'), $data['person_birthday']);
@@ -572,13 +626,18 @@ class Contact extends Alert
             );
         }
 
+        $country_code = (isset($data['address_country_code']) && !empty($data['address_country_code'])) ? $data['address_country_code'] : null;
+
         if (isset($data['communication_phone']) && !empty($data['communication_phone'])) {
+            if (false === ($number = $this->parsePhoneNumber($data['communication_phone'], $country_code))) {
+                $number = $data['communication_phone'];
+            }
             $contact['communication'][] = array(
                 'communication_id' => $data['communication_phone_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'PHONE',
                 'communication_usage' => 'PRIMARY',
-                'communication_value' => $data['communication_phone']
+                'communication_value' => $number
             );
         }
         if (isset($data['communication_phone_secondary']) && !empty($data['communication_phone_secondary'])) {
@@ -587,7 +646,7 @@ class Contact extends Alert
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'PHONE',
                 'communication_usage' => 'SECONDARY',
-                'communication_value' => $data['communication_phone_secondary']
+                'communication_value' => $this->parsePhoneNumber($data['communication_phone_secondary'], $country_code)
             );
         }
 
@@ -596,8 +655,8 @@ class Contact extends Alert
                 'communication_id' => $data['communication_cell_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'CELL',
-                'communication_usage' => 'BUSINESS',
-                'communication_value' => $data['communication_cell']
+                'communication_usage' => 'PRIMARY',
+                'communication_value' => $this->parsePhoneNumber($data['communication_cell'], $country_code)
             );
         }
         if (isset($data['communication_cell_secondary']) && !empty($data['communication_cell_secondary'])) {
@@ -606,7 +665,7 @@ class Contact extends Alert
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'CELL',
                 'communication_usage' => 'SECONDARY',
-                'communication_value' => $data['communication_cell_secondary']
+                'communication_value' => $this->parsePhoneNumber($data['communication_cell_secondary'], $country_code)
             );
         }
 
@@ -615,8 +674,8 @@ class Contact extends Alert
                 'communication_id' => $data['communication_fax_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'FAX',
-                'communication_usage' => 'BUSINESS',
-                'communication_value' => $data['communication_fax']
+                'communication_usage' => 'PRIMARY',
+                'communication_value' => $this->parsePhoneNumber($data['communication_fax'], $country_code)
             );
         }
         if (isset($data['communication_fax_secondary']) && !empty($data['communication_fax_secondary'])) {
@@ -625,7 +684,7 @@ class Contact extends Alert
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'FAX',
                 'communication_usage' => 'SECONDARY',
-                'communication_value' => $data['communication_fax_secondary']
+                'communication_value' => $this->parsePhoneNumber($data['communication_fax_secondary'], $country_code)
             );
         }
 

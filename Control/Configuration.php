@@ -47,6 +47,15 @@ class Configuration
                     'AT'
                 )
             ),
+            'phonenumber' => array(
+                'parse' => array(
+                    'enabled' => true,
+                    'default_country' => 'DE',
+                    'validate' => true,
+                    'format' => true,
+                    'default_format' => 'INTERNATIONAL'
+                )
+            ),
             'command' => array(
                 'register' => array(
                     'field' => array(

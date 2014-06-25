@@ -263,6 +263,12 @@ class Update
             $this->Configuration->setConfiguration($config);
             $this->Configuration->saveConfiguration();
         }
+        if (!isset($config['phonenumber'])) {
+            $default = $this->Configuration->getDefaultConfigArray();
+            $config['phonenumber'] = $default['phonenumber'];
+            $this->Configuration->setConfiguration($config);
+            $this->Configuration->saveConfiguration();
+        }
     }
 
     /**

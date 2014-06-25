@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormFactory;
 use phpManufaktur\Contact\Control\Pattern\Form\Contact as ContactForm;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumberFormat;
 
 class ContactEdit extends Basic
 {
@@ -211,7 +214,7 @@ class ContactEdit extends Basic
                         $data_changed = false;
                         if ($this->app['contact']->update($contact, self::$contact_id, $data_changed, true)) {
                             // clear the alerts from the contact interface
-                            $this->clearAlert();
+//                            $this->clearAlert();
                             if ($data_changed) {
                                 $this->setAlert('The contact record has been successfull updated.',
                                     array(), self::ALERT_TYPE_SUCCESS);
@@ -275,6 +278,19 @@ class ContactEdit extends Basic
         $this->initParameters($app);
         self::$contact_id = $contact_id;
 
+        $phoneUtil = PhoneNumberUtil::getInstance();
+        try {
+            $number = '+49 30 12345678';
+            $numberProto = $phoneUtil->parse($number, 'DE');
+            if ($phoneUtil->isValidNumber($numberProto)) {
+                echo $phoneUtil->format($numberProto, PhoneNumberFormat::NATIONAL);
+            }
+            else {
+                echo "invalid number: $number";
+            }
+        } catch (NumberParseException $e) {
+            echo $e->getMessage();
+        }
 
         // important: check the authentication!
         if (!$this->isAuthenticated()) {
