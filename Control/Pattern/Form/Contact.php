@@ -12,12 +12,13 @@
 namespace phpManufaktur\Contact\Control\Pattern\Form;
 
 use Silex\Application;
-use Symfony\Component\Form\FormFactory;
 use phpManufaktur\Contact\Control\Configuration;
 use phpManufaktur\Basic\Control\Pattern\Alert;
 use phpManufaktur\Contact\Data\Contact\TagType;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
+use phpManufaktur\Contact\Data\Contact\CategoryType;
+use Carbon\Carbon;
 
 class Contact extends Alert
 {
@@ -39,6 +40,14 @@ class Contact extends Alert
         'company_additional_2',
         'company_additional_3'
     );
+    protected static $must_fields = array(
+        'contact_id',
+        'contact_type',
+        'communication_email',
+        'person_id',
+        'company_id',
+        'address_id'
+    );
 
 
     /**
@@ -54,13 +63,13 @@ class Contact extends Alert
     }
 
     /**
-     * Select the contact record for the given contact ID. Prepare and return 
+     * Select the contact record for the given contact ID. Prepare and return
      * data array for usage with the contact form
-     * 
+     *
      * @param integer $contact_id
-     * @return boolean|array
+     * @return mixed <boolean|array>
      */
-    public function selectContactRecord($contact_id)
+    public function getData($contact_id)
     {
         $data = array();
         $contact = $this->app['contact']->select($contact_id);
@@ -259,16 +268,460 @@ class Contact extends Alert
             }
         }
 
+        if (isset($contact['tag']) && is_array($contact['tag'])) {
+            foreach ($contact['tag'] as $tag) {
+                $data['tags'][] = $tag['tag_name'];
+            }
+        }
+
         return $data;
+    }
+
+    public function checkData($data, $field=array())
+    {
+        if (!is_array($field) || empty($field)) {
+            // use the default configuration from config.contact.json
+            $field = self::$config['pattern']['form']['contact']['field'];
+        }
+        // perform some checks for the fields
+        if (isset($field['tags']) && is_array($field['tags'])) {
+            $tags = array();
+            foreach ($field['tags'] as $tag) {
+                $tags[] = strtoupper($tag);
+            }
+            $field['tags'] = $tags;
+        }
+
+        foreach (self::$must_fields as $must_field) {
+            // check the must have fields of the data record
+            if (!array_key_exists($must_field, $data)) {
+                $this->setAlert('Missing the field <strong>%field%</strong> in data record!',
+                    array('%field%' => $must_field), self::ALERT_TYPE_DANGER);
+                return false;
+            }
+        }
+
+        if (($data['contact_id'] > 0) ||
+            (false !== ($existing_id = $this->app['contact']->existsLogin($data['communication_email'])))) {
+            $id = ($data['contact_id'] > 0) ? $data['contact_id'] : $existing_id;
+            // select the existing record
+            $existing_contact = $this->app['contact']->select($id);
+
+            if ($existing_contact['contact']['contact_id'] != $id) {
+                // the query return an empty contact record - this mean that the record is deleted or locked for any reason
+                $this->setAlert('Sorry, but we have a problem. Please contact the webmaster and tell him to check the status of the email address %email%.',
+                    array('%email%' => $data['communication_email']), self::ALERT_TYPE_DANGER);
+                return false;
+            }
+
+            if (($existing_contact['contact']['contact_status'] !== 'ACTIVE') &&
+                ((!in_array('contact_status', $field['visible']) ||
+                 (in_array('contact_status', $field['visible']) && in_array('contact_status', $field['readonly']))))) {
+                // the existing contact is not ACTIVE and the status of the submitted record can not be changed!
+                $this->setAlert('There exists already a contact record for you, but the status of this record is <strong>%status%</strong>. '.
+                    'Please contact the webmaster to activate the existing record.',
+                    array('%status%' => $this->app['translator']->trans($this->app['utils']->humanize($existing_contact['contact']['contact_status']))),
+                    self::ALERT_TYPE_WARNING);
+                return false;
+            }
+
+            if ($existing_contact['contact']['contact_type'] !== $data['contact_type']) {
+                // problem: the contact type differ!
+                $this->setAlert('There exists already a contact record for you, but this record is assigned to a <strong>%type%</strong> and can not be changed. Please use the same type or contact the webmaster.',
+                    array('%type%' => $this->app['translator']->trans($this->app['utils']->humanize($existing_contact['contact']['contact_type']))),
+                    self::ALERT_TYPE_WARNING);
+                return false;
+            }
+
+            // compare the existing data with the submitted data
+            $data['contact_id'] = $existing_contact['contact']['contact_id'];
+            $data['contact_status'] = $existing_contact['contact']['contact_status'];
+            $data['contact_login'] = (isset($data['contact_login']) && !empty($data['contact_login']) && ($data['contact_login'] != $existing_contact['contact']['contact_login'])) ? $data['contact_login'] : $existing_contact['contact']['contact_login'];
+            $data['contact_name'] = (isset($data['contact_name']) && !empty($data['contact_name']) && ($data['contact_name'] != $existing_contact['contact']['contact_name'])) ? $data['contact_name'] : $existing_contact['contact']['contact_name'];
+            if (isset($data['contact_since']) && !empty($data['contact_since']) && ($data['contact_since'] != '0000-00-00')) {
+                $dt = Carbon::createFromFormat($this->app['translator']->trans('DATE_FORMAT'), $data['contact_since']);
+                $contact_since = $dt->toDateTimeString();
+            }
+            else {
+                $contact_since = '0000-00-00';
+            }
+            $data['contact_since'] = (($contact_since != '0000-00-00') && ($contact_since != $existing_contact['contact']['contact_since'])) ? $contact_since : $existing_contact['contact']['contact_since'];
+
+            // address data
+            $data['address_id'] = $existing_contact['address'][0]['address_id'];
+            $data['address_street'] = (isset($data['address_street']) && !empty($data['address_street']) && ($data['address_street'] != $existing_contact['address'][0]['address_street'])) ? $data['address_street'] : $existing_contact['address'][0]['address_street'];
+            $data['address_city'] = (isset($data['address_city']) && !empty($data['address_city']) && ($data['address_city'] != $existing_contact['address'][0]['address_city'])) ? $data['address_city'] : $existing_contact['address'][0]['address_city'];
+            $data['address_zip'] = (isset($data['address_zip']) && !empty($data['address_zip']) && ($data['address_zip'] != $existing_contact['address'][0]['address_zip'])) ? $data['address_zip'] : $existing_contact['address'][0]['address_zip'];
+            $data['address_area'] = (isset($data['address_area']) && !empty($data['address_area']) && ($data['address_area'] != $existing_contact['address'][0]['address_area'])) ? $data['address_area'] : $existing_contact['address'][0]['address_area'];
+            $data['address_state'] = (isset($data['address_state']) && !empty($data['address_state']) && ($data['address_state'] != $existing_contact['address'][0]['address_state'])) ? $data['address_state'] : $existing_contact['address'][0]['address_state'];
+            $data['address_country_code'] = (isset($data['address_country_code']) && !empty($data['address_country_code']) && ($data['address_country_code'] != $existing_contact['address'][0]['address_country_code'])) ?
+            $data['address_country_code'] : $existing_contact['address'][0]['address_country_code'];
+
+            if ($data['contact_type'] == 'PERSON') {
+                $data['person_id'] = (($data['person_id'] > 0) && ($data['person_id'] != $existing_contact['person'][0]['person_id'])) ? $data['person_id'] : $existing_contact['person'][0]['person_id'];
+                $data['person_gender'] = (isset($data['person_gender']) && !empty($data['person_gender']) && ($data['person_gender'] != $existing_contact['person'][0]['person_gender'])) ? $data['person_gender'] : $existing_contact['person'][0]['person_gender'];
+                $data['person_title'] = (isset($data['person_title']) && !empty($data['person_title']) && ($data['person_title'] != $existing_contact['person'][0]['person_title'])) ? $data['person_title'] : $existing_contact['person'][0]['person_title'];
+                $data['person_first_name'] = (isset($data['person_first_name']) && !empty($data['person_first_name']) && ($data['person_first_name'] != $existing_contact['person'][0]['person_first_name'])) ? $data['person_first_name'] : $existing_contact['person'][0]['person_first_name'];
+                $data['person_last_name'] = (isset($data['person_last_name']) && !empty($data['person_last_name']) && ($data['person_last_name'] != $existing_contact['person'][0]['person_last_name'])) ? $data['person_last_name'] : $existing_contact['person'][0]['person_last_name'];
+                $data['person_nick_name'] = (isset($data['person_nick_name']) && !empty($data['person_nick_name']) && ($data['person_nick_name'] != $existing_contact['person'][0]['person_nick_name'])) ? $data['person_nick_name'] : $existing_contact['person'][0]['person_nick_name'];
+                if (isset($data['person_birthday']) && !empty($data['person_birthday']) && ($data['person_birthday'] != '0000-00-00')) {
+                    $dt = Carbon::createFromFormat($this->app['translator']->trans('DATE_FORMAT'), $data['person_birthday']);
+                    $birthday = $dt->toDateTimeString();
+                }
+                else {
+                    $birthday = $existing_contact['person'][0]['person_birthday'];
+                }
+                $data['person_birthday'] = (($birthday != '0000-00-00') && ($birthday != $existing_contact['person'][0]['person_birthday'])) ?
+                $birthday : $existing_contact['person'][0]['person_birthday'];
+            }
+            else {
+                // COMPANY
+                $data['company_id'] = (($data['company_id'] > 0) && ($data['company_id'] != $existing_contact['company'][0]['company_id'])) ? $data['company_id'] : $existing_contact['company'][0]['company_id'];
+                $data['company_name'] = (isset($data['company_name']) && !empty($data['company_name']) && ($data['company_name'] != $existing_contact['company'][0]['company_name'])) ? $data['company_name'] : $existing_contact['company'][0]['company_name'];
+                $data['company_department'] = (isset($data['company_department']) && !empty($data['company_department']) && ($data['company_department'] != $existing_contact['company'][0]['company_department'])) ? $data['company_department'] : $existing_contact['company'][0]['company_department'];
+            }
+
+            if (isset($existing_contact['communication']) && is_array($existing_contact['communication'])) {
+                foreach ($existing_contact['communication'] as $communication) {
+                    switch ($communication['communication_type']) {
+                        case 'EMAIL':
+                            if ($communication['communication_usage'] == 'PRIMARY') {
+                                $data['communication_email_id'] = $communication['communication_id'];
+                                $data['communication_email'] = (isset($data['communication_email']) && !empty($data['communication_email']) && ($data['communication_email'] != $communication['communication_value'])) ? $data['communication_email'] : $communication['communication_value'];
+                            }
+                            elseif (!isset($data['communication_email_secondary'])) {
+                                $data['communication_email_secondary_id'] = $communication['communication_id'];
+                                $data['communication_email_secondary'] = (isset($data['communication_email_secondary']) && !empty($data['communication_email_secondary']) && ($data['communication_email_secondary'] != $communication['communication_value'])) ? $data['communication_email_secondary'] : $communication['communication_value'];
+                            }
+                            break;
+                        case 'PHONE':
+                            if ($communication['communication_usage'] == 'PRIMARY') {
+                                $data['communication_phone_id'] = $communication['communication_id'];
+                                $data['communication_phone'] = (isset($data['communication_phone']) && !empty($data['communication_phone']) && ($data['communication_phone'] != $communication['communication_value'])) ? $data['communication_phone'] : $communication['communication_value'];
+                            }
+                            elseif (!isset($data['communication_phone_secondary'])) {
+                                $data['communication_phone_secondary_id'] = $communication['communication_id'];
+                                $data['communication_phone_secondary'] = (isset($data['communication_phone_secondary']) && !empty($data['communication_phone_secondary']) && ($data['communication_phone_secondary'] != $communication['communication_value'])) ? $data['communication_phone_secondary'] : $communication['communication_value'];
+                            }
+                            break;
+                        case 'CELL':
+                            if ($communication['communication_usage'] == 'PRIMARY') {
+                                $data['communication_cell_id'] = $communication['communication_id'];
+                                $data['communication_cell'] = (isset($data['communication_cell']) && !empty($data['communication_cell']) && ($data['communication_cell'] != $communication['communication_value'])) ? $data['communication_cell'] : $communication['communication_value'];
+                            }
+                            elseif (!isset($data['communication_cell_secondary'])) {
+                                $data['communication_cell_secondary_id'] = $communication['communication_id'];
+                                $data['communication_cell_secondary'] = (isset($data['communication_cell_secondary']) && !empty($data['communication_cell_secondary']) && ($data['communication_cell_secondary'] != $communication['communication_value'])) ? $data['communication_cell_secondary'] : $communication['communication_value'];
+                            }
+                            break;
+                        case 'FAX':
+                            if ($communication['communication_usage'] == 'PRIMARY') {
+                                $data['communication_fax_id'] = $communication['communication_id'];
+                                $data['communication_fax'] = (isset($data['communication_fax']) && !empty($data['communication_fax']) && ($data['communication_fax'] != $communication['communication_value'])) ? $data['communication_fax'] : $communication['communication_value'];
+                            }
+                            elseif (!isset($data['communication_fax_secondary'])) {
+                                $data['communication_fax_secondary_id'] = $communication['communication_id'];
+                                $data['communication_fax_secondary'] = (isset($data['communication_fax_secondary']) && !empty($data['communication_fax_secondary']) && ($data['communication_fax_secondary'] != $communication['communication_value'])) ? $data['communication_fax_secondary'] : $communication['communication_value'];
+                            }
+                            break;
+                        case 'URL':
+                            if ($communication['communication_usage'] == 'PRIMARY') {
+                                $data['communication_url_id'] = $communication['communication_id'];
+                                $data['communication_url'] = (isset($data['communication_url']) && !empty($data['communication_url']) && ($data['communication_url'] != $communication['communication_value'])) ? $data['communication_url'] : $communication['communication_value'];
+                            }
+                            elseif (!isset($data['communication_url_secondary'])) {
+                                $data['communication_url_secondary_id'] = $communication['communication_id'];
+                                $data['communication_url_secondary'] = (isset($data['communication_url_secondary']) && !empty($data['communication_url_secondary']) && ($data['communication_url_secondary'] != $communication['communication_value'])) ? $data['communication_url_secondary'] : $communication['communication_value'];
+                            }
+                            break;
+                        default:
+                            // nothing to do here ...
+                            break;
+                    }
+                }
+            }
+
+            $data['note_id'] = isset($existing_contact['note'][0]['note_id']) ? $existing_contact['note'][0]['note_id'] : -1;
+            if ($data['note_id'] > 0) {
+                $data['note'] = (isset($data['note']) && !empty($data['note']) && ($data['note'] != $existing_contact['note'][0]['note_content'])) ? $data['note'] : $existing_contact['note'][0]['note_content'];
+            }
+
+            $data['category_id'] = (($data['category_id'] > 0) && ($data['category_id'] != $existing_contact['category'][0]['category_id'])) ? $data['category_id'] : $existing_contact['category'][0]['category_id'];
+            $data['category_type_id'] = ($data['category_type_id'] != $existing_contact['category'][0]['category_type_id']) ? $data['category_type_id'] : $existing_contact['category'][0]['category_type_id'];
+
+            if (isset($existing_contact['extra_fields']) && is_array($existing_contact['extra_fields'])) {
+                foreach ($existing_contact['extra_fields'] as $extra_field) {
+                    $name = 'extra_'.strtolower($extra_field['extra_type_name']);
+                    $id = 'extra_'.strtolower($extra_field['extra_type_name']).'_id';
+                    if ($extra_field['extra_type_type'] == 'DATE') {
+                        if (isset($data[$name]) && !empty($data[$name]) && ($data[$name] != '0000-00-00')) {
+                            $dt = Carbon::createFromFormat($this->app['translator']->trans('DATE_FORMAT'), $data[$name]);
+                            $date = $dt->toDateTimeString();
+                        }
+                        else {
+                            $date = $existing_contact['person'][0]['person_birthday'];
+                        }
+                        $data[$name] = (($date != '0000-00-00') && ($date != $extra_field['extra_value'])) ? $date : $extra_field['extra_value'];
+                    }
+                    else {
+                        $data[$name] = (isset($data[$name]) && !empty($data[$name]) && ($data[$name] != $extra_field['extra_value'])) ? $data[$name] : $extra_field['extra_value'];
+                    }
+                    $data[$id] = $extra_field['extra_id'];
+                }
+            }
+
+
+            // important: on update grant that existing tags will be not removed in case $field['tags'] is used !!!
+            if (isset($data['tags']) && is_array($data['tags']) &&
+                isset($existing_contact['tag']) && is_array($existing_contact['tag']) &&
+                isset($field['tags']) && is_array($field['tags']) && !empty($field['tags'])) {
+                foreach ($existing_contact['tag'] as $tag_field) {
+                    if (!in_array($tag_field['tag_name'], $field['tags']) &&
+                        !in_array($tag_field['tag_name'], $data['tags'])) {
+                            $data['tags'][] = $tag_field['tag_name'];
+                        }
+                }
+            }
+
+        }
+
+        /**
+         Create the contact record for INSERT or UPDATE
+         */
+
+        if (!isset($contact_since) && isset($data['contact_since']) && !empty($data['contact_since']) && ($data['contact_since'] != '0000-00-00')) {
+            $dt = Carbon::createFromFormat($this->app['translator']->trans('DATE_FORMAT'), $data['contact_since']);
+            $contact_since = $dt->toDateTimeString();
+        }
+        else {
+            $contact_since = '0000-00-00';
+        }
+
+        $contact = array(
+            'contact' => array(
+                'contact_id' => $data['contact_id'],
+                'contact_type' => $data['contact_type'],
+                'contact_status' => isset($data['contact_status']) ? $data['contact_status'] : 'ACTIVE',
+                'contact_login' => isset($data['contact_login']) ? $data['contact_login'] : $data['communication_email'],
+                'contact_since' => $contact_since,
+                'contact_name' => isset($data['contact_name']) ? $data['contact_name'] : $data['communication_email']
+            ),
+            'address' => array(
+                array(
+                    'address_id' => $data['address_id'],
+                    'contact_id' => $data['contact_id'],
+                    'address_type' => ($data['contact_type'] == 'PERSON') ? 'PRIVATE' : 'BUSINESS',
+                    'address_street' => isset($data['address_street']) ? $data['address_street'] : '',
+                    'address_zip' => isset($data['address_zip']) ? $data['address_zip'] : '',
+                    'address_city' => isset($data['address_city']) ? $data['address_city'] : '',
+                    'address_area' => isset($data['address_area']) ? $data['address_area'] : '',
+                    'address_state' => isset($data['address_state']) ? $data['address_state'] : '',
+                    'address_country_code' => isset($data['address_country_code']) ? $data['address_country_code'] : ''
+                )
+            )
+        );
+
+        if (!isset($birthday)) {
+            if (isset($data['person_birthday']) && !empty($data['person_birthday']) && ($data['person_birthday'] != '0000-00-00')) {
+                $dt = Carbon::createFromFormat($this->app['translator']->trans('DATE_FORMAT'), $data['person_birthday']);
+                $birthday = $dt->toDateTimeString();
+            }
+            else {
+                $birthday = '0000-00-00';
+            }
+        }
+        if ($data['contact_type'] == 'PERSON') {
+            $contact['person'] = array(
+                array(
+                    'person_id' => $data['person_id'],
+                    'contact_id' => $data['contact_id'],
+                    'person_gender' => isset($data['person_gender']) ? $data['person_gender'] : 'MALE',
+                    'person_title' => isset($data['person_title']) ? $data['person_title'] : 'NO_TITLE',
+                    'person_first_name' => isset($data['person_first_name']) ? $data['person_first_name'] : '',
+                    'person_last_name' => isset($data['person_last_name']) ? $data['person_last_name'] : '',
+                    'person_nick_name' => isset($data['person_nick_name']) ? $data['person_nick_name'] : '',
+                    'person_birthday' => $birthday
+                )
+            );
+        }
+        else {
+            $contact['company'] = array(
+                array(
+                    'company_id' => $data['company_id'],
+                    'contact_id' => $data['contact_id'],
+                    'company_name' => isset($data['company_name']) ? $data['company_name'] : '',
+                    'company_department' => isset($data['company_department']) ? $data['company_department'] : ''
+                )
+            );
+        }
+
+        $contact['communication'][] = array(
+            'communication_id' => $data['communication_email_id'],
+            'contact_id' => $data['contact_id'],
+            'communication_type' => 'EMAIL',
+            'communication_usage' => 'PRIMARY',
+            'communication_value' => $data['communication_email']
+        );
+        if (isset($data['communication_email_secondary']) && !empty($data['communication_email_secondary'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_email_secondary_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'EMAIL',
+                'communication_usage' => 'SECONDARY',
+                'communication_value' => $data['communication_email_secondary']
+            );
+        }
+
+        if (isset($data['communication_phone']) && !empty($data['communication_phone'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_phone_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'PHONE',
+                'communication_usage' => 'PRIMARY',
+                'communication_value' => $data['communication_phone']
+            );
+        }
+        if (isset($data['communication_phone_secondary']) && !empty($data['communication_phone_secondary'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_phone_secondary_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'PHONE',
+                'communication_usage' => 'SECONDARY',
+                'communication_value' => $data['communication_phone_secondary']
+            );
+        }
+
+        if (isset($data['communication_cell']) && !empty($data['communication_cell'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_cell_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'CELL',
+                'communication_usage' => 'BUSINESS',
+                'communication_value' => $data['communication_cell']
+            );
+        }
+        if (isset($data['communication_cell_secondary']) && !empty($data['communication_cell_secondary'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_cell_secondary_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'CELL',
+                'communication_usage' => 'SECONDARY',
+                'communication_value' => $data['communication_cell_secondary']
+            );
+        }
+
+        if (isset($data['communication_fax']) && !empty($data['communication_fax'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_fax_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'FAX',
+                'communication_usage' => 'BUSINESS',
+                'communication_value' => $data['communication_fax']
+            );
+        }
+        if (isset($data['communication_fax_secondary']) && !empty($data['communication_fax_secondary'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_fax_secondary_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'FAX',
+                'communication_usage' => 'SECONDARY',
+                'communication_value' => $data['communication_fax_secondary']
+            );
+        }
+
+        if (isset($data['communication_url']) && !empty($data['communication_url'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_url_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'URL',
+                'communication_usage' => 'PRIMARY',
+                'communication_value' => $data['communication_url']
+            );
+        }
+        if (isset($data['communication_url_secondary']) && !empty($data['communication_url_secondary'])) {
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_url_secondary_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'URL',
+                'communication_usage' => 'SECONDARY',
+                'communication_value' => $data['communication_url_secondary']
+            );
+        }
+
+        $contact['note'] = array(
+            array(
+                'note_id' => isset($data['note_id']) ? $data['note_id'] : -1,
+                'contact_id' => $data['contact_id'],
+                'note_title' => 'Remark',
+                'note_type' => 'TEXT',
+                'note_content' => isset($data['note']) ? $data['note'] : ''
+            )
+        );
+
+        $CategoryType = new CategoryType($this->app);
+        $category_type = $CategoryType->select($data['category_type_id']);
+
+        $contact['category'] = array(
+            array(
+                'category_id' => $data['category_id'],
+                'contact_id' => $data['contact_id'],
+                'category_type_id' => $data['category_type_id'],
+                'category_type_name' => $category_type['category_type_name']
+            )
+        );
+
+        // EXTRA FIELDS
+        $ExtraCategory = new ExtraCategory($this->app);
+        $type_ids = $ExtraCategory->selectTypeIDByCategoryTypeID($data['category_type_id']);
+        $ExtraType = new ExtraType($this->app);
+
+        $contact['extra_fields'] = array();
+        foreach ($type_ids as $type_id) {
+            // get the extra field specification
+            if (false !== ($extra = $ExtraType->select($type_id))) {
+                $name = 'extra_'.strtolower($extra['extra_type_name']);
+                $id = 'extra_'.strtolower($extra['extra_type_name']).'_id';
+                if (isset($data[$name])) {
+                    $contact['extra_fields'][] = array(
+                        'extra_id' => isset($data[$id]) ? $data[$id] : -1,
+                        'extra_type_id' => $extra['extra_type_id'],
+                        'extra_type_name' => $extra['extra_type_name'],
+                        'category_id' => $data['category_id'],
+                        'category_type_name' => $category_type['category_type_name'],
+                        'contact_id' => $data['contact_id'],
+                        'extra_type_type' => $extra['extra_type_type'],
+                        'extra_value' => $data[$name]
+                    );
+                }
+            }
+        }
+
+        if (isset($data['tags']) && is_array($data['tags'])) {
+            foreach ($data['tags'] as $tag) {
+                $contact['tag'][] = array(
+                    'tag_name' => $tag,
+                    'contact_id' => $data['contact_id']
+                );
+            }
+        }
+
+        return $contact;
+
+        echo "<pre>";
+        print_r($existing_contact);
+        print_r($contact);
+        echo "</pre>";
+        $this->setAlert('test');
+        return false;
     }
 
     /**
      * Get the Contact form, depending on the settings in the field array.
      *
      * @see /Contact/config.contact.json - [pattern][form][contact][field]
-     * @param unknown $data
-     * @param unknown $field
-     * @return boolean
+     * @param array $data - prepared contact record
+     * @param array $field
+     * @return mixed <boolean|FormFactory>
      */
     public function getFormContact($data=array(), $field=array())
     {
@@ -300,6 +753,7 @@ class Contact extends Alert
         $TagType = new TagType($this->app);
         $ExtraType = new ExtraType($this->app);
         $ExtraCategory = new ExtraCategory($this->app);
+        $CategoryType = new CategoryType($this->app);
 
         reset($field);
 
@@ -332,8 +786,25 @@ class Contact extends Alert
                     ));
                     break;
                 case 'category_name':
+                    if (isset($field['categories']) && is_array($field['categories']) && !empty($field['categories'])) {
+                        $categories = array();
+                        foreach ($field['categories'] as $category) {
+                            if ((false !== ($id = filter_var($category, FILTER_VALIDATE_INT))) &&
+                                (false !== ($type = $CategoryType->select($id))) &&
+                                !array_key_exists($category['category_type_name'], $categories)) {
+                                $categories[$type['category_type_name']] = $this->app['utils']->humanize($type['category_type_name']);
+                            }
+                            elseif ((false !== ($type = $CategoryType->selectByName(trim($category)))) &&
+                                    !array_key_exists($type['category_type_name'], $categories)) {
+                                $categories[$type['category_type_name']] = $this->app['utils']->humanize($type['category_type_name']);
+                            }
+                        }
+                    }
+                    else {
+                        $categories = $this->app['contact']->getCategoryArrayForTwig();
+                    }
                     $form->add($visible, 'choice', array(
-                        'choices' => $this->app['contact']->getCategoryArrayForTwig(),
+                        'choices' => $categories,
                         'empty_value' => '- please select -',
                         'required' => in_array($visible, $field['required']),
                         'read_only' => in_array($visible, $field['readonly']),
@@ -349,9 +820,9 @@ class Contact extends Alert
                     break;
                 case 'tags':
                     // contact tags
-                    if (isset($field['predefined']['tags']) && is_array($field['predefined']['tags'])) {
+                    if (isset($field['tags']) && is_array($field['tags']) && !empty($field['tags'])) {
                         $tags = array();
-                        foreach ($field['predefined']['tags'] as $tag) {
+                        foreach ($field['tags'] as $tag) {
                             if ((false !== ($id = filter_var($tag, FILTER_VALIDATE_INT))) &&
                                 (false !== ($type = $TagType->select($id))) &&
                                 !array_key_exists($type['tag_type_id'], $tags)) {
@@ -402,10 +873,11 @@ class Contact extends Alert
                     if ($data['contact_type'] == 'COMPANY') {
                         break;
                     }
+                    $birthday = (isset($data[$visible]) && ($data[$visible] != '0000-00-00')) ? date($this->app['translator']->trans('DATE_FORMAT'), strtotime($data[$visible])) : '';
                     $form->add($visible, 'text', array(
                         'required' => in_array($visible, $field['required']),
                         'read_only' => in_array($visible, $field['readonly']),
-                        'data' => (isset($data[$visible]) && ($data[$visible] != '0000-00-00')) ? date($this->app['translator']->trans('DATE_FORMAT'), strtotime($data[$visible])) : '',
+                        'data' => $birthday,
                         'attr' => array('class' => 'datepicker')
                     ));
                     break;

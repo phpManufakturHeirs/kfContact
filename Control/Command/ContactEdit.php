@@ -193,7 +193,7 @@ class ContactEdit extends Basic
 
         // get the contact form
         $ContactForm = new ContactForm($app);
-        $data = $ContactForm->selectContactRecord(self::$contact_id);
+        $data = $ContactForm->getData(self::$contact_id);
         if (false === ($form = $ContactForm->getFormContact($data))) {
             return $this->promptAlert();
         }
@@ -203,7 +203,39 @@ class ContactEdit extends Basic
             $form->bind($this->app['request']);
             if ($form->isValid()) {
                 $data = $form->getData();
-                return 'process data';
+                if (false !== ($contact = $ContactForm->checkData($data))) {
+                    // successfull submission, insert or update the contact
+                    self::$contact_id = $contact['contact']['contact_id'];
+                    if (self::$contact_id > 0) {
+                        // update an existing contact record
+                        $data_changed = false;
+                        if ($this->app['contact']->update($contact, self::$contact_id, $data_changed, true)) {
+                            // clear the alerts from the contact interface
+                            $this->clearAlert();
+                            if ($data_changed) {
+                                $this->setAlert('The contact record has been successfull updated.',
+                                    array(), self::ALERT_TYPE_SUCCESS);
+                            }
+                            else {
+                                // contact record has not changed
+                                $this->setAlert('The contact record has not been changed and not updated.',
+                                    array(), self::ALERT_TYPE_SUCCESS);
+                            }
+                        }
+                    }
+                    else {
+                        // insert a new contact record
+                        if ($this->app['contact']->insert($contact, self::$contact_id)) {
+                            // clear the alerts from the contact interface
+                            $this->clearAlert();
+                            $this->setAlert('The contact record has been successfull inserted.',
+                                array(), self::ALERT_TYPE_SUCCESS);
+                        }
+                    }
+                    // retrieve the current data
+                    $data = $ContactForm->getData(self::$contact_id);
+                }
+
             }
             else {
                 // general error (timeout, CSFR ...)
@@ -251,7 +283,7 @@ class ContactEdit extends Basic
 
         // get the contact form
         $ContactForm = new ContactForm($app);
-        $data = $ContactForm->selectContactRecord(self::$contact_id);
+        $data = $ContactForm->getData(self::$contact_id);
 
         if (false === ($form = $ContactForm->getFormContact($data))) {
             return $this->promptAlert();

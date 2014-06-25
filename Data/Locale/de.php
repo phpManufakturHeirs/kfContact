@@ -25,6 +25,8 @@ return array(
         => '- kein Kontakt ausgewählt -',
     'active'
         => 'Aktiv',
+    'Active'
+        => 'Aktiv',
     'Add a new category'
         => 'Eine neue Kategorie erstellen',
     'Add a new contact'

@@ -77,8 +77,7 @@ class Configuration
                         'field' => array(
                             'predefined' => array(
                                 'contact_type',
-                                'category_id',
-                                'tags'
+                                'category_id'
                             ),
                             'visible' => array(
                                 'tags',
@@ -113,6 +112,8 @@ class Configuration
                             'readonly' => array(
                                 'contact_status',
                                 'category_name'
+                            ),
+                            'tags' => array(
                             )
                         )
                     )

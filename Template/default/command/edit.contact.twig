@@ -21,6 +21,10 @@
 {% endblock jquery %}
 {% block content %}
   <!-- {{ _self.getTemplateName() }} -->
+  
+  {% include '@phpManufaktur/Contact/Template/default/command/user.status.twig' 
+     with {redirect:'/contact/public/view/id/' ~ form.contact_id.vars.value|url_encode()} %}
+  
   {# need the parent to enable prompting messages #}
   <h2>{{ 'Contact record'|trans }}</h2>
   
