@@ -406,7 +406,6 @@ class Contact extends ContactParent
         }
 
         $check = true;
-        $this->clearAlert();
 
         foreach ($options as $key => $value) {
             if (is_array($value)) {
@@ -592,8 +591,6 @@ class Contact extends ContactParent
         try {
             // BEGIN TRANSACTION
             $this->app['db']->beginTransaction();
-
-            $this->clearAlert();
 
             // get the contact blocks with the options
             $contact_blocks = $this->getContactBlocks();
@@ -825,8 +822,6 @@ class Contact extends ContactParent
         try {
             // start transaction
             $this->app['db']->beginTransaction();
-
-            $this->clearAlert();
 
             $data_changed = false;
 
