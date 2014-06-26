@@ -212,28 +212,11 @@ class ContactEdit extends Basic
                     if (self::$contact_id > 0) {
                         // update an existing contact record
                         $data_changed = false;
-                        if ($this->app['contact']->update($contact, self::$contact_id, $data_changed, true)) {
-                            // clear the alerts from the contact interface
-//                            $this->clearAlert();
-                            if ($data_changed) {
-                                $this->setAlert('The contact record has been successfull updated.',
-                                    array(), self::ALERT_TYPE_SUCCESS);
-                            }
-                            else {
-                                // contact record has not changed
-                                $this->setAlert('The contact record has not been changed and not updated.',
-                                    array(), self::ALERT_TYPE_SUCCESS);
-                            }
-                        }
+                        $this->app['contact']->update($contact, self::$contact_id, $data_changed, true);
                     }
                     else {
                         // insert a new contact record
-                        if ($this->app['contact']->insert($contact, self::$contact_id)) {
-                            // clear the alerts from the contact interface
-                            $this->clearAlert();
-                            $this->setAlert('The contact record has been successfull inserted.',
-                                array(), self::ALERT_TYPE_SUCCESS);
-                        }
+                        $this->app['contact']->insert($contact, self::$contact_id);
                     }
                     // retrieve the current data
                     $data = $ContactForm->getData(self::$contact_id);

@@ -133,6 +133,8 @@ return array(
         => 'Telefon',
     'communication_phone'
         => 'Telefon',
+    'Communication url'
+        => 'URL',
     'Company'
         => 'Firma',
     'COMPANY'
@@ -476,6 +478,8 @@ return array(
         => "Der Login <b>%login%</b> wird bereits verwendet, bitte legen Sie einen anderen Login fest!",
     "The login_name or a email address must be always set, can't insert the record!"
         => 'Das Feld <i>Anmeldename</i> oder eine <i>E-Mail Adresse</i> müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
+    'The phone number %number% failed the validation, please check it!'
+        => 'Die Telefonnummer %number% ist wahrscheinlich fehlerhaft, bitte überprüfen!',
     "The process has not returned a status message"
         => 'Der Prozess hat keinen Status für den Vorgang gemeldet',
     'The record with the ID %id% was successfull inserted.'
@@ -520,6 +524,8 @@ return array(
 
     'Unchecked'
         => '- ungeprüft -',
+    'Unknown phone number format <strong>%format%</strong>, please check the settings!'
+        => 'Unbekannte Telefonnummer Formatierung <strong>%format%</strong>, bitte prüfen Sie die Einstellungen!',
 
     'You are authenticated but not allowed to edit this contact'
         => 'Sie sind angemeldet, verfügen jedoch nicht über die Berechtigung diesen Kontaktdatensatz zu bearbeiten!',

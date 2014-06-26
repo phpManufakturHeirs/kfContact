@@ -280,6 +280,16 @@ class Contact extends Alert
         return $data;
     }
 
+    /**
+     * Parse a phone number using the library libphonenumber and the settings in
+     * config.contact.json as default
+     *
+     * @param string $number
+     * @param string $country code
+     * @param string $format possible are INTERNATIONAL, NATIONAL, E164 or RFC3966
+     * @throws \Exception
+     * @return boolean|array
+     */
     protected function parsePhoneNumber($number, $country=null, $format=null)
     {
         if (self::$config['phonenumber']['parse']['enabled']) {
@@ -292,7 +302,6 @@ class Contact extends Alert
                     if (!$phoneUtil->isValidNumber($prototype)) {
                         $this->setAlert('The phone number %number% failed the validation, please check it!',
                             array('%number%' => $number), self::ALERT_TYPE_WARNING);
-echo 'fail!';
                         return false;
                     }
                 }
@@ -330,6 +339,14 @@ echo 'fail!';
         }
     }
 
+    /**
+     * Check the contact form data record and return a regular contact record
+     * for insert or update a contact
+     *
+     * @param array $data
+     * @param array $field settings for the form
+     * @return boolean|array
+     */
     public function checkData($data, $field=array())
     {
         if (!is_array($field) || empty($field)) {
@@ -641,50 +658,65 @@ echo 'fail!';
             );
         }
         if (isset($data['communication_phone_secondary']) && !empty($data['communication_phone_secondary'])) {
+            if (false === ($number = $this->parsePhoneNumber($data['communication_phone_secondary'], $country_code))) {
+                $number = $data['communication_phone_secondary'];
+            }
             $contact['communication'][] = array(
                 'communication_id' => $data['communication_phone_secondary_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'PHONE',
                 'communication_usage' => 'SECONDARY',
-                'communication_value' => $this->parsePhoneNumber($data['communication_phone_secondary'], $country_code)
+                'communication_value' => $number
             );
         }
 
         if (isset($data['communication_cell']) && !empty($data['communication_cell'])) {
+            if (false === ($number = $this->parsePhoneNumber($data['communication_cell'], $country_code))) {
+                $number = $data['communication_cell'];
+            }
             $contact['communication'][] = array(
                 'communication_id' => $data['communication_cell_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'CELL',
                 'communication_usage' => 'PRIMARY',
-                'communication_value' => $this->parsePhoneNumber($data['communication_cell'], $country_code)
+                'communication_value' => $number
             );
         }
         if (isset($data['communication_cell_secondary']) && !empty($data['communication_cell_secondary'])) {
+            if (false === ($number = $this->parsePhoneNumber($data['communication_cell_secondary'], $country_code))) {
+                $number = $data['communication_cell_secondary'];
+            }
             $contact['communication'][] = array(
                 'communication_id' => $data['communication_cell_secondary_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'CELL',
                 'communication_usage' => 'SECONDARY',
-                'communication_value' => $this->parsePhoneNumber($data['communication_cell_secondary'], $country_code)
+                'communication_value' => $number
             );
         }
 
         if (isset($data['communication_fax']) && !empty($data['communication_fax'])) {
+            if (false === ($number = $this->parsePhoneNumber($data['communication_fax'], $country_code))) {
+                $number = $data['communication_fax'];
+            }
             $contact['communication'][] = array(
                 'communication_id' => $data['communication_fax_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'FAX',
                 'communication_usage' => 'PRIMARY',
-                'communication_value' => $this->parsePhoneNumber($data['communication_fax'], $country_code)
+                'communication_value' => $number
             );
         }
         if (isset($data['communication_fax_secondary']) && !empty($data['communication_fax_secondary'])) {
+            if (false === ($number = $this->parsePhoneNumber($data['communication_fax_secondary'], $country_code))) {
+                $number = $data['communication_fax_secondary'];
+            }
             $contact['communication'][] = array(
                 'communication_id' => $data['communication_fax_secondary_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'FAX',
                 'communication_usage' => 'SECONDARY',
-                'communication_value' => $this->parsePhoneNumber($data['communication_fax_secondary'], $country_code)
+                'communication_value' => $number
             );
         }
 
@@ -941,9 +973,15 @@ echo 'fail!';
                     ));
                     break;
                 case 'communication_email':
+                case 'communication_email_secondary':
                 case 'communication_phone':
+                case 'communication_phone_secondary':
                 case 'communication_cell':
+                case 'communication_cell_secondary':
                 case 'communication_fax':
+                case 'communication_fax_secondary':
+                case 'communication_url':
+                case 'communication_url_secondary':
                     $form->add($visible.'_id', 'hidden', array(
                         'data' => isset($data[$visible.'_id']) ? $data[$visible.'_id'] : -1
                     ));
