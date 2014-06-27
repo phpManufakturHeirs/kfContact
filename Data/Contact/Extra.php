@@ -130,8 +130,11 @@ EOD;
                 'category_id' => $category_id,
                 'category_type_name' => $category_type_name,
                 'contact_id' => $contact_id,
-                'extra_type_type' => $type['extra_type_type']
+                'extra_type_type' => $type['extra_type_type'],
+                'extra_text' => '', // TEXT can not be NULL!
+                'extra_html' => '' // TEXT can not be NULL!
             );
+
             if (!is_null($value)) {
                 switch ($type['extra_type_type']) {
                     case 'TEXT':
@@ -145,6 +148,7 @@ EOD;
                         break;
                 }
             }
+
             $this->app['db']->insert(self::$table_name, $data);
             $extra_id = $this->app['db']->lastInsertId();
         } catch (\Doctrine\DBAL\DBALException $e) {
