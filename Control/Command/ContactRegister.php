@@ -12,6 +12,7 @@
 namespace phpManufaktur\Contact\Control\Command;
 
 use Silex\Application;
+use phpManufaktur\Contact\Control\Pattern\Form\Contact as ContactForm;
 use phpManufaktur\Basic\Control\kitCommand\Basic;
 use Symfony\Component\Form\FormFactory;
 use phpManufaktur\Contact\Control\Configuration;
@@ -28,6 +29,7 @@ use phpManufaktur\Contact\Data\Contact\TagType;
 class ContactRegister extends Basic
 {
     protected $app = null;
+    protected $ContactForm = null;
     protected static $contact_type = null;
     protected static $category_type_id = null;
     protected static $tags = null;
@@ -95,6 +97,8 @@ class ContactRegister extends Basic
 
         $Config = new Configuration($app);
         self::$config = $Config->getConfiguration();
+
+        $this->ContactForm = new ContactForm($app);
     }
 
     /**
@@ -102,7 +106,7 @@ class ContactRegister extends Basic
      *
      * @return FormFactory
      */
-    protected function getFormSelectContactType()
+   /* protected function getFormSelectContactType()
     {
         return $this->app['form.factory']->createBuilder('form')
         ->add('contact_type', 'choice', array(
@@ -113,14 +117,14 @@ class ContactRegister extends Basic
             'data' => 'PERSON'
         ))
         ->getForm();
-    }
+    }*/
 
     /**
      * Get the form to select the contact category
      *
      * @return FormFactory
      */
-    protected function getFormSelectCategory()
+    /*protected function getFormSelectCategory()
     {
         // reset the category array
         reset(self::$parameter['categories']);
@@ -138,14 +142,14 @@ class ContactRegister extends Basic
             'data' => key(self::$parameter['categories'])
         ))
         ->getForm();
-    }
+    }*
 
     /**
      * Get the form to select the #tags assigned to this contact
      *
      * @return FormFactory
      */
-    protected function getFormSelectTags()
+    /*protected function getFormSelectTags()
     {
         return $this->app['form.factory']->createBuilder('form')
         ->add('contact_type', 'hidden', array(
@@ -168,7 +172,7 @@ class ContactRegister extends Basic
      * @param array $data
      * @return FormFactory
      */
-    protected function getFormContactData($data=array())
+    /*protected function getFormContactData($data=array())
     {
         $field = self::$config['command']['register']['field'];
 
@@ -414,7 +418,7 @@ class ContactRegister extends Basic
      * @param string reference $mode - 'INSERT' or 'UPDATE'
      * @return boolean
      */
-    protected function checkContactData(&$data=array(), &$mode='INSERT')
+   /* protected function checkContactData(&$data=array(), &$mode='INSERT')
     {
         $contact_status = 'PENDING';
         $contact_tags = (strpos($data['tags'], ',')) ? explode(',', $data['tags']) : array($data['tags']);
@@ -556,7 +560,7 @@ class ContactRegister extends Basic
         /**
             Create the contact record for INSERT or UPDATE
          */
-        $contact = array(
+     /*   $contact = array(
             'contact' => array(
                 'contact_id' => $data['contact_id'],
                 'contact_type' => $data['contact_type'],
@@ -808,17 +812,35 @@ class ContactRegister extends Basic
      *
      * @param Application $app
      */
-    public function ControllerRegisterContactCheck(Application $app)
+    public function ControllerContactCheck(Application $app)
     {
         $this->initParameters($app);
 
-        $form = $this->getFormContactData();
+        // $form = $this->getFormContactData();
+        //if (!is_array($data) || empty($data)) {
+            $data = array(
+                'contact_id' => -1,
+                'contact_type' => self::$contact_type,
+                'category_type_id' => self::$category_type_id,
+            );
+        //}
+        $field = self::$config['command']['register']['field'];
+        // set the available tags from the parameters
+        $field['tags'] = array_keys(self::$parameter['tags']);
+        // set the available categories from the parameters
+        $field['categories'] = array_keys(self::$parameter['categories']);
+
+        if (false === ($form = $this->ContactForm->getFormContact($data, $field))) {
+            // something went wrong
+            return $this->promptAlert();
+        }
 
         if ('POST' == $this->app['request']->getMethod()) {
             // the form was submitted, bind the request
             $form->bind($this->app['request']);
             if ($form->isValid()) {
                 $contact = $form->getData();
+                /*
                 $mode = 'INSERT';
                 if ($this->checkContactData($contact, $mode)) {
                     // contact data are ok - send confirmation mails and say goodbye ...
@@ -834,6 +856,8 @@ class ContactRegister extends Basic
                             'mode' => $mode
                         ));
                 }
+                */
+                print_r($contact);
             }
             else {
                 // general error (timeout, CSFR ...)
@@ -856,7 +880,7 @@ class ContactRegister extends Basic
      *
      * @return string
      */
-    protected function registerContact()
+    /*protected function registerContact()
     {
         $form = $this->getFormContactData();
 
@@ -874,7 +898,7 @@ class ContactRegister extends Basic
      *
      * @return string
      */
-    protected function registerTags()
+   /* protected function registerTags()
     {
         if (!isset(self::$parameter['tags'])) {
             self::$tags = array();
@@ -903,20 +927,24 @@ class ContactRegister extends Basic
      * @param Application $app
      * @return string
      */
-    public function ControllerRegisterCategoryCheck(Application $app)
+    public function ControllerCategoryCheck(Application $app)
     {
         $this->initParameters($app);
 
-        $form = $this->getFormSelectCategory();
+        //$form = $this->getFormSelectCategory();
+        $form = $this->ContactForm->getFormContactCategory(
+            self::$parameter['categories'],
+            array('contact_type' => self::$contact_type));
+
 
         $form->bind($this->app['request']);
         if ($form->isValid()) {
             // get the form data
             $contact = $form->getData();
-            // show the dialog for PERSON or COMPANY contacts
             self::$contact_type = $contact['contact_type'];
             self::$category_type_id = $contact['category_type_id'];
-            return $this->registerTags();
+            // show the dialog for PERSON or COMPANY contacts
+            return $this->registerContact();
         }
         else {
             // general error (timeout, CSFR ...)
@@ -932,7 +960,7 @@ class ContactRegister extends Basic
      * @param Application $app
      * @return string
      */
-    public function ControllerRegisterTagsCheck(Application $app)
+   /* public function ControllerRegisterTagsCheck(Application $app)
     {
         $this->initParameters($app);
 
@@ -973,10 +1001,13 @@ class ContactRegister extends Basic
             // we have exacly one category - the key contains the ID ...
             reset(self::$parameter['categories']);
             self::$category_type_id = key(self::$parameter['categories']);
-            return $this->registerTags();
+            return $this->registerContact();
         }
 
-        $form = $this->getFormSelectCategory();
+        $form = $this->ContactForm->getFormContactCategory(
+            self::$parameter['categories'],
+            array('contact_type' => self::$contact_type));
+
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             '@phpManufaktur/Contact/Template', 'command/register.contact.category.twig',
             $this->getPreferredTemplateStyle()),
@@ -986,13 +1017,43 @@ class ContactRegister extends Basic
             ));
     }
 
+    protected function registerContact($data=null)
+    {
+        if (!is_array($data) || empty($data)) {
+            $data = array(
+                'contact_id' => -1,
+                'contact_type' => self::$contact_type,
+                'category_type_id' => self::$category_type_id,
+            );
+        }
+        $field = self::$config['command']['register']['field'];
+        // set the available tags from the parameters
+        $field['tags'] = array_keys(self::$parameter['tags']);
+        // set the available categories from the parameters
+        $field['categories'] = array_keys(self::$parameter['categories']);
+
+        if (false === ($form = $this->ContactForm->getFormContact($data, $field))) {
+            // something went wrong
+            return $this->promptAlert();
+        }
+
+        return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+            '@phpManufaktur/Contact/Template', 'command/register.contact.data.twig',
+            $this->getPreferredTemplateStyle()),
+            array(
+                'basic' => $this->getBasicSettings(),
+                'form' => $form->createView()
+            ));
+    }
+
     /**
-     * Controller to start register a Public Contact
+     * Controller to start register a Public Contact, the first step is to
+     * select the contact type - PERSON or COMPANY
      *
      * @param Application $app
      * @return string
      */
-    public function ControllerRegister(Application $app)
+    public function ControllerType(Application $app)
     {
         $this->initParameters($app);
 
@@ -1003,7 +1064,7 @@ class ContactRegister extends Basic
         }
 
         // create the form
-        $form = $this->getFormSelectContactType();
+        $form = $this->ContactForm->getFormContactType();
 
         if ('POST' == $this->app['request']->getMethod()) {
             // the form was submitted, bind the request

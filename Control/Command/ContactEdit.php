@@ -261,20 +261,6 @@ class ContactEdit extends Basic
         $this->initParameters($app);
         self::$contact_id = $contact_id;
 
-        $phoneUtil = PhoneNumberUtil::getInstance();
-        try {
-            $number = '+49 30 12345678';
-            $numberProto = $phoneUtil->parse($number, 'DE');
-            if ($phoneUtil->isValidNumber($numberProto)) {
-                echo $phoneUtil->format($numberProto, PhoneNumberFormat::NATIONAL);
-            }
-            else {
-                echo "invalid number: $number";
-            }
-        } catch (NumberParseException $e) {
-            echo $e->getMessage();
-        }
-
         // important: check the authentication!
         if (!$this->isAuthenticated()) {
             return $this->ControllerLogin($app);

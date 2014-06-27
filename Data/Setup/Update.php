@@ -269,6 +269,12 @@ class Update
             $this->Configuration->setConfiguration($config);
             $this->Configuration->saveConfiguration();
         }
+        if (!isset($config['url'])) {
+            $default = $this->Configuration->getDefaultConfigArray();
+            $config['url'] = $default['url'];
+            $this->Configuration->setConfiguration($config);
+            $this->Configuration->saveConfiguration();
+        }
     }
 
     /**

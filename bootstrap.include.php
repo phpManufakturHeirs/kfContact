@@ -262,13 +262,21 @@ $app->get('/contact/view',
     'phpManufaktur\Contact\Control\Command\ContactView::ControllerView');
 
 $app->match('/contact/register',
-    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegister');
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerType');
+$app->post('/contact/register/category/check',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerCategoryCheck');
+$app->match('/contact/register/contact',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerContact');
+$app->match('/contact/register/contact/check',
+    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerContactCheck');
+/*
 $app->post('/contact/register/category/check',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterCategoryCheck');
 $app->post('/contact/register/tags/check',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterTagsCheck');
 $app->post('/contact/register/data/check',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterContactCheck');
+    */
 $app->get('/contact/register/activate/user/{guid}',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterActivation');
 $app->get('contact/register/activate/admin/{guid}',

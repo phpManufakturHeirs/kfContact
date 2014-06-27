@@ -30,7 +30,7 @@
   {# assign the bootstrap 3 theming for horizontal forms to the Symfony Form Factory output #}  
   {% form_theme form '@phpManufaktur/Contact/Template/default/command/form.fields.horizontal.twig' %}
 
-  <form action="{{ FRAMEWORK_URL ~ '/contact/register/data/check?pid=' ~ basic.pid }}" class="form-horizontal" method="post" role="form">
+  <form action="{{ FRAMEWORK_URL ~ '/contact/register/contact/check?pid=' ~ basic.pid }}" class="form-horizontal" method="post" role="form">
     {# loop through all form fields from the form.json #}
     {{ form_widget(form) }}     
 

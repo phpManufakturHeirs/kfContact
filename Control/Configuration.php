@@ -56,6 +56,16 @@ class Configuration
                     'default_format' => 'INTERNATIONAL'
                 )
             ),
+            'url' => array(
+                'parse' => array(
+                    'enabled' => true,
+                    'format' => true,
+                    'validate' => true,
+                    'strip_query' => false,
+                    'strip_fragment' => false,
+                    'lowercase_host' => true
+                )
+            ),
             'command' => array(
                 'register' => array(
                     'field' => array(

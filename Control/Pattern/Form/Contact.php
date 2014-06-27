@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\NumberParseException;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Contact extends Alert
 {
@@ -328,15 +329,54 @@ class Contact extends Alert
                     }
                     $number = $phoneUtil->format($prototype, $format_id);
                 }
-                return $number;
             } catch (NumberParseException $e) {
                 throw new \Exception($e);
             }
         }
-        else {
-            // parsing of phonenumbers is disabled, just return the $number
-            return $number;
+        return $number;
+    }
+
+    /**
+     * Parse the given URL and return a valid, executable URL
+     *
+     * @param string $url
+     * @return boolean|string
+     */
+    protected function parseURL($url)
+    {
+        if (self::$config['url']['parse']['enabled']) {
+            if (self::$config['url']['parse']['format']) {
+                $parse = parse_url($url);
+
+                $scheme = isset($parse['scheme']) ? $parse['scheme'].'://' : 'http://';
+                $host = isset($parse['host']) ? $parse['host'] : '';
+                $path = isset($parse['path']) ? $parse['path'] : '';
+                $query = isset($parse['query']) ? $parse['query'] : '';
+                $fragment = isset($parse['fragment']) ? $parse['fragment'] : '';
+
+                if (self::$config['url']['parse']['lowercase_host']) {
+                    $url = (empty($host) && !empty($path)) ? strtolower($scheme.$host.$path) : strtolower($scheme.$host).$path;
+                }
+                else {
+                    $url = $scheme.$host.$path;
+                }
+                if (!self::$config['url']['parse']['strip_query'] && !empty($query)) {
+                    $url .= "?$query";
+                }
+                if (!self::$config['url']['parse']['strip_fragment'] && !empty($fragment)) {
+                    $url .= "#$fragment";
+                }
+            }
+            if (self::$config['url']['parse']['validate']) {
+                $errors = $this->app['validator']->validateValue($url, new Assert\Url());
+                if (count($errors) > 0) {
+                    $error = (string) $errors;
+                    $this->setAlert($error, array(), self::ALERT_TYPE_WARNING);
+                    return false;
+                }
+            }
         }
+        return $url;
     }
 
     /**
@@ -721,21 +761,27 @@ class Contact extends Alert
         }
 
         if (isset($data['communication_url']) && !empty($data['communication_url'])) {
+            if (false === ($url = $this->parseURL($data['communication_url']))) {
+                $url = $data['communication_url'];
+            }
             $contact['communication'][] = array(
                 'communication_id' => $data['communication_url_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'URL',
                 'communication_usage' => 'PRIMARY',
-                'communication_value' => $data['communication_url']
+                'communication_value' => $url
             );
         }
         if (isset($data['communication_url_secondary']) && !empty($data['communication_url_secondary'])) {
+            if (false === ($url = $this->parseURL($data['communication_url_secondary']))) {
+                $url = $data['communication_url_secondary'];
+            }
             $contact['communication'][] = array(
                 'communication_id' => $data['communication_url_secondary_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'URL',
                 'communication_usage' => 'SECONDARY',
-                'communication_value' => $data['communication_url_secondary']
+                'communication_value' => $url
             );
         }
 
@@ -804,6 +850,68 @@ class Contact extends Alert
         echo "</pre>";
         $this->setAlert('test');
         return false;
+    }
+
+    /**
+     * Get a Form to select the contact type
+     *
+     * @return FormFactory
+     */
+    public function getFormContactType($hidden_fields=null)
+    {
+        $form = $this->app['form.factory']->createBuilder('form')
+            ->add('contact_type', 'choice', array(
+                'choices' => array('PERSON' => 'Person', 'COMPANY' => 'Organization'),
+                'empty_value' => false,
+                'expanded' => true,
+                'data' => 'PERSON'
+            ));
+
+        if (is_array($hidden_fields)) {
+            foreach ($hidden_fields as $key => $value) {
+                $form->add($key, 'hidden', array(
+                    'data' => $value
+                ));
+            }
+        }
+
+        return $form->getForm();
+    }
+
+    /**
+     * Return a form to select the contact category
+     *
+     * @return FormFactory
+     */
+    public function getFormContactCategory($categories=null, $hidden_fields=null)
+    {
+        if (is_array($categories) && !empty($categories)) {
+            reset($categories);
+        }
+        else {
+            $categories = $this->app['contact']->getCategoryArrayForTwig();
+            reset($categories);
+        }
+
+        $form = $this->app['form.factory']->createBuilder('form')
+            ->add('category_type_id', 'choice', array(
+                'choices' => $categories,
+                'empty_value' => false,
+                'multiple' => false,
+                'expanded' => true,
+                // set the first entry as default value
+                'data' => key($categories)
+            ));
+
+        if (is_array($hidden_fields)) {
+            foreach ($hidden_fields as $key => $value) {
+                $form->add($key, 'hidden', array(
+                    'data' => $value
+                ));
+            }
+        }
+
+        return $form->getForm();
     }
 
     /**
@@ -986,7 +1094,7 @@ class Contact extends Alert
                         'data' => isset($data[$visible.'_id']) ? $data[$visible.'_id'] : -1
                     ));
                     $form->add($visible, 'text', array(
-                        'required' => in_array($visible, $field['required']),
+                        'required' => (in_array($visible, $field['required']) || ($visible === 'communication_email')),
                         'read_only' => in_array($visible, $field['readonly']),
                         'data' => isset($data[$visible]) ? $data[$visible] : ''
                     ));
