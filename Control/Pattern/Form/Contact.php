@@ -603,6 +603,10 @@ class Contact extends Alert
             $dt = Carbon::createFromFormat($this->app['translator']->trans('DATE_FORMAT'), $data['contact_since']);
             $contact_since = $dt->toDateTimeString();
         }
+        elseif ($data['contact_id'] < 1) {
+            // for new contacts set the current date/time
+            $contact_since = date('Y-m-d H:i:s');
+        }
         else {
             $contact_since = '0000-00-00';
         }
@@ -827,7 +831,7 @@ class Contact extends Alert
                         'category_type_name' => $category_type['category_type_name'],
                         'contact_id' => $data['contact_id'],
                         'extra_type_type' => $extra['extra_type_type'],
-                        'extra_value' => $data[$name]
+                        'extra_value' => !is_null($data[$name]) ? $data[$name] : ''
                     );
                 }
             }
@@ -944,8 +948,12 @@ class Contact extends Alert
 
         // loop through the hidden fields
         foreach ($field['hidden'] as $hidden) {
+            $default_value = null;
+            if (in_array($hidden, array('contact_id','category_id','company_id','person_id','address_id'))) {
+                $default_value = -1;
+            }
             $form->add($hidden, 'hidden', array(
-                'data' => isset($data[$hidden]) ? $data[$hidden] : null
+                'data' => isset($data[$hidden]) ? $data[$hidden] : $default_value
             ));
         }
 
