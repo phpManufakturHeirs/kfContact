@@ -35,6 +35,9 @@ use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
 use phpManufaktur\Contact\Data\Contact\Message;
 use phpManufaktur\Contact\Data\Contact\Category;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\NumberParseException;
 
 class Contact extends ContactParent
 {
@@ -56,6 +59,8 @@ class Contact extends ContactParent
     protected $ExtraType = null;
     protected $Extra = null;
     protected $Message = null;
+
+    protected static $config = null;
 
     protected static $ContactBlocks = array(
         'contact' => array(
@@ -108,6 +113,9 @@ class Contact extends ContactParent
         $this->ExtraType = new ExtraType($this->app);
         // Messages
         $this->Message = new Message($app);
+
+        $Config = new Configuration($app);
+        self::$config = $Config->getConfiguration();
     }
 
     /**
@@ -250,32 +258,52 @@ class Contact extends ContactParent
      *
      * @param mixed $identifier
      */
-    public function select($identifier, $contact_type='PERSON')
+    public function select($identifier, $contact_type=null)
     {
         if (!is_numeric($identifier)) {
             // try to get the contact ID by the login name
             if (!$identifier = $this->existsLogin($identifier)) {
-                return $this->getDefaultRecord($contact_type);
+                if (is_null($contact_type)) {
+                    return false;
+                }
+                else {
+                    return $this->getDefaultRecord(strtoupper($contact_type));
+                }
             }
         }
         if (is_numeric($identifier)) {
 
             self::$contact_id = $identifier;
             if (self::$contact_id < 1) {
-                return $this->getDefaultRecord($contact_type);
+                if (is_null($contact_type)) {
+                    return false;
+                }
+                else {
+                    return $this->getDefaultRecord(strtoupper($contact_type));
+                }
             }
             else {
                 if (false === ($contact = $this->ContactData->select(self::$contact_id))) {
                     self::$contact_id = -1;
                     $this->setAlert("The contact with the ID %contact_id% does not exists!",
                         array('%contact_id%' => $identifier), self::ALERT_TYPE_WARNING);
-                    return $this->getDefaultRecord($contact_type);
+                    if (is_null($contact_type)) {
+                        return false;
+                    }
+                    else {
+                        return $this->getDefaultRecord(strtoupper($contact_type));
+                    }
                 }
 
                 if (false === ($contact = $this->ContactData->selectContact(self::$contact_id))) {
                     $this->setAlert("Can't read the contact with the ID %contact_id% - it is possibly deleted.",
                         array('%contact_id%' => $identifier), self::ALERT_TYPE_WARNING);
-                    return $this->getDefaultRecord($contact_type);
+                    if (is_null($contact_type)) {
+                        return false;
+                    }
+                    else {
+                        return $this->getDefaultRecord(strtoupper($contact_type));
+                    }
                 }
 
                 return $contact;
@@ -1441,5 +1469,104 @@ class Contact extends ContactParent
         $CategoryData = new Category($this->app);
         return $CategoryData->selectTargetURL($contact_id);
     }
+
+    /**
+     * Parse a phone number using the library libphonenumber and the settings in
+     * config.contact.json as default
+     *
+     * @param string $number
+     * @param string $country code
+     * @param string $format possible are INTERNATIONAL, NATIONAL, E164 or RFC3966
+     * @throws \Exception
+     * @return boolean|array
+     */
+    public function parsePhoneNumber($number, $country=null, $format=null)
+    {
+        if (self::$config['phonenumber']['parse']['enabled']) {
+            // parse the given phonenumber
+            try {
+                $phoneUtil = PhoneNumberUtil::getInstance();
+                $country = !is_null($country) ? strtoupper($country) : strtoupper(self::$config['phonenumber']['parse']['default_country']);
+                $prototype = $phoneUtil->parse($number, $country);
+                if (self::$config['phonenumber']['parse']['validate']) {
+                    if (!$phoneUtil->isValidNumber($prototype)) {
+                        $this->setAlert('The phone number %number% failed the validation, please check it!',
+                            array('%number%' => $number), self::ALERT_TYPE_WARNING);
+                        return false;
+                    }
+                }
+                if (self::$config['phonenumber']['parse']['format']) {
+                    $format = !is_null($format) ? strtoupper($format) : strtoupper(self::$config['phonenumber']['parse']['default_format']);
+                    switch ($format) {
+                        case 'INTERNATIONAL':
+                            $format_id = PhoneNumberFormat::INTERNATIONAL;
+                            break;
+                        case 'NATIONAL':
+                            $format_id = PhoneNumberFormat::NATIONAL;
+                            break;
+                        case 'E164':
+                            $format_id = PhoneNumberFormat::E164;
+                            break;
+                        case 'RFC3966':
+                            $format_id = PhoneNumberFormat::RFC3966;
+                            break;
+                        default:
+                            // unknown format
+                            $this->setAlert('Unknown phone number format <strong>%format%</strong>, please check the settings!',
+                            array('%format%' => $format), self::ALERT_TYPE_DANGER);
+                            return false;
+                    }
+                    $number = $phoneUtil->format($prototype, $format_id);
+                }
+            } catch (NumberParseException $e) {
+                throw new \Exception($e);
+            }
+        }
+        return $number;
+    }
+
+    /**
+     * Parse the given URL and return a valid, executable URL
+     *
+     * @param string $url
+     * @return boolean|string
+     */
+    public function parseURL($url)
+    {
+        if (self::$config['url']['parse']['enabled']) {
+            if (self::$config['url']['parse']['format']) {
+                $parse = parse_url($url);
+
+                $scheme = isset($parse['scheme']) ? $parse['scheme'].'://' : 'http://';
+                $host = isset($parse['host']) ? $parse['host'] : '';
+                $path = isset($parse['path']) ? $parse['path'] : '';
+                $query = isset($parse['query']) ? $parse['query'] : '';
+                $fragment = isset($parse['fragment']) ? $parse['fragment'] : '';
+
+                if (self::$config['url']['parse']['lowercase_host']) {
+                    $url = (empty($host) && !empty($path)) ? strtolower($scheme.$host.$path) : strtolower($scheme.$host).$path;
+                }
+                else {
+                    $url = $scheme.$host.$path;
+                }
+                if (!self::$config['url']['parse']['strip_query'] && !empty($query)) {
+                    $url .= "?$query";
+                }
+                if (!self::$config['url']['parse']['strip_fragment'] && !empty($fragment)) {
+                    $url .= "#$fragment";
+                }
+            }
+            if (self::$config['url']['parse']['validate']) {
+                $errors = $this->app['validator']->validateValue($url, new Assert\Url());
+                if (count($errors) > 0) {
+                    $error = (string) $errors;
+                    $this->setAlert($error, array(), self::ALERT_TYPE_WARNING);
+                    return false;
+                }
+            }
+        }
+        return $url;
+    }
+
 }
 
