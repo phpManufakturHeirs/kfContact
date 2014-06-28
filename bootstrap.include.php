@@ -165,6 +165,16 @@ $app->match('/admin/contact/import/keepintouch/start',
 $app->match('/admin/contact/import/keepintouch/execute',
     'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::execute');
 
+// Export to Excel
+$app->get('/admin/contact/export/excel',
+    'phpManufaktur\Contact\Control\Export\Excel::ControllerExportExcel');
+// Export to CSV
+$app->get('/admin/contact/export/csv',
+    'phpManufaktur\Contact\Control\Export\Excel::ControllerExportCSV');
+// Remove exported file
+$app->get('/admin/contact/export/remove/{file}',
+    'phpManufaktur\Contact\Control\Export\Excel::ControllerRemoveFile');
+
 /**
  * Use the EmbeddedAdministration feature to connect the extension with the CMS
  *

@@ -19,10 +19,6 @@ use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
 use Carbon\Carbon;
-use libphonenumber\PhoneNumberUtil;
-use libphonenumber\PhoneNumberFormat;
-use libphonenumber\NumberParseException;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class Contact extends Alert
 {
@@ -281,103 +277,7 @@ class Contact extends Alert
         return $data;
     }
 
-    /**
-     * Parse a phone number using the library libphonenumber and the settings in
-     * config.contact.json as default
-     *
-     * @param string $number
-     * @param string $country code
-     * @param string $format possible are INTERNATIONAL, NATIONAL, E164 or RFC3966
-     * @throws \Exception
-     * @return boolean|array
-     */
-    protected function parsePhoneNumber($number, $country=null, $format=null)
-    {
-        if (self::$config['phonenumber']['parse']['enabled']) {
-            // parse the given phonenumber
-            try {
-                $phoneUtil = PhoneNumberUtil::getInstance();
-                $country = !is_null($country) ? strtoupper($country) : strtoupper(self::$config['phonenumber']['parse']['default_country']);
-                $prototype = $phoneUtil->parse($number, $country);
-                if (self::$config['phonenumber']['parse']['validate']) {
-                    if (!$phoneUtil->isValidNumber($prototype)) {
-                        $this->setAlert('The phone number %number% failed the validation, please check it!',
-                            array('%number%' => $number), self::ALERT_TYPE_WARNING);
-                        return false;
-                    }
-                }
-                if (self::$config['phonenumber']['parse']['format']) {
-                    $format = !is_null($format) ? strtoupper($format) : strtoupper(self::$config['phonenumber']['parse']['default_format']);
-                    switch ($format) {
-                        case 'INTERNATIONAL':
-                            $format_id = PhoneNumberFormat::INTERNATIONAL;
-                            break;
-                        case 'NATIONAL':
-                            $format_id = PhoneNumberFormat::NATIONAL;
-                            break;
-                        case 'E164':
-                            $format_id = PhoneNumberFormat::E164;
-                            break;
-                        case 'RFC3966':
-                            $format_id = PhoneNumberFormat::RFC3966;
-                            break;
-                        default:
-                            // unknown format
-                            $this->setAlert('Unknown phone number format <strong>%format%</strong>, please check the settings!',
-                                array('%format%' => $format), self::ALERT_TYPE_DANGER);
-                            return false;
-                    }
-                    $number = $phoneUtil->format($prototype, $format_id);
-                }
-            } catch (NumberParseException $e) {
-                throw new \Exception($e);
-            }
-        }
-        return $number;
-    }
 
-    /**
-     * Parse the given URL and return a valid, executable URL
-     *
-     * @param string $url
-     * @return boolean|string
-     */
-    protected function parseURL($url)
-    {
-        if (self::$config['url']['parse']['enabled']) {
-            if (self::$config['url']['parse']['format']) {
-                $parse = parse_url($url);
-
-                $scheme = isset($parse['scheme']) ? $parse['scheme'].'://' : 'http://';
-                $host = isset($parse['host']) ? $parse['host'] : '';
-                $path = isset($parse['path']) ? $parse['path'] : '';
-                $query = isset($parse['query']) ? $parse['query'] : '';
-                $fragment = isset($parse['fragment']) ? $parse['fragment'] : '';
-
-                if (self::$config['url']['parse']['lowercase_host']) {
-                    $url = (empty($host) && !empty($path)) ? strtolower($scheme.$host.$path) : strtolower($scheme.$host).$path;
-                }
-                else {
-                    $url = $scheme.$host.$path;
-                }
-                if (!self::$config['url']['parse']['strip_query'] && !empty($query)) {
-                    $url .= "?$query";
-                }
-                if (!self::$config['url']['parse']['strip_fragment'] && !empty($fragment)) {
-                    $url .= "#$fragment";
-                }
-            }
-            if (self::$config['url']['parse']['validate']) {
-                $errors = $this->app['validator']->validateValue($url, new Assert\Url());
-                if (count($errors) > 0) {
-                    $error = (string) $errors;
-                    $this->setAlert($error, array(), self::ALERT_TYPE_WARNING);
-                    return false;
-                }
-            }
-        }
-        return $url;
-    }
 
     /**
      * Check the contact form data record and return a regular contact record
@@ -690,7 +590,7 @@ class Contact extends Alert
         $country_code = (isset($data['address_country_code']) && !empty($data['address_country_code'])) ? $data['address_country_code'] : null;
 
         if (isset($data['communication_phone']) && !empty($data['communication_phone'])) {
-            if (false === ($number = $this->parsePhoneNumber($data['communication_phone'], $country_code))) {
+            if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_phone'], $country_code))) {
                 $number = $data['communication_phone'];
             }
             $contact['communication'][] = array(
@@ -702,7 +602,7 @@ class Contact extends Alert
             );
         }
         if (isset($data['communication_phone_secondary']) && !empty($data['communication_phone_secondary'])) {
-            if (false === ($number = $this->parsePhoneNumber($data['communication_phone_secondary'], $country_code))) {
+            if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_phone_secondary'], $country_code))) {
                 $number = $data['communication_phone_secondary'];
             }
             $contact['communication'][] = array(
@@ -715,7 +615,7 @@ class Contact extends Alert
         }
 
         if (isset($data['communication_cell']) && !empty($data['communication_cell'])) {
-            if (false === ($number = $this->parsePhoneNumber($data['communication_cell'], $country_code))) {
+            if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_cell'], $country_code))) {
                 $number = $data['communication_cell'];
             }
             $contact['communication'][] = array(
@@ -727,7 +627,7 @@ class Contact extends Alert
             );
         }
         if (isset($data['communication_cell_secondary']) && !empty($data['communication_cell_secondary'])) {
-            if (false === ($number = $this->parsePhoneNumber($data['communication_cell_secondary'], $country_code))) {
+            if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_cell_secondary'], $country_code))) {
                 $number = $data['communication_cell_secondary'];
             }
             $contact['communication'][] = array(
@@ -740,7 +640,7 @@ class Contact extends Alert
         }
 
         if (isset($data['communication_fax']) && !empty($data['communication_fax'])) {
-            if (false === ($number = $this->parsePhoneNumber($data['communication_fax'], $country_code))) {
+            if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_fax'], $country_code))) {
                 $number = $data['communication_fax'];
             }
             $contact['communication'][] = array(
@@ -752,7 +652,7 @@ class Contact extends Alert
             );
         }
         if (isset($data['communication_fax_secondary']) && !empty($data['communication_fax_secondary'])) {
-            if (false === ($number = $this->parsePhoneNumber($data['communication_fax_secondary'], $country_code))) {
+            if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_fax_secondary'], $country_code))) {
                 $number = $data['communication_fax_secondary'];
             }
             $contact['communication'][] = array(
@@ -765,7 +665,7 @@ class Contact extends Alert
         }
 
         if (isset($data['communication_url']) && !empty($data['communication_url'])) {
-            if (false === ($url = $this->parseURL($data['communication_url']))) {
+            if (false === ($url = $this->app['contact']->parseURL($data['communication_url']))) {
                 $url = $data['communication_url'];
             }
             $contact['communication'][] = array(
@@ -777,7 +677,7 @@ class Contact extends Alert
             );
         }
         if (isset($data['communication_url_secondary']) && !empty($data['communication_url_secondary'])) {
-            if (false === ($url = $this->parseURL($data['communication_url_secondary']))) {
+            if (false === ($url = $this->app['contact']->parseURL($data['communication_url_secondary']))) {
                 $url = $data['communication_url_secondary'];
             }
             $contact['communication'][] = array(
