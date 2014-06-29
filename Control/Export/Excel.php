@@ -272,6 +272,89 @@ class Excel extends Alert
                         }
                     }
 
+                    if (isset($record['address']) && is_array($record['address'])) {
+                        foreach ($record['address'] as $address) {
+                            if (($address['address_status'] == 'ACTIVE') && ($address['address_id'] > 0)) {
+                                switch ($address['address_type']) {
+                                    case 'PRIVATE':
+                                    case 'BUSINESS':
+                                        if (!isset($contact['address_id'])) {
+                                            $contact['address_street'] = $address['address_street'];
+                                            $contact['address_zip'] = $address['address_zip'];
+                                            $contact['address_city'] = $address['address_city'];
+                                            $contact['address_area'] = $address['address_area'];
+                                            $contact['address_state'] = $address['address_state'];
+                                            $contact['address_country_code'] = $address['address_country_code'];
+                                        }
+                                        elseif (!isset($contact['address_secondary_id'])) {
+                                            $contact['address_secondary_street'] = $address['address_street'];
+                                            $contact['address_secondary_zip'] = $address['address_zip'];
+                                            $contact['address_secondary_city'] = $address['address_city'];
+                                            $contact['address_secondary_area'] = $address['address_area'];
+                                            $contact['address_secondary_state'] = $address['address_state'];
+                                            $contact['address_secondary_country_code'] = $address['address_country_code'];
+                                        }
+                                        break;
+                                    case 'DELIVERY':
+                                        if (!isset($contact['address_delivery_id'])) {
+                                            $contact['address_delivery_street'] = $address['address_street'];
+                                            $contact['address_delivery_zip'] = $address['address_zip'];
+                                            $contact['address_delivery_city'] = $address['address_city'];
+                                            $contact['address_delivery_area'] = $address['address_area'];
+                                            $contact['address_delivery_state'] = $address['address_state'];
+                                            $contact['address_delivery_country_code'] = $address['address_country_code'];
+                                        }
+                                        elseif (!isset($contact['address_delivery_secondary_id'])) {
+                                            $contact['address_delivery_secondary_street'] = $address['address_street'];
+                                            $contact['address_delivery_secondary_zip'] = $address['address_zip'];
+                                            $contact['address_delivery_secondary_city'] = $address['address_city'];
+                                            $contact['address_delivery_secondary_area'] = $address['address_area'];
+                                            $contact['address_delivery_secondary_state'] = $address['address_state'];
+                                            $contact['address_delivery_secondary_country_code'] = $address['address_country_code'];
+                                        }
+                                        break;
+                                    case 'BILLING':
+                                        if (!isset($contact['address_billing_id'])) {
+                                            $contact['address_billing_street'] = $address['address_street'];
+                                            $contact['address_billing_zip'] = $address['address_zip'];
+                                            $contact['address_billing_city'] = $address['address_city'];
+                                            $contact['address_billing_area'] = $address['address_area'];
+                                            $contact['address_billing_state'] = $address['address_state'];
+                                            $contact['address_billing_country_code'] = $address['address_country_code'];
+                                        }
+                                        elseif (!isset($contact['address_secondary_id'])) {
+                                            $contact['address_billing_secondary_street'] = $address['address_street'];
+                                            $contact['address_billing_secondary_zip'] = $address['address_zip'];
+                                            $contact['address_billing_secondary_city'] = $address['address_city'];
+                                            $contact['address_billing_secondary_area'] = $address['address_area'];
+                                            $contact['address_billing_secondary_state'] = $address['address_state'];
+                                            $contact['address_billing_secondary_country_code'] = $address['address_country_code'];
+                                        }
+                                        break;
+                                    case 'OTHER':
+                                        if (!isset($contact['address_other_id'])) {
+                                            $contact['address_other_street'] = $address['address_street'];
+                                            $contact['address_other_zip'] = $address['address_zip'];
+                                            $contact['address_other_city'] = $address['address_city'];
+                                            $contact['address_other_area'] = $address['address_area'];
+                                            $contact['address_other_state'] = $address['address_state'];
+                                            $contact['address_other_country_code'] = $address['address_country_code'];
+                                        }
+                                        elseif (!isset($contact['address_secondary_id'])) {
+                                            $contact['address_other_secondary_street'] = $address['address_street'];
+                                            $contact['address_other_secondary_zip'] = $address['address_zip'];
+                                            $contact['address_other_secondary_city'] = $address['address_city'];
+                                            $contact['address_other_secondary_area'] = $address['address_area'];
+                                            $contact['address_other_secondary_state'] = $address['address_state'];
+                                            $contact['address_other_secondary_country_code'] = $address['address_country_code'];
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                    }
+
+
                     if (isset($record['note'][0]) && is_array($record['note'][0])) {
                         $contact['note'] = $record['note'][0]['note_content'];
                     }

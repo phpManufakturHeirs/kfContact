@@ -165,6 +165,8 @@ return array(
         => 'Kontaktdaten veröffentlicht',
     'contact_login'
         => 'Login',
+    'Contact records successfull exported as <a href="%url%">%file_name%</a>. Please <a href="%remove%">remove the file</a> after download.'
+        => 'Kontaktdatensätze erfolgreich exportiert als <a href="%url%">%file_name%</a>. Bitte <a href="%remove%">entfernen Sie die Datei</a> nach dem Herunterladen.',
     'Contact since'
         => 'Kontakt seit',
     'Contact status'
@@ -254,6 +256,8 @@ return array(
         => 'Frau',
     'Fields of type `select`, `radio` or `checkbox` need one or more values defined as array in `choices`!'
         => 'Felder vom Typ `select`, `radio` oder `checkbox` benötigen einen oder mehrere Werte, die als Array in `choices` übergeben werden!',
+    'File %file% successfull removed.'
+        => 'Datei %file% erfolgreich entfernt.',
     'First name'
         => 'Vorname',
     'Forms'
@@ -274,8 +278,12 @@ return array(
         => 'Falls Sie der Inhaber des Kontaktdatensatz sind können Sie die Daten jederzeit aktualisieren oder ändern, bitte melden Sie sich an. Falls Sie bisher keine Zugangsdaten erhalten haben, wählen Sie bitte "Haben Sie ihr Passwort vergessen?".',
     'If you have never got a password or still forgot it, you can order a link to create a new one. Just type in the email address which is assigned to the contact record you want zu change or update and we will send youn an email.'
         => 'Falls Sie bisher kein Passwort erhalten oder das Passwort verloren haben, können Sie einen Link anfordern um ein neues Passwort zu erstellen. Geben Sie einfach die E-Mail Adresse an, die dem Kontaktdatensatz zugeordnet ist den Sie ändern oder aktualisieren möchten, wir senden Ihnen einen Link zu.',
+    'Import contact records'
+        => 'Kontaktdaten importieren',
     'Import contacts from KeepInTouch (KIT)'
         => 'Kontakte aus KeepInTouch (KIT) importieren',
+    'Import from'
+        => 'Importieren aus',
     "Inserted the new contact with the ID %contact_id%."
         => 'Es wurde ein neuer Kontakt mit der ID %contact_id% hinzugefügt',
     'Intern'
@@ -325,6 +333,8 @@ return array(
         => 'Notiz',
     'Note content'
         => 'Notiz',
+    'Nothing to do ...'
+        => 'Nichts zu tun ...',
 
     'Options'
         => 'Optionen',
@@ -363,6 +373,8 @@ return array(
         => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
     'Please select one #tag at minimum!'
         => 'Bitte wählen Sie mindestens eine Markierung aus!',
+    'Please select the target file format to export the kitFramework Contact records: <a href="%xlsx%">XLSX (Excel)</a> or <a href="%csv%">CSV (Text)</a>.'
+        => 'Bitte wählen Sie das Ausgabeformat um die kitFramework Contact Datensätze zu exportieren: <a href="%xlsx%">XLSX (Excel)</a> oder <a href="%csv%">CSV (Text)</a>.',
     'Please select the type of contact you want to create. Be aware that you can not change the contact type if the record is created.'
         => 'Bitte legen Sie den Typ des neuen Kontakt fest. Bitte beachten Sie, dass Sie den Typ nicht mehr ändern können wenn der Datensatz angelegt ist.',
     'Please specify a search term!'
@@ -397,6 +409,8 @@ return array(
         => 'Entschuldigung, während der Verarbeitung des Formulars ist ein Problem aufgetreten. Wir haben den Webmaster informiert.',
     'Sorry, but we have a problem. Please contact the webmaster and tell him to check the status of the email address %email%.'
         => 'Entschuldigung, wir haben ein Problem. Bitte wenden Sie sich an den Webmaster und bitten Sie ihn, den Status der E-Mail Adresse %email% zu überprüfen!',
+    'Start import'
+        => 'Import starten',
     'Start import from KeepInTouch'
         => 'Den Import aus KeepInTouch starten',
     'State'
@@ -500,6 +514,8 @@ return array(
         => 'Die URL %url% ist nicht gültig. Akzeptiert werden nur vollständige URL Angaben wie z.B. http://example.com oder https://www.example.com',
     'The zip %zip% is not valid!'
         => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
+    'There a no contacts to export.'
+        => 'Es existieren keine Kontaktdatensätze, die exportiert werden könnten.',
     'There exists already a contact record for you, but the status of this record is <strong>%status%</strong>. Please contact the webmaster to activate the existing record.'
         => 'Es existiert bereits ein Adressdatensatz für Sie, der Status dieses Datensatz ist jedoch auf <strong>%status%</strong> gesetzt. Bitte setzen Sie sich mit dem Webmaster in Verbindung um den Datensatz freizugeben.',
     'There exists already a contact record for you, but this record is assigned to a <strong>%type%</strong> and can not be changed. Please use the same type or contact the webmaster.'
@@ -524,6 +540,8 @@ return array(
 
     'Unchecked'
         => '- ungeprüft -',
+    'Unknown file format <strong>%format%</strong> to save the contact records.'
+        => 'Unbekanntes Dateiformat <strong>%format%</strong> zu Sicherung der Kontaktdatensätze.',
     'Unknown phone number format <strong>%format%</strong>, please check the settings!'
         => 'Unbekannte Telefonnummer Formatierung <strong>%format%</strong>, bitte prüfen Sie die Einstellungen!',
 

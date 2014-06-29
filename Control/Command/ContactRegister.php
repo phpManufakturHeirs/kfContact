@@ -14,12 +14,8 @@ namespace phpManufaktur\Contact\Control\Command;
 use Silex\Application;
 use phpManufaktur\Contact\Control\Pattern\Form\Contact as ContactForm;
 use phpManufaktur\Basic\Control\kitCommand\Basic;
-use Symfony\Component\Form\FormFactory;
 use phpManufaktur\Contact\Control\Configuration;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
-use phpManufaktur\Contact\Data\Contact\ExtraCategory;
-use phpManufaktur\Contact\Data\Contact\ExtraType;
-use Carbon\Carbon;
 use phpManufaktur\Contact\Data\Contact\TagType;
 
 /**

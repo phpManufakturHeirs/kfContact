@@ -570,20 +570,29 @@ class Contact extends Alert
             );
         }
 
-        $contact['communication'][] = array(
-            'communication_id' => $data['communication_email_id'],
-            'contact_id' => $data['contact_id'],
-            'communication_type' => 'EMAIL',
-            'communication_usage' => 'PRIMARY',
-            'communication_value' => $data['communication_email']
-        );
+        if (isset($data['communication_email']) && !empty($data['communication_email'])) {
+            if (false === ($email = $this->app['contact']->parseEMail($data['communication_email']))) {
+                $email = $data['communication_email'];
+            }
+            $contact['communication'][] = array(
+                'communication_id' => $data['communication_email_id'],
+                'contact_id' => $data['contact_id'],
+                'communication_type' => 'EMAIL',
+                'communication_usage' => 'PRIMARY',
+                'communication_value' => $email
+            );
+        }
+
         if (isset($data['communication_email_secondary']) && !empty($data['communication_email_secondary'])) {
+            if (false === ($email = $this->app['contact']->parseEMail($data['communication_email_secondary']))) {
+                $email = $data['communication_email_secondary'];
+            }
             $contact['communication'][] = array(
                 'communication_id' => $data['communication_email_secondary_id'],
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'EMAIL',
                 'communication_usage' => 'SECONDARY',
-                'communication_value' => $data['communication_email_secondary']
+                'communication_value' => $email
             );
         }
 
@@ -747,13 +756,6 @@ class Contact extends Alert
         }
 
         return $contact;
-
-        echo "<pre>";
-        print_r($existing_contact);
-        print_r($contact);
-        echo "</pre>";
-        $this->setAlert('test');
-        return false;
     }
 
     /**

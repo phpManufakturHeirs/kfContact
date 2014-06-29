@@ -157,14 +157,9 @@ $app->match('/admin/contact/simple/extra/edit',
 $app->match('/admin/contact/simple/extra/edit/id/{type_id}',
     'phpManufaktur\Contact\Control\Dialog\Simple\ExtraFieldEdit::controller');
 
-// Import from KeepInTouch
-$app->match('/admin/contact/import/keepintouch',
-    'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::start');
-$app->match('/admin/contact/import/keepintouch/start',
-    'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::start');
-$app->match('/admin/contact/import/keepintouch/execute',
-    'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::execute');
-
+// Export, selection dialog
+$app->get('/admin/contact/export',
+    'phpManufaktur\Contact\Control\Export\Controller::Controller');
 // Export to Excel
 $app->get('/admin/contact/export/excel',
     'phpManufaktur\Contact\Control\Export\Excel::ControllerExportExcel');
@@ -174,6 +169,26 @@ $app->get('/admin/contact/export/csv',
 // Remove exported file
 $app->get('/admin/contact/export/remove/{file}',
     'phpManufaktur\Contact\Control\Export\Excel::ControllerRemoveFile');
+
+// Import, selection dialog
+$app->get('/admin/contact/import',
+    'phpManufaktur\Contact\Control\Import\Controller::Controller');
+$app->post('/admin/contact/import/select',
+    'phpManufaktur\Contact\Control\Import\Controller::ControllerSelect');
+$app->post('/admin/contact/import/type/{type}',
+    'phpManufaktur\Contact\Control\Import\Excel::ControllerType');
+$app->post('/admin/contact/import/file/{type}',
+    'phpManufaktur\Contact\Control\Import\Excel::ControllerFile');
+$app->post('/admin/contact/import/execute',
+    'phpManufaktur\Contact\Control\Import\Excel::ControllerExecute');
+
+// Import from KeepInTouch
+$app->match('/admin/contact/import/keepintouch',
+    'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::start');
+$app->match('/admin/contact/import/keepintouch/start',
+    'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::start');
+$app->match('/admin/contact/import/keepintouch/execute',
+    'phpManufaktur\Contact\Control\Import\KeepInTouch\KeepInTouch::execute');
 
 /**
  * Use the EmbeddedAdministration feature to connect the extension with the CMS

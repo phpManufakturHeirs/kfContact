@@ -18,9 +18,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormFactory;
 use phpManufaktur\Contact\Control\Pattern\Form\Contact as ContactForm;
-use libphonenumber\PhoneNumberUtil;
-use libphonenumber\NumberParseException;
-use libphonenumber\PhoneNumberFormat;
 
 class ContactEdit extends Basic
 {

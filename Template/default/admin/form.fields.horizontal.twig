@@ -1,0 +1,216 @@
+{#
+  Contact
+
+  @author Team phpManufaktur <team@phpmanufaktur.de>
+  @link https://kit2.phpmanufaktur.de
+  @copyright 2014 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+  @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+#}
+
+{% block textarea_row %}
+  {{ block('form_row_textarea') }}
+{% endblock %}
+
+{% block text_row %}
+  {% set type = 'text' %}
+  {{ block('form_row_simple') }}
+{% endblock %}
+
+{% block password_row %}
+  {% set type = 'password' %}
+  {{ block('form_row_simple') }}
+{% endblock %}
+
+{% block email_row %}
+  {% set type = 'email' %}
+  {{ block('form_row_simple') }}
+{% endblock %}
+
+{% block file_row %}
+  {% set type = 'file' %}
+  {{ block('form_row_simple') }}
+{% endblock %}  
+
+{% block choice_row %}
+  {% if name == 'tags' %}
+    {% set translate = 1 %}
+    {% set columns = 2 %}
+  {% endif %}
+  <div class="form-group">
+    {{ block('form_label') }}
+    <div class="col-sm-9">
+      {% if attr.prefix is defined %}
+        <span class="prefix-block">{{ attr.prefix|trans }}</span>
+      {% endif %}
+      {{ block('choice_widget') }}
+      {% if attr.help is defined %}
+        <span class="help-block">{{ attr.help|trans }}</span>
+      {% endif %}  
+    </div>
+  </div>
+{% endblock %}
+
+{% block checkbox_row %}
+  <div class="form-group">
+    <div class="col-sm-9 col-sm-offset-3">
+      {{ block('checkbox_widget') }}&nbsp;&nbsp;{% if label is empty %}{{ name|humanize }}{% else %}{{ label|trans }}{% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block form_row_simple %}
+  <div class="form-group">
+    {{ block('form_label') }}
+    <div class="col-sm-9">
+      {% if attr.prefix is defined %}
+        <span class="prefix-block">{{ attr.prefix|trans }}</span>
+      {% endif %}
+      {% if type == 'file' %}
+        <span class="btn btn-default btn-file">{% if attr.title is defined %}{{ attr.title|trans }}{% else %}{{ 'Browse'|trans }}{% endif %}<input type="{{ type }}" class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" {{ block('widget_attributes') }}/></span>
+      {% else %}
+        <input type="{{ type }}" class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+      {% endif %}
+      {% if attr.help is defined %}
+        <span class="help-block">{{ attr.help|trans }}</span>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block form_row_textarea %}
+  <div class="form-group">
+    {{ block('form_label') }}
+    <div class="col-sm-9">
+      {% if attr.prefix is defined %}
+        <span class="prefix-block">{{ attr.prefix|trans }}</span>
+      {% endif %}
+      {% if attr.type is defined and attr.type == 'html' %}
+        {{ CKEditor(id, full_name, value, '100%', '150px',
+          MANUFAKTUR_URL ~ '/Contact/Template/default/command/ckeditor.simple.js') }}  
+      {% else %}  
+        <textarea class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" rows="3" {{ block('widget_attributes') }}>{{ value }}</textarea>
+      {% endif %}
+      {% if attr.help is defined %}
+        <span class="help-block">{{ attr.help|trans }}</span>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block widget_attributes %}
+  {% spaceless %}
+    id="{{ id }}" name="{{ full_name }}"{% if read_only %} readonly="readonly"{% endif %}{% if disabled %} disabled="disabled"{% endif %}{% if required %} required="required"{% endif %}{% if max_length %} maxlength="{{ max_length }}"{% endif %}{% if pattern %} pattern="{{ pattern }}"{% endif %}
+    {% for attrname, attrvalue in attr %}
+      {# don't show the attribute 'help' or 'prefix' - nothing else changed ... #}
+      {% if attrname in ['placeholder', 'title'] %}{{ attrname }}="{{ attrvalue|trans({}, translation_domain) }}" {% elseif attrname in ['help','prefix'] %}{# ignore item! #}{% else %}{{ attrname }}="{{ attrvalue }}" {% endif %}{% endfor %}
+  {% endspaceless %}
+{% endblock widget_attributes %}
+    
+{% block choice_widget_collapsed %}
+  {% spaceless %}  
+  <select class="form-control" {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
+      {% if empty_value is not none and not read_only %}
+          <option value=""{% if required and value is empty %} selected="selected"{% endif %}>{{ empty_value|trans({}, translation_domain) }}</option>
+      {% endif %}
+      {% if preferred_choices|length > 0 %}
+          {% set options = preferred_choices %}
+          {{ block('choice_widget_options') }}
+          {% if choices|length > 0 and separator is not none %}
+              <option disabled="disabled">{{ separator }}</option>
+          {% endif %}
+      {% endif %}
+      {% set options = choices %}
+      {{ block('choice_widget_options') }}
+  </select>
+  {% endspaceless %}
+{% endblock choice_widget_collapsed %}
+
+{% block choice_widget_options %}
+  {% spaceless %}
+    {% if attr.translate is defined and not attr.translate %}
+      {% set translate = 0 %}
+    {% else %}
+      {% set translate = translate|default(1) %}
+    {% endif %}  
+    {% for group_label, choice in options %}
+        {% if choice is iterable %}
+            <optgroup label="{{ group_label|trans({}, translation_domain) }}">
+                {% set options = choice %}
+                {{ block('choice_widget_options') }}
+            </optgroup>
+        {% else %}
+            <option {% if read_only and choice is not selectedchoice(value) %}disabled="disabled" {% endif %}value="{{ choice.value }}"{% if choice is selectedchoice(value) %} selected="selected"{% endif %}>{% if translate == 1 %}{{ choice.label|trans({}, translation_domain) }}{% else %}{{ choice.label }}{% endif %}</option>
+        {% endif %}
+    {% endfor %}
+  {% endspaceless %}
+{% endblock choice_widget_options %}
+
+{% block choice_widget_expanded %}
+  {% spaceless %}
+    {% if columns is defined %}
+      {% set i = 1 %}
+      {% for child in form %}
+        {% if i == 1 %}<div class="row">{% endif %}
+        <div class="col-lg-{{ 12/columns }} col-sm-{{ 12/columns }}">
+          <div class="checkbox {{ class|default('') }}">
+            <label>
+              {{ form_widget(child) }} {{ child.vars.value|humanize|trans }}
+            </label>
+          </div>
+        </div>
+        {% set i = i+1 %}
+        {% if i > columns %}
+          </div>
+          {% set i = 1 %}
+        {% endif %}
+      {% endfor %}
+      {% if i != 1 %}</div>{% endif %}
+
+    {% else %}        
+      <div {{ block('widget_container_attributes') }}>
+      {% for child in form %}
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="pull-left choice-radio">{{ form_widget(child) }}&nbsp;</div>
+            <div>{{ child.vars.label|trans }}</div>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endspaceless %}
+{% endblock choice_widget_expanded %}            
+               
+{% block checkbox_widget %}
+  {% spaceless %}
+    <input type="checkbox"{% if read_only %} disabled="disabled"{% endif %} {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+  {% endspaceless %}
+{% endblock checkbox_widget %}
+    
+{% block radio_widget %}
+  {% spaceless %}
+    <input type="radio"{% if read_only %} disabled="disabled"{% endif %} {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+  {% endspaceless %}
+{% endblock radio_widget %}
+    
+{% block form_label %}
+  {% spaceless %}
+    {% if label is not sameas(false) %}
+      {% if not compound %}
+          {% set label_attr = label_attr|merge({'for': id}) %}
+      {% endif %}
+      {% if required %}
+          {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+      {% endif %}
+      {% if label is empty %}
+        {% set label = name|humanize|trans({}, translation_domain) %}
+      {% elseif label_attr.translate is defined and label_attr.translate is sameas(false) %}
+        {% set label = label %}
+      {% else %}
+        {% set label = label|trans({}, translation_domain) %}
+      {% endif %}
+      <label class="col-sm-3 control-label{{ required ? ' required' : '' }}"{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label }}</label>
+    {% endif %}
+  {% endspaceless %}
+{% endblock form_label %}
+

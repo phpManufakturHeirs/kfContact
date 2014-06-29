@@ -24,6 +24,7 @@ class KeepInTouch extends Alert {
     protected $Contact = null;
     protected static $script_start = null;
     protected static $max_execution_time = 60; // 60 seconds
+    protected static $usage = null;
 
     /**
      * Initialize the class
@@ -45,6 +46,8 @@ class KeepInTouch extends Alert {
         $this->Contact = new Contact($app);
         // increase the execution time to 60 seconds
         ini_set('max_execution_time', self::$max_execution_time);
+
+        self::$usage = $app['request']->get('usage', 'framework');
     }
 
     /**
@@ -74,6 +77,7 @@ class KeepInTouch extends Alert {
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             '@phpManufaktur/Contact/Template', 'admin/import/start.keepintouch.twig'),
             array(
+                'usage' => self::$usage,
                 'alert' => $this->getAlert(),
                 'records' => $records,
                 'import_is_possible' => self::$import_is_possible,
@@ -328,6 +332,7 @@ class KeepInTouch extends Alert {
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             '@phpManufaktur/Contact/Template', 'admin/import/execute.keepintouch.twig'),
             array(
+                'usage' => self::$usage,
                 'alert' => $this->getAlert(),
                 'contacts' => array(
                     'detected' => $contacts_detected,

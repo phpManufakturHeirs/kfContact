@@ -38,7 +38,12 @@ class Configuration
     {
         return array(
             'email' => array(
-                'required' => true
+                'required' => true,
+                'parse' => array(
+                    'enabled' => true,
+                    'validate' => true,
+                    'format' => true
+                )
             ),
             'countries' => array(
                 'preferred' => array(

@@ -1568,5 +1568,31 @@ class Contact extends ContactParent
         return $url;
     }
 
+    /**
+     * Parse the given email address, format and validate if configured.
+     * Return false and set an alert if the validation fails
+     *
+     * @param string $email
+     * @return boolean|string
+     */
+    public function parseEMail($email)
+    {
+        if (self::$config['email']['parse']['enabled']) {
+            if (self::$config['email']['parse']['format']) {
+                // lowercase the email address
+                $email = strtolower(trim($email));
+            }
+            if (self::$config['email']['parse']['validate']) {
+                $errors = $this->app['validator']->validateValue($email, new Assert\Email());
+                if (count($errors) > 0) {
+                    $error = (string) $errors;
+                    $this->setAlert($error, array(), self::ALERT_TYPE_WARNING);
+                    return false;
+                }
+            }
+        }
+        return $email;
+    }
+
 }
 

@@ -13,8 +13,6 @@ namespace phpManufaktur\Contact\Control\Command;
 
 use Silex\Application;
 use phpManufaktur\Basic\Control\kitCommand\Basic;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class Action extends Basic
 {

@@ -275,6 +275,12 @@ class Update
             $this->Configuration->setConfiguration($config);
             $this->Configuration->saveConfiguration();
         }
+        if (!isset($config['email']['parse'])) {
+            $default = $this->Configuration->getDefaultConfigArray();
+            $config['email']['parse'] = $default['email']['parse'];
+            $this->Configuration->setConfiguration($config);
+            $this->Configuration->saveConfiguration();
+        }
     }
 
     /**
