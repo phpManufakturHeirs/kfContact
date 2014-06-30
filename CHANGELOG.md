@@ -6,6 +6,19 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.36** - 2014-06-30
+
+* changed handling of `container` and `container-fluid`
+* bugfix: used unsanitize instead of sanitize at category type insert
+* introduce kitCommand `~~ contact action[list] ~~`
+* extend contact for the field `category_type_access` which enable classifying contacts as `PUBLIC` or `ADMIN`
+* introduce the contact filter for the usage with the kitCommands
+* introduce kitCommand `~~ command action[view] ~~`
+* introduce kitCommand `~~ contact action[register] ~~`
+* introduce `libphonenumber` for the phone number check and formatting
+* introduce export of contact records as `csv` or `xlsx` file
+* introduce import of contact records in `csv`, `xls`, `xlsx` and `ods` file format
+
 **2.0.35** - 2014-05-07
 
 * all language files are now loaded by the BASIC extension

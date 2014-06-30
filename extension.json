@@ -22,8 +22,8 @@
     "about":"\/contact\/about"
   },
   "release":{
-    "number":"2.0.35",
-    "date":"2013-05-07",
+    "number":"2.0.36",
+    "date":"2013-06-30",
     "status":"beta"
   },
   "description":{
@@ -47,7 +47,10 @@
     "extension":{
         "phpmanufaktur":{
             "Basic":{
-                "release":"0.92"
+                "release":"0.97"
+            },
+            "Library":{
+                "release":"0.32"
             }
         }
     }
