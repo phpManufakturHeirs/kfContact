@@ -492,6 +492,8 @@ return array(
         => "Der Login <b>%login%</b> wird bereits verwendet, bitte legen Sie einen anderen Login fest!",
     "The login_name or a email address must be always set, can't insert the record!"
         => 'Das Feld <i>Anmeldename</i> oder eine <i>E-Mail Adresse</i> müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
+    'The phone number %number% exceeds the maximum length of %max% characters.'
+        => 'Die Telefonnummer %number% überschreitet die maximal zulässige Länge von %max% Zeichen.',
     'The phone number %number% failed the validation, please check it!'
         => 'Die Telefonnummer %number% ist wahrscheinlich fehlerhaft, bitte überprüfen!',
     "The process has not returned a status message"
@@ -522,6 +524,8 @@ return array(
         => 'Es existiert bereits ein Adressdatensatz für Sie, dieser ist jedoch einer <strong>%type%</strong> zugeordnet, der Typ kann nicht geändert werden. Bitte verwenden Sie den gleichen Kontakttyp oder kontaktieren Sie den Webmaster, damit dieser den Datensatz ändert.',
     'There exists no KeepInTouch installation at the parent CMS!'
         => 'Es existiert keine KeepInTouch Installation auf dem übergeordneten Content Management System!',
+    'There where no contact records inserted or updated.'
+        => 'Es wurden keine Kontaktdatensätze eingefügt oder aktualisiert.',
     'This is a sample panel text whith some unnecessary content'
         => 'Dies ist ein Beispiel für einen Panel Text mit etwas sinnfreiem Inhalt.',
     'This tag will be assigned to all user-defined `Contact` forms.'
@@ -537,6 +541,10 @@ return array(
         => 'Titel Übersicht',
     'To prevent a timeout of the script the import was aborted after import of %counter% records. Please reload this page to continue the import process.'
         => 'Das Script wurde nach dem Import von %counter% Datensätzen abgebrochen, um eine Überschreitung der zulässigen Ausführungsdauer zu vermeiden. Bitte laden Sie diese Seite erneut um den Import forzusetzen.',
+    'Totally inserted %count% contact records'
+        => 'Insgesamt wurden %count% Kontaktdatensätze eingefügt',
+    'Totally updated %count% contact records'
+        => 'Insgesamt wurden %count% Kontaktdatensätze aktualisiert',
 
     'Unchecked'
         => '- ungeprüft -',

@@ -1489,6 +1489,12 @@ class Contact extends ContactParent
                 $country = !is_null($country) ? strtoupper($country) : strtoupper(self::$config['phonenumber']['parse']['default_country']);
                 $prototype = $phoneUtil->parse($number, $country);
                 if (self::$config['phonenumber']['parse']['validate']) {
+                    if (strlen($number) > self::$config['phonenumber']['parse']['maximum_length']) {
+                        $this->setAlert('The phone number %number% exceeds the maximum length of %max% characters.',
+                            array('%number%' => $number, '%max%' => self::$config['phonenumber']['parse']['maximum_length']),
+                            self::ALERT_TYPE_WARNING);
+                        return false;
+                    }
                     if (!$phoneUtil->isValidNumber($prototype)) {
                         $this->setAlert('The phone number %number% failed the validation, please check it!',
                             array('%number%' => $number), self::ALERT_TYPE_WARNING);
@@ -1559,7 +1565,7 @@ class Contact extends ContactParent
             if (self::$config['url']['parse']['validate']) {
                 $errors = $this->app['validator']->validateValue($url, new Assert\Url());
                 if (count($errors) > 0) {
-                    $error = (string) $errors;
+                    $error = 'parseURL()'.(string) $errors.' -> '.$url;
                     $this->setAlert($error, array(), self::ALERT_TYPE_WARNING);
                     return false;
                 }
@@ -1585,7 +1591,7 @@ class Contact extends ContactParent
             if (self::$config['email']['parse']['validate']) {
                 $errors = $this->app['validator']->validateValue($email, new Assert\Email());
                 if (count($errors) > 0) {
-                    $error = (string) $errors;
+                    $error = 'parseEMail()'. (string) $errors.' -> '.$email;
                     $this->setAlert($error, array(), self::ALERT_TYPE_WARNING);
                     return false;
                 }

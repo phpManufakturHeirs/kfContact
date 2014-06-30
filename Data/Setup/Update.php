@@ -21,6 +21,7 @@ use phpManufaktur\Contact\Data\Contact\Overview;
 use phpManufaktur\Contact\Control\Configuration;
 use phpManufaktur\Basic\Control\CMS\InstallAdminTool;
 use phpManufaktur\Contact\Data\Contact\Form;
+use phpManufaktur\Contact\Data\Contact\CommunicationUsage;
 
 class Update
 {
@@ -280,6 +281,15 @@ class Update
             $config['email']['parse'] = $default['email']['parse'];
             $this->Configuration->setConfiguration($config);
             $this->Configuration->saveConfiguration();
+        }
+
+        $CommunicationUsage = new CommunicationUsage($this->app);
+        if (!$CommunicationUsage->existsUsage('SECONDARY')) {
+            $data = array(
+                'communication_usage_name' => 'SECONDARY',
+                'communication_usage_description' => 'secondary channel for the communication'
+            );
+            $CommunicationUsage->insert($data);
         }
     }
 

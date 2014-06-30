@@ -26,6 +26,8 @@ class Excel extends Alert
     protected static $import_type = null;
     protected static $import_file = null;
     protected static $import_xlsx = null;
+    protected static $counter_insert = null;
+    protected static $counter_update = null;
 
     protected function initialize(Application $app)
     {
@@ -85,13 +87,21 @@ class Excel extends Alert
             'address_area' => '',
             'address_state' => '',
             'address_country_code' => '',
-
+            'address_description' => '',
+            'address_identifier' => '',
+            'address_appendix' => '',
+            'address_appendix_2' => '',
+/*
             'address_secondary_street' => '',
             'address_secondary_city' => '',
             'address_secondary_zip' => '',
             'address_secondary_area' => '',
             'address_secondary_state' => '',
             'address_secondary_country_code' => '',
+            'address_secondary_description' => '',
+            'address_secondary_identifier' => '',
+            'address_secondary_appendix' => '',
+            'address_secondary_appendix_2' => '',
 
             'address_delivery_street' => '',
             'address_delivery_city' => '',
@@ -99,6 +109,10 @@ class Excel extends Alert
             'address_delivery_area' => '',
             'address_delivery_state' => '',
             'address_delivery_country_code' => '',
+            'address_delivery_description' => '',
+            'address_delivery_identifier' => '',
+            'address_delivery_appendix' => '',
+            'address_delivery_appendix_2' => '',
 
             'address_delivery_secondary_street' => '',
             'address_delivery_secondary_city' => '',
@@ -106,6 +120,10 @@ class Excel extends Alert
             'address_delivery_secondary_area' => '',
             'address_delivery_secondary_state' => '',
             'address_delivery_secondary_country_code' => '',
+            'address_delivery_secondary_description' => '',
+            'address_delivery_secondary_identifier' => '',
+            'address_delivery_secondary_appendix' => '',
+            'address_delivery_secondary_appendix_2' => '',
 
             'address_billing_street' => '',
             'address_billing_city' => '',
@@ -113,6 +131,10 @@ class Excel extends Alert
             'address_billing_area' => '',
             'address_billing_state' => '',
             'address_billing_country_code' => '',
+            'address_billing_description' => '',
+            'address_billing_identifier' => '',
+            'address_billing_appendix' => '',
+            'address_billing_appendix_2' => '',
 
             'address_billing_secondary_street' => '',
             'address_billing_secondary_city' => '',
@@ -120,7 +142,11 @@ class Excel extends Alert
             'address_billing_secondary_area' => '',
             'address_billing_secondary_state' => '',
             'address_billing_secondary_country_code' => '',
-
+            'address_billing_secondary_description' => '',
+            'address_billing_secondary_identifier' => '',
+            'address_billing_secondary_appendix' => '',
+            'address_billing_secondary_appendix_2' => '',
+*/
         );
     }
 
@@ -373,11 +399,47 @@ class Excel extends Alert
         if (false === ($contact_id = $this->app['contact']->existsLogin($login))) {
             $contact_id = -1;
         }
+
         // set defaults
+        $data['contact_login'] = $login;
         $data['contact_type'] = isset($data['contact_type']) ? $data['contact_type'] : $defaults['contact_type'];
         $data['person_id'] = -1;
         $data['company_id'] = -1;
         $data['address_id'] = -1;
+        $data['category_id'] = -1;
+        $data['category_type_id'] = -1;
+        $data['address_country_code'] = isset($data['address_country_code']) ? $data['address_country_code'] : $defaults['address_country_code'];
+
+        if (isset($data['tags'])) {
+            $items = strpos($data['tags'], ',') ? explode(',', $data['tags']) : array($data['tags']);
+            $tags = array();
+            foreach ($items as $item) {
+                $tag = strtoupper(trim($item));
+                if ($this->app['contact']->existsTagName($tag)) {
+                    $tags[] = $tag;
+                }
+            }
+            $data['tags'] = $tags;
+        }
+        else {
+            $data['tags'] = $defaults['tags'];
+        }
+
+        $CategoryType = new CategoryType($this->app);
+        if (isset($data['category_name']) && !empty($data['category_name'])) {
+            // set the category_type_id
+            $category = $CategoryType->selectByName($data['category_name']);
+            if (isset($category['category_type_id'])) {
+                $data['category_type_id'] = $category['category_type_id'];
+            }
+        }
+        elseif (isset($defaults['category_name']) && !empty($defaults['category_name'])) {
+            $data['category_name'] = $defaults['category_name'];
+            $category = $CategoryType->selectByName($data['category_name']);
+            if (isset($category['category_type_id'])) {
+                $data['category_type_id'] = $category['category_type_id'];
+            }
+        }
 
         if ($contact_id > 0) {
             // select the existing record
@@ -512,7 +574,7 @@ class Excel extends Alert
 
             if (isset($existing_contact['category'][0]) && is_array($existing_contact['category'][0]) && !empty($existing_contact['category'][0])) {
                 $data['category_id'] = (isset($data['category_id']) && ($data['category_id'] > 0) && ($data['category_id'] != $existing_contact['category'][0]['category_id'])) ? $data['category_id'] : $existing_contact['category'][0]['category_id'];
-                $data['category_type_id'] = (isset($data['category_type_id']) && ($data['category_type_id'] != $existing_contact['category'][0]['category_type_id'])) ? $data['category_type_id'] : $existing_contact['category'][0]['category_type_id'];
+                $data['category_type_id'] = (isset($data['category_type_id']) && ($data['category_type_id'] > 0) && ($data['category_type_id'] != $existing_contact['category'][0]['category_type_id'])) ? $data['category_type_id'] : $existing_contact['category'][0]['category_type_id'];
 
                 if (isset($existing_contact['extra_fields']) && is_array($existing_contact['extra_fields'])) {
                     foreach ($existing_contact['extra_fields'] as $extra_field) {
@@ -591,11 +653,16 @@ class Excel extends Alert
                     'address_city' => isset($data['address_city']) ? $data['address_city'] : '',
                     'address_area' => isset($data['address_area']) ? $data['address_area'] : '',
                     'address_state' => isset($data['address_state']) ? $data['address_state'] : '',
-                    'address_country_code' => isset($data['address_country_code']) ? $data['address_country_code'] : ''
+                    'address_country_code' => isset($data['address_country_code']) ? $data['address_country_code'] : '',
+                    'address_description' => isset($data['address_description']) ? $data['address_description'] : '',
+                    'address_identifier' => isset($data['address_identifier']) ? $data['address_identifier'] : '',
+                    'address_appendix_1' => isset($data['address_appendix']) ? $data['address_appendix'] : '',
+                    'address_appendix_2' => isset($data['address_appendix_2']) ? $data['address_appendix_2'] : ''
                 )
             )
         );
 
+        // @todo: support all other address types!
 
         if (!isset($birthday)) {
             if (isset($data['person_birthday']) && !empty($data['person_birthday']) && ($data['person_birthday'] != '0000-00-00')) {
@@ -634,9 +701,13 @@ class Excel extends Alert
         if (isset($data['communication_email']) && !empty($data['communication_email'])) {
             if (false === ($email = $this->app['contact']->parseEMail($data['communication_email']))) {
                 $email = $data['communication_email'];
+                if ($login == $email) {
+                    // fatal - can not use invalid email address for login!
+                    return false;
+                }
             }
             $contact['communication'][] = array(
-                'communication_id' => $data['communication_email_id'],
+                'communication_id' => isset($data['communication_email_id']) ? $data['communication_email_id'] : -1,
                 'contact_id' => $data['contact_id'],
                 'communication_type' => 'EMAIL',
                 'communication_usage' => 'PRIMARY',
@@ -769,45 +840,47 @@ class Excel extends Alert
             )
         );
 
-        /*
-        $CategoryType = new CategoryType($this->app);
-        $category_type = $CategoryType->select($data['category_type_id']);
+        if ($data['category_type_id'] > 0) {
+            // a valid category type ID isset
 
-        $contact['category'] = array(
-            array(
-                'category_id' => $data['category_id'],
-                'contact_id' => $data['contact_id'],
-                'category_type_id' => $data['category_type_id'],
-                'category_type_name' => $category_type['category_type_name']
-            )
-        );
+            $category_type = $CategoryType->select($data['category_type_id']);
 
-        // EXTRA FIELDS
-        $ExtraCategory = new ExtraCategory($this->app);
-        $type_ids = $ExtraCategory->selectTypeIDByCategoryTypeID($data['category_type_id']);
-        $ExtraType = new ExtraType($this->app);
+            $contact['category'] = array(
+                array(
+                    'category_id' => $data['category_id'],
+                    'contact_id' => $data['contact_id'],
+                    'category_type_id' => $data['category_type_id'],
+                    'category_type_name' => $category_type['category_type_name']
+                )
+            );
 
-        $contact['extra_fields'] = array();
-        foreach ($type_ids as $type_id) {
-            // get the extra field specification
-            if (false !== ($extra = $ExtraType->select($type_id))) {
-                $name = 'extra_'.strtolower($extra['extra_type_name']);
-                $id = 'extra_'.strtolower($extra['extra_type_name']).'_id';
-                if (isset($data[$name])) {
-                    $contact['extra_fields'][] = array(
-                        'extra_id' => isset($data[$id]) ? $data[$id] : -1,
-                        'extra_type_id' => $extra['extra_type_id'],
-                        'extra_type_name' => $extra['extra_type_name'],
-                        'category_id' => $data['category_id'],
-                        'category_type_name' => $category_type['category_type_name'],
-                        'contact_id' => $data['contact_id'],
-                        'extra_type_type' => $extra['extra_type_type'],
-                        'extra_value' => !is_null($data[$name]) ? $data[$name] : ''
-                    );
+            // EXTRA FIELDS
+            $ExtraCategory = new ExtraCategory($this->app);
+            $type_ids = $ExtraCategory->selectTypeIDByCategoryTypeID($data['category_type_id']);
+            $ExtraType = new ExtraType($this->app);
+
+            $contact['extra_fields'] = array();
+            foreach ($type_ids as $type_id) {
+                // get the extra field specification
+                if (false !== ($extra = $ExtraType->select($type_id))) {
+                    $name = 'extra_'.strtolower($extra['extra_type_name']);
+                    $id = 'extra_'.strtolower($extra['extra_type_name']).'_id';
+                    if (isset($data[$name])) {
+                        $contact['extra_fields'][] = array(
+                            'extra_id' => isset($data[$id]) ? $data[$id] : -1,
+                            'extra_type_id' => $extra['extra_type_id'],
+                            'extra_type_name' => $extra['extra_type_name'],
+                            'category_id' => $data['category_id'],
+                            'category_type_name' => $category_type['category_type_name'],
+                            'contact_id' => $data['contact_id'],
+                            'extra_type_type' => $extra['extra_type_type'],
+                            'extra_value' => !is_null($data[$name]) ? $data[$name] : ''
+                        );
+                    }
                 }
             }
         }
-*/
+
         if (isset($data['tags']) && is_array($data['tags'])) {
             foreach ($data['tags'] as $tag) {
                 $contact['tag'][] = array(
@@ -818,10 +891,12 @@ class Excel extends Alert
         }
 
         if ($data['contact_id'] > 0) {
-            $this->app['contact']->update($contact, $data['contact_id']);
+            if ($this->app['contact']->update($contact, $data['contact_id'])) {
+                self::$counter_update++;
+            }
         }
-        else {
-            $this->app['contact']->insert($contact);
+        elseif ($this->app['contact']->insert($contact)) {
+            self::$counter_insert++;
         }
     }
 
@@ -889,6 +964,8 @@ class Excel extends Alert
 
                     $objWorksheet = $objPHPExcel->getActiveSheet();
                     $start = true;
+                    self::$counter_insert = 0;
+                    self::$counter_update = 0;
 
                     foreach ($objWorksheet->getRowIterator() as $row) {
                         if ($start) {
@@ -909,7 +986,6 @@ class Excel extends Alert
                             $contact[$cell_type[$i]] = $cell->getValue();
                         }
                         $this->importContact($contact, $defaults);
-break;
                     }
 
                 } catch (\PHPExcel_Reader_Exception $e) {
@@ -918,7 +994,18 @@ break;
                             '%file%' => basename($e->getFile()), '%line%' => $e->getLine()), self::ALERT_TYPE_DANGER);
                 }
             }
-            $this->setAlert('ok!!!');
+            if (self::$counter_insert > 0) {
+                $this->setAlert('Totally inserted %count% contact records',
+                    array('%count%' => self::$counter_insert), self::ALERT_TYPE_SUCCESS);
+            }
+            if (self::$counter_update > 0) {
+                $this->setAlert('Totally updated %count% contact records',
+                    array('%count%' => self::$counter_update), self::ALERT_TYPE_SUCCESS);
+            }
+            if ((self::$counter_insert == 0) && (self::$counter_update == 0)) {
+                $this->setAlert('There where no contact records inserted or updated.',
+                    array(), self::ALERT_TYPE_INFO);
+            }
         }
         else {
             // general error (timeout, CSFR ...)

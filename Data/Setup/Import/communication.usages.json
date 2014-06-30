@@ -10,5 +10,9 @@
   {
     "usage":"PRIMARY",
     "description":"description: primary"
+  },
+  {
+      "usage":"SECONDARY",
+      "description":"secondary communication channel"
   }
 ]

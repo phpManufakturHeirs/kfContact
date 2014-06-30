@@ -58,7 +58,8 @@ class Configuration
                     'default_country' => 'DE',
                     'validate' => true,
                     'format' => true,
-                    'default_format' => 'INTERNATIONAL'
+                    'default_format' => 'INTERNATIONAL',
+                    'maximum_length' => 17
                 )
             ),
             'url' => array(
