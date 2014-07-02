@@ -17,6 +17,7 @@ use phpManufaktur\Contact\Data\Contact\ExtraType;
 use Carbon\Carbon;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
+use phpManufaktur\Contact\Data\Contact\Country;
 
 require_once EXTENSION_PATH.'/phpexcel/1.8.0/Classes/PHPExcel/IOFactory.php';
 
@@ -408,7 +409,20 @@ class Excel extends Alert
         $data['address_id'] = -1;
         $data['category_id'] = -1;
         $data['category_type_id'] = -1;
-        $data['address_country_code'] = isset($data['address_country_code']) ? $data['address_country_code'] : $defaults['address_country_code'];
+
+        if (isset($data['address_country_code']) && !empty($data['address_country_code'])) {
+            $Country = new Country($this->app);
+            $check = $data['address_country_code'];
+            if ($Country->existsCountryCode($check)) {
+                $data['address_country_code'] = strtoupper($check);
+            }
+            elseif (false === ($data['address_country_code'] = $Country->selectCountryCode($check))) {
+                $data['address_country_code'] = $defaults['address_country_code'];
+            }
+        }
+        else {
+            $data['address_country_code'] = $defaults['address_country_code'];
+        }
 
         if (isset($data['tags'])) {
             $items = strpos($data['tags'], ',') ? explode(',', $data['tags']) : array($data['tags']);
@@ -703,6 +717,8 @@ class Excel extends Alert
                 $email = $data['communication_email'];
                 if ($login == $email) {
                     // fatal - can not use invalid email address for login!
+                    $this->setAlert('Fatal: Can not import contact record because the email address %email% is invalid.',
+                        array('%email%' => $data['communication_email']), self::ALERT_TYPE_DANGER);
                     return false;
                 }
             }

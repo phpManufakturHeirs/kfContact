@@ -394,9 +394,19 @@ class Excel extends Alert
                     '%remove%' => FRAMEWORK_URL.'/admin/contact/export/remove/'.base64_encode($file_name)),
                 self::ALERT_TYPE_SUCCESS);
         }
+        elseif ($save_as === 'xls') {
+            $file_name = date('ymd-Hi').'-contact-export.xls';
+            \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5')
+            ->save(FRAMEWORK_MEDIA_PATH.'/'.$file_name);
+            $this->setAlert('Contact records successfull exported as <a href="%url%">%file_name%</a>. Please <a href="%remove%">remove the file</a> after download.',
+                array('%url%' => FRAMEWORK_MEDIA_URL.'/'.$file_name, '%file_name%' => $file_name,
+                    '%remove%' => FRAMEWORK_URL.'/admin/contact/export/remove/'.base64_encode($file_name)),
+                self::ALERT_TYPE_SUCCESS);
+        }
         elseif ($save_as === 'csv') {
             $file_name = date('ymd-Hi').'-contact-export.csv';
             \PHPExcel_IOFactory::createWriter($objPHPExcel, 'CSV')
+                ->setUseBOM(true)
                 ->setDelimiter(',')
                 ->setEnclosure('"')
                 ->setLineEnding("\r\n")
@@ -415,26 +425,14 @@ class Excel extends Alert
     }
 
     /**
-     * Controller to create a Excel file with all available contact records
+     * Controller to execute the desired export
      *
      * @param Application $app
      */
-    public function ControllerExportExcel(Application $app)
+    public function ControllerExportType(Application $app, $type)
     {
         $this->initialize($app);
-        $this->export('xlsx');
-        return $this->promptAlertFramework();
-    }
-
-    /**
-     * Controller to create a CSV file with all available contact records
-     *
-     * @param Application $app
-     */
-    public function ControllerExportCSV(Application $app)
-    {
-        $this->initialize($app);
-        $this->export('csv');
+        $this->export($type);
         return $this->promptAlertFramework();
     }
 

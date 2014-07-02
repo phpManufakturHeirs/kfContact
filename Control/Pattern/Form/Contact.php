@@ -454,6 +454,7 @@ class Contact extends Alert
             $data['note_id'] = isset($existing_contact['note'][0]['note_id']) ? $existing_contact['note'][0]['note_id'] : -1;
             if ($data['note_id'] > 0) {
                 $data['note'] = (isset($data['note']) && !empty($data['note']) && ($data['note'] != $existing_contact['note'][0]['note_content'])) ? $data['note'] : $existing_contact['note'][0]['note_content'];
+                $data['note_date'] = $existing_contact['note'][0]['note_date'];
             }
 
             $data['category_id'] = (($data['category_id'] > 0) && ($data['category_id'] != $existing_contact['category'][0]['category_id'])) ? $data['category_id'] : $existing_contact['category'][0]['category_id'];
@@ -702,9 +703,10 @@ class Contact extends Alert
             array(
                 'note_id' => isset($data['note_id']) ? $data['note_id'] : -1,
                 'contact_id' => $data['contact_id'],
-                'note_title' => 'Remark',
+                'note_title' => 'Remarks',
                 'note_type' => 'TEXT',
-                'note_content' => isset($data['note']) ? $data['note'] : ''
+                'note_content' => isset($data['note']) ? $data['note'] : '',
+                'note_date' => isset($data['note_date']) ? $data['note_date'] : date('Y-m-d H:i:s')
             )
         );
 
@@ -849,14 +851,16 @@ class Contact extends Alert
         $form = $this->app['form.factory']->createBuilder('form');
 
         // loop through the hidden fields
-        foreach ($field['hidden'] as $hidden) {
-            $default_value = null;
-            if (in_array($hidden, array('contact_id','category_id','company_id','person_id','address_id'))) {
-                $default_value = -1;
+        if (isset($field['hidden']) && is_array($field['hidden'])) {
+            foreach ($field['hidden'] as $hidden) {
+                $default_value = null;
+                if (in_array($hidden, array('contact_id','category_id','company_id','person_id','address_id'))) {
+                    $default_value = -1;
+                }
+                $form->add($hidden, 'hidden', array(
+                    'data' => isset($data[$hidden]) ? $data[$hidden] : $default_value
+                ));
             }
-            $form->add($hidden, 'hidden', array(
-                'data' => isset($data[$hidden]) ? $data[$hidden] : $default_value
-            ));
         }
 
         $TagType = new TagType($this->app);

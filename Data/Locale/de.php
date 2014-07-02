@@ -23,6 +23,10 @@ return array(
         => '- neue Markierung -',
     '- no contact selected -'
         => '- kein Kontakt ausgewählt -',
+    '- not assigned -'
+        => '- nicht zugeordnet -',
+    '- select category (optional) -'
+        => '- Kategorie auswählen (optional) -',
     'active'
         => 'Aktiv',
     'Active'
@@ -67,6 +71,8 @@ return array(
         => 'Erlaubte Zeichen für den %identifier% Bezeichner sind A-Z, 0-9 und der Unterstrich. Der Bezeichner wird stets in Großbuchstaben umgewandelt.',
     'Area'
         => 'Bezirk, Region',
+    'Assign the fields'
+        => 'Datenfelder zuordnen',
     'AT'
         => 'Österreich',
     "At minimum you must specify a street, a city or a zip code for a valid address"
@@ -187,6 +193,8 @@ return array(
         => 'Land',
     'Create a new category'
         => 'Eine neue Kategorie erstellen',
+    'Create a new contact'
+        => 'Einen neuen Kontakt anlegen',
     'Create a new Tag <i>#tag</i>'
         => 'Eine neue Markierung (#tag) erstellen',
     'Create a new title'
@@ -220,6 +228,8 @@ return array(
         => 'Es wurde eine KeepInTouch Installation (Release: %release%) mit %count% aktiven oder gesperrten Kontakten gefunden.',
     'Determine contact type'
         => 'Kontakt Typ festlegen',
+    'Determine default values'
+        => 'Vorgabewerte festlegen',
     'doc'
         => 'Dr.',
 
@@ -249,6 +259,12 @@ return array(
         => 'Titel bearbeiten',
     'Edit titles'
         => 'Titel bearbeiten',
+    'Execute import'
+        => 'Import durchführen',
+    'Export as'
+        => 'Exportieren im Format',
+    'Export contact records'
+        => 'Kontaktdatensätze exportieren',
 
     'Failed to send a email with the subject <b>%subject%</b> to the addresses: <b>%failed%</b>.'
         => 'Eine E-Mail mit dem Betreff <b>%subject%</b> konnte an die folgenden Adressaten nicht übermittelt werden: <b>%failed%</b>.',
@@ -282,8 +298,12 @@ return array(
         => 'Kontaktdaten importieren',
     'Import contacts from KeepInTouch (KIT)'
         => 'Kontakte aus KeepInTouch (KIT) importieren',
+    'Import fields'
+        => 'Import Datenfelder',
     'Import from'
         => 'Importieren aus',
+    'Information about the Contact extension'
+        => 'Information über kitFramework Contact',
     "Inserted the new contact with the ID %contact_id%."
         => 'Es wurde ein neuer Kontakt mit der ID %contact_id% hinzugefügt',
     'Intern'
@@ -293,6 +313,14 @@ return array(
 
     'Last name'
         => 'Nachname',
+    'List of available categories'
+        => 'Liste aller verfügbaren Kategorien',
+    'List of all available contacts'
+        => 'Liste aller verfügbaren Kontakte',
+    'List of available extra fields'
+        => 'Liste der verfügbaren Zusatzfelder',
+    'List of available tags'
+        => 'Liste der verfügbaren Markierungen',
     'locked'
         => 'Gesperrt',
     'Locked'
@@ -329,6 +357,8 @@ return array(
         => 'kein Zusatzfeld zugeordnet',
     'No hits for the search term <i>%search%</i>!'
         => 'Keine Treffer für den Suchbegriff <i>%search%</i>!',
+    'No hits for this search!'
+        => 'Keine Treffer für diese Suche!',
     'Note'
         => 'Notiz',
     'Note content'
@@ -409,6 +439,8 @@ return array(
         => 'Entschuldigung, während der Verarbeitung des Formulars ist ein Problem aufgetreten. Wir haben den Webmaster informiert.',
     'Sorry, but we have a problem. Please contact the webmaster and tell him to check the status of the email address %email%.'
         => 'Entschuldigung, wir haben ein Problem. Bitte wenden Sie sich an den Webmaster und bitten Sie ihn, den Status der E-Mail Adresse %email% zu überprüfen!',
+    'Start export'
+        => 'Export starten',
     'Start import'
         => 'Import starten',
     'Start import from KeepInTouch'
