@@ -157,10 +157,16 @@ class Contact extends ContactParent
         return $country->getArrayForTwig();
     }
 
-    public function getCategoryArrayForTwig()
+    /**
+     * Return a associative array prepared for the usage as select option in a Twig template
+     *
+     * @param mixed $access null to return all categories, 'PUBLIC' to return only public categories
+     * @return array
+     */
+    public function getCategoryArrayForTwig($access=null)
     {
         $categoryType = new CategoryType($this->app);
-        return $categoryType->getArrayForTwig();
+        return $categoryType->getArrayForTwig($access);
     }
 
     public function getTagArrayForTwig()

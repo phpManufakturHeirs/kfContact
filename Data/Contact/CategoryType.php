@@ -118,10 +118,18 @@ EOD;
      * @throws \Exception
      * @return array
      */
-    public function getArrayForTwig()
+    public function getArrayForTwig($access=null)
     {
         try {
-            $SQL = "SELECT * FROM `".self::$table_name."` ORDER BY `category_type_name` ASC";
+            if (null === $access) {
+                $SQL = "SELECT * FROM `".self::$table_name."` ORDER BY `category_type_name` ASC";
+            }
+            elseif (in_array(strtoupper($access), array('ADMIN','PUBLIC'))) {
+                $SQL = "SELECT * FROM `".self::$table_name."` WHERE `category_type_access`='$access' ORDER BY `category_type_name` ASC";
+            }
+            else {
+                throw new \Exception('Parameter $access must be a string and can be ADMIN or PUBLIC');
+            }
             $categories = $this->app['db']->fetchAll($SQL);
             $result = array();
             foreach ($categories as $category) {
@@ -304,6 +312,24 @@ EOD;
             if (!empty($update)) {
                 $this->app['db']->update(self::$table_name, $update, array('category_type_id' => $category_type_id));
             }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Check if the access to the given $category_type_name is PUBLIC or not
+     *
+     * @param string $category_type_name
+     * @throws \Exception
+     * @return boolean
+     */
+    public function isPublic($category_type_name)
+    {
+        try {
+            $SQL = "SELECT `category_access` FROM `".self::$table_name."` WHERE `category_type_name`='$category_type_name'";
+            $access = $this->app['db']->fetchColumn($SQL);
+            return ($access === 'PUBLIC');
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
