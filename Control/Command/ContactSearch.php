@@ -15,11 +15,16 @@ use Silex\Application;
 use phpManufaktur\Basic\Control\kitCommand\Basic;
 use phpManufaktur\Contact\Data\Contact\Contact;
 use phpManufaktur\Contact\Data\Contact\TagType;
+use phpManufaktur\Contact\Data\Contact\CategoryType;
 
 class ContactSearch extends Basic
 {
     protected static $list_configuration = null;
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\Basic\Control\kitCommand\Basic::initParameters()
+     */
     protected function initParameters(Application $app, $parameter_id=-1)
     {
         parent::initParameters($app, $parameter_id);
@@ -30,11 +35,17 @@ class ContactSearch extends Basic
         self::$list_configuration = $app['utils']->readJSON($config_path);
     }
 
+    /**
+     * Controller to execute the search for public contacts
+     *
+     * @param Application $app
+     */
     public function ControllerSearch(Application $app)
     {
         $this->initParameters($app);
 
         $parameter = $this->getCommandParameters();
+
         $tags = array();
         $use_tags = false;
         if (isset($parameter['tags'])) {
@@ -52,6 +63,29 @@ class ContactSearch extends Basic
                 }
             }
         }
+        $tag_select = $app['contact']->getTagArrayForTwig();
+
+        $categories = array();
+        $use_categories = false;
+        $category_select = array();
+        if (isset($parameter['categories'])) {
+            $use_categories = true;
+            if (!empty(trim($parameter['categories']))) {
+                $CategoryTypeData = new CategoryType($app);
+                $category_array = strpos($parameter['categories'], ',') ? explode(',', $parameter['categories']) : array($parameter['categories']);
+                if (!empty($category_array)) {
+                    foreach ($category_array as $category) {
+                        $category = strtoupper(trim($category));
+                        if ($CategoryTypeData->existsCategory($category) &&
+                            $CategoryTypeData->isPublic($category)) {
+                            $categories[] = $category;
+                        }
+                    }
+                }
+            }
+        }
+        $category_select = $app['contact']->getCategoryArrayForTwig('PUBLIC');
+
         $contacts = array();
 
         if ('POST' == $this->app['request']->getMethod()) {
@@ -62,11 +96,16 @@ class ContactSearch extends Basic
                     $search_tags = array($tag);
                 }
             }
+            $search_categories = $categories;
+            if ($use_categories && empty($search_categories)) {
+                if ((null !== ($category = $app['request']->get('category'))) && ($category != -1)) {
+                    $search_categories = array($category);
+                }
+            }
             $Contact = new Contact($app);
-            $contacts = $Contact->searchPublicContact($search, $search_tags);
+            $contacts = $Contact->searchPublicContact($search, $search_tags, $search_categories);
         }
 
-        $tag_select = $app['contact']->getTagArrayForTwig();
 
         // no extra space for the iframe
         $this->setFrameAdd(300);
@@ -79,6 +118,9 @@ class ContactSearch extends Basic
                 'use_tags' => $use_tags,
                 'tags' => $tags,
                 'tag_select' => $tag_select,
+                'use_categories' => $use_categories,
+                'categories' => $categories,
+                'category_select' => $category_select,
                 'contacts' => $contacts,
                 'columns' => self::$list_configuration['columns']
             ));

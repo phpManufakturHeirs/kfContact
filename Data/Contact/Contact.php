@@ -704,7 +704,16 @@ EOD;
         }
     }
 
-    public function searchPublicContact($search_term, $tags=array())
+    /**
+     * Search for public contacts in all relevant data fields.
+     *
+     * @param string $search_term
+     * @param array $tags optional, search only for records with the desired tags
+     * @param array $categories optional, search only for records with the desired categories
+     * @throws \Exception
+     * @return Ambigous <boolean, array>
+     */
+    public function searchPublicContact($search_term, $tags=array(), $categories=array())
     {
         try {
             $t_overview = FRAMEWORK_TABLE_PREFIX.'contact_overview';
@@ -715,6 +724,7 @@ EOD;
             $t_person = FRAMEWORK_TABLE_PREFIX.'contact_person';
             $t_note = FRAMEWORK_TABLE_PREFIX.'contact_note';
             $t_tag = FRAMEWORK_TABLE_PREFIX.'contact_tag';
+            $t_category = FRAMEWORK_TABLE_PREFIX.'contact_category';
             // base SQL - access only PUBLIC and ACTIVE contacts
             $SQL = "SELECT * FROM `$t_overview` ".
                 "LEFT JOIN `$t_extra` ON `$t_extra`.`contact_id`=`$t_overview`.`contact_id` ".
@@ -724,6 +734,7 @@ EOD;
                 "LEFT JOIN `$t_person` ON `$t_person`.`contact_id`=`$t_overview`.`contact_id` ".
                 "LEFT JOIN `$t_note` ON `$t_note`.`contact_id`=`$t_overview`.`contact_id` ".
                 "LEFT JOIN `$t_tag` ON `$t_tag`.`contact_id`=`$t_overview`.`contact_id` ".
+                "LEFT JOIN `$t_category` ON `$t_category`.`contact_id`=`$t_overview`.`contact_id` ".
                 "WHERE `$t_overview`.`category_access`='PUBLIC' AND `$t_overview`.`contact_status`='ACTIVE' AND (";
 
             $search = trim($search_term);
@@ -811,6 +822,20 @@ EOD;
                 }
                 $SQL .= ") ";
             }
+
+            if (is_array($categories) && !empty($categories)) {
+                $SQL .= " AND (";
+                $start = true;
+                foreach ($categories as $category) {
+                    if (!$start) {
+                        $SQL .= " OR ";
+                    }
+                    $SQL .= "(`$t_category`.`category_type_name`='$category')";
+                    $start = false;
+                }
+                $SQL .= ") ";
+            }
+
             $SQL .= "GROUP BY `$t_overview`.`contact_id` ORDER BY `$t_overview`.`order_name` ASC";
 
             $results = $this->app['db']->fetchAll($SQL);
