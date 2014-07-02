@@ -221,8 +221,8 @@ EOD;
         try {
             $category_table = self::$table_name;
             $category_type_table = FRAMEWORK_TABLE_PREFIX.'contact_category_type';
-            $SQL = "SELECT `category_type_target_url` FROM `$category_table`, `$category_type_table` ".
-                "WHERE `$category_table`.`category_type_id`=`$category_type_table`.`category_type_id` AND ".
+            $SQL = "SELECT `category_type_target_url` FROM `$category_table` ".
+                "LEFT JOIN `$category_type_table` ON `$category_type_table`.`category_type_id`=`$category_table`.`category_type_id` ".
                 "`$category_table`.`contact_id`=$contact_id";
             $url = $this->app['db']->fetchColumn($SQL);
             return (is_string($url) && (strlen($url) > 1)) ? CMS_URL.$url : false;

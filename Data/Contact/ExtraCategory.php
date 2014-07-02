@@ -191,13 +191,23 @@ EOD;
         }
     }
 
+    /**
+     * Select ExtraCategory by the given name and category ID
+     *
+     * @param string $extra_name
+     * @param integer $category_type_id
+     * @throws \Exception
+     * @return Ambigous <boolean, array>
+     */
     public function selectTypeByNameAndCategory($extra_name, $category_type_id)
     {
         try {
             $ExtraType = FRAMEWORK_TABLE_PREFIX.'contact_extra_type';
             $ExtraCategory = self::$table_name;
-            $SQL = "SELECT * FROM `$ExtraCategory`, `$ExtraType` WHERE `$ExtraType`.`extra_type_name`='$extra_name' AND ".
-                "`$ExtraCategory`.`category_type_id`=$category_type_id AND `$ExtraType`.`extra_type_id`=`$ExtraCategory`.`extra_type_id`";
+            $SQL = "SELECT * FROM `$ExtraCategory` ".
+                "LEFT JOIN `$ExtraType` ON `$ExtraType`.`extra_type_id`=`$ExtraCategory`.`extra_type_id` ".
+                "WHERE `$ExtraType`.`extra_type_name`='$extra_name' AND ".
+                "`$ExtraCategory`.`category_type_id`$category_type_id";
             $result = $this->app['db']->fetchAssoc($SQL);
             return (is_array($result)) ? $result : false;
         } catch (\Doctrine\DBAL\DBALException $e) {

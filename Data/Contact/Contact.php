@@ -626,9 +626,11 @@ EOD;
 
             if (is_array($tags) && !empty($tags)) {
                 $in_tags = "('".implode("','", $tags)."')";
-                $SQL = "SELECT `$contact`.`contact_id`, `$contact`.`contact_name` FROM `$contact`, `$tag_table` "
-                    ."WHERE `$contact`.`contact_id`=`$tag_table`.`contact_id` AND `$tag_table`.`tag_name` IN $in_tags "
-                    ."AND `contact_status` IN $in_status ORDER BY `contact_name` ASC";
+                $SQL = "SELECT `$contact`.`contact_id`, `contact_name` FROM `$contact` ".
+                    "LEFT JOIN `$tag_table` ON `$tag_table`.`contact_id`=`$contact`.`contact_id` ".
+                    "WHERE `$tag_table`.`tag_name` IN $in_tags AND `contact_status` IN $in_status ".
+                    "ORDER BY `contact_name` ASC";
+
             }
             else {
                 $SQL = "SELECT `contact_id`,`contact_name` FROM `$contact` WHERE `contact_status` IN $in_status "
@@ -663,7 +665,9 @@ EOD;
         try {
             $category_type = FRAMEWORK_TABLE_PREFIX.'contact_category_type';
             $category = FRAMEWORK_TABLE_PREFIX.'contact_category';
-            $SQL = "SELECT `category_type_access` FROM `$category_type`, `$category` WHERE `$category_type`.`category_type_id`=`$category`.`category_type_id` AND `contact_id`=$contact_id";
+            $SQL = "SELECT `category_type_access` FROM `$category_type` ".
+                "LEFT JOIN `$category` ON `$category`.`category_type_id`=`$category_type`.`category_type_id` ".
+                "WHERE `contact_id`=$contact_id";
             $result = $this->app['db']->fetchColumn($SQL);
             return (is_string($result)) ? $result : 'ADMIN';
         } catch (\Doctrine\DBAL\DBALException $e) {
@@ -695,6 +699,127 @@ EOD;
             $SQL = "SELECT `contact_status` FROM `".self::$table_name."` WHERE `contact_id`=$contact_id";
             $status = $this->app['db']->fetchColumn($SQL);
             return ($status == 'ACTIVE');
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    public function searchPublicContact($search_term, $tags=array())
+    {
+        try {
+            $t_overview = FRAMEWORK_TABLE_PREFIX.'contact_overview';
+            $t_extra = FRAMEWORK_TABLE_PREFIX.'contact_extra';
+            $t_communication = FRAMEWORK_TABLE_PREFIX.'contact_communication';
+            $t_address = FRAMEWORK_TABLE_PREFIX.'contact_address';
+            $t_company = FRAMEWORK_TABLE_PREFIX.'contact_company';
+            $t_person = FRAMEWORK_TABLE_PREFIX.'contact_person';
+            $t_note = FRAMEWORK_TABLE_PREFIX.'contact_note';
+            $t_tag = FRAMEWORK_TABLE_PREFIX.'contact_tag';
+            // base SQL - access only PUBLIC and ACTIVE contacts
+            $SQL = "SELECT * FROM `$t_overview` ".
+                "LEFT JOIN `$t_extra` ON `$t_extra`.`contact_id`=`$t_overview`.`contact_id` ".
+                "LEFT JOIN `$t_communication` ON `$t_communication`.`contact_id`=`$t_overview`.`contact_id` ".
+                "LEFT JOIN `$t_address` ON `$t_address`.`contact_id`=`$t_overview`.`contact_id` ".
+                "LEFT JOIN `$t_company` ON `$t_company`.`contact_id`=`$t_overview`.`contact_id` ".
+                "LEFT JOIN `$t_person` ON `$t_person`.`contact_id`=`$t_overview`.`contact_id` ".
+                "LEFT JOIN `$t_note` ON `$t_note`.`contact_id`=`$t_overview`.`contact_id` ".
+                "LEFT JOIN `$t_tag` ON `$t_tag`.`contact_id`=`$t_overview`.`contact_id` ".
+                "WHERE `$t_overview`.`category_access`='PUBLIC' AND `$t_overview`.`contact_status`='ACTIVE' AND (";
+
+            $search = trim($search_term);
+            $search_array = array();
+            if (strpos($search, ' ')) {
+                $dummy = explode(' ', $search_term);
+                foreach ($dummy as $item) {
+                    $search_array[] = trim($item);
+                }
+            }
+            else {
+                $search_array[] = trim($search_term);
+            }
+            $start = true;
+            $skipped = false;
+            foreach ($search_array as $search) {
+                if (!$skipped) {
+                    if ($start) {
+                        $SQL .= "(";
+                        $start = false;
+                    }
+                    elseif (strtoupper($search) == 'AND') {
+                        $SQL .= ") AND (";
+                        $skipped = true;
+                        continue;
+                    }
+                    elseif (strtoupper($search) == 'NOT') {
+                        $SQL .= ") AND NOT (";
+                        $skipped = true;
+                        continue;
+                    }
+                    elseif (strtoupper($search) == 'OR') {
+                        $SQL .= ") OR (";
+                        $skipped = true;
+                        continue;
+                    }
+                    else {
+                        $SQL .= ") OR (";
+                    }
+                }
+                else {
+                    $skipped = false;
+                }
+                $SQL .= "`contact_name` LIKE '%$search%' OR ".
+                    "(`$t_person`.`person_gender` LIKE '%$search%' AND `$t_person`.`person_status`='ACTIVE') OR ".
+                    "(`$t_person`.`person_title` LIKE '%$search%' AND `$t_person`.`person_status`='ACTIVE') OR ".
+                    "(`$t_person`.`person_first_name` LIKE '%$search%' AND `$t_person`.`person_status`='ACTIVE') OR ".
+                    "(`$t_person`.`person_last_name` LIKE '%$search%' AND `$t_person`.`person_status`='ACTIVE') OR ".
+                    "(`$t_person`.`person_nick_name` LIKE '%$search%' AND `$t_person`.`person_status`='ACTIVE') OR ".
+                    "(`$t_person`.`person_primary_note_id`=`$t_note`.`note_id` AND `$t_note`.`note_content` LIKE '%$search%' AND `$t_note`.`note_status`='ACTIVE') OR ".
+                    "(`$t_company`.`company_name` LIKE '%$search%' AND `$t_company`.`company_status`='ACTIVE') OR ".
+                    "(`$t_company`.`company_department` LIKE '%$search%' AND `$t_company`.`company_status`='ACTIVE') OR ".
+                    "(`$t_company`.`company_additional` LIKE '%$search%' AND `$t_company`.`company_status`='ACTIVE') OR ".
+                    "(`$t_company`.`company_additional_2` LIKE '%$search%' AND `$t_company`.`company_status`='ACTIVE') OR ".
+                    "(`$t_company`.`company_additional_3` LIKE '%$search%' AND `$t_company`.`company_status`='ACTIVE') OR ".
+                    "(`$t_company`.`company_primary_note_id`=`$t_note`.`note_id` AND `$t_note`.`note_content` LIKE '%$search%' AND `$t_note`.`note_status`='ACTIVE') OR ".
+                    "(`$t_communication`.`communication_value` LIKE '%$search%' AND `$t_communication`.`communication_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_identifier` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_description` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_street` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_appendix_1` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_appendix_2` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_city` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_area` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_state` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_country_code` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_extra`.`contact_id`=`$t_overview`.`contact_id` AND `$t_extra`.`extra_text` LIKE '%$search%') OR ".
+                    "(`$t_extra`.`contact_id`=`$t_overview`.`contact_id` AND `$t_extra`.`extra_html` LIKE '%$search%') OR ".
+                    "(`$t_extra`.`contact_id`=`$t_overview`.`contact_id` AND `$t_extra`.`extra_varchar` LIKE '%$search%') OR ".
+                    "(`$t_extra`.`contact_id`=`$t_overview`.`contact_id` AND `$t_extra`.`extra_date` LIKE '%$search%') OR ".
+                    "(`$t_extra`.`contact_id`=`$t_overview`.`contact_id` AND `$t_extra`.`extra_datetime` LIKE '%$search%') OR ".
+                    "(`$t_extra`.`contact_id`=`$t_overview`.`contact_id` AND `$t_extra`.`extra_time` LIKE '%$search%')";
+            }
+            $SQL .= ")) ";
+
+            if (is_array($tags) && !empty($tags)) {
+                $SQL .= " AND (";
+                $start = true;
+                foreach ($tags as $tag) {
+                    if (!$start) {
+                        $SQL .= " OR ";
+                    }
+                    $SQL .= "(`$t_tag`.`tag_name`='$tag')";
+                    $start = false;
+                }
+                $SQL .= ") ";
+            }
+            $SQL .= "GROUP BY `$t_overview`.`contact_id` ORDER BY `$t_overview`.`order_name` ASC";
+
+            $results = $this->app['db']->fetchAll($SQL);
+
+            $contacts = array();
+            foreach ($results as $key => $value) {
+                $contacts[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            return (!empty($contacts)) ? $contacts : false;
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
