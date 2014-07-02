@@ -1,10 +1,16 @@
 ## Contact for kitFramework ##
 
-(c) 2013 phpManufaktur by Ralf Hertsch
+(c) 2010, 2014 phpManufaktur by Ralf Hertsch
 
 MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
+
+**2.0.37** - 2014-07-02
+
+* introduce search function for contacts with public access, just use the kitCommand `~~ command action[search] ~~`
+* bugfix: config.contact.json was missing the settings for the register dialog
+* improved and speed up some SQL queries
 
 **2.0.36** - 2014-06-30
 
