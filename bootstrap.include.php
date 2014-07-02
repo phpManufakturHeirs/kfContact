@@ -159,13 +159,12 @@ $app->match('/admin/contact/simple/extra/edit/id/{type_id}',
 
 // Export, selection dialog
 $app->get('/admin/contact/export',
-    'phpManufaktur\Contact\Control\Export\Controller::Controller');
-// Export to Excel
-$app->get('/admin/contact/export/excel',
-    'phpManufaktur\Contact\Control\Export\Excel::ControllerExportExcel');
-// Export to CSV
-$app->get('/admin/contact/export/csv',
-    'phpManufaktur\Contact\Control\Export\Excel::ControllerExportCSV');
+    'phpManufaktur\Contact\Control\Export\Controller::ControllerStart');
+$app->post('/admin/contact/export/execute',
+    'phpManufaktur\Contact\Control\Export\Controller::ControllerExecute');
+// Export contact records
+$app->post('/admin/contact/export/type/{type}',
+    'phpManufaktur\Contact\Control\Export\Excel::ControllerExportType');
 // Remove exported file
 $app->get('/admin/contact/export/remove/{file}',
     'phpManufaktur\Contact\Control\Export\Excel::ControllerRemoveFile');
@@ -275,17 +274,25 @@ $command->post('/contact',
     'phpManufaktur\Contact\Control\Command\Action::ControllerAction')
     ->setOption('info', MANUFAKTUR_PATH.'/Contact/command.contact.json');
 
+// custom forms
 $app->get('/contact/form',
     'phpManufaktur\Contact\Control\Command\Form::ControllerFormAction');
 $app->post('/contact/form/check',
     'phpManufaktur\Contact\Control\Command\Form::ControllerFormAction');
 
+// public contact list
 $app->get('/contact/list',
     'phpManufaktur\Contact\Control\Command\ContactList::ControllerList');
 
+// search for public contacts
+$app->match('/contact/search',
+    'phpManufaktur\Contact\Control\Command\ContactSearch::ControllerSearch');
+
+// view a specific public contact
 $app->get('/contact/view',
     'phpManufaktur\Contact\Control\Command\ContactView::ControllerView');
 
+// register a public contact
 $app->match('/contact/register',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerType');
 $app->post('/contact/register/category/check',
@@ -294,14 +301,6 @@ $app->match('/contact/register/contact',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerContact');
 $app->match('/contact/register/contact/check',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerContactCheck');
-/*
-$app->post('/contact/register/category/check',
-    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterCategoryCheck');
-$app->post('/contact/register/tags/check',
-    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterTagsCheck');
-$app->post('/contact/register/data/check',
-    'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterContactCheck');
-    */
 $app->get('/contact/register/activate/user/{guid}',
     'phpManufaktur\Contact\Control\Command\ContactRegister::ControllerRegisterActivation');
 $app->get('contact/register/activate/admin/{guid}',

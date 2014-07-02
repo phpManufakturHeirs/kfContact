@@ -84,6 +84,9 @@ class Action extends Basic
             case 'register':
                 // register a new contact record
                 return $this->createIFrame('/contact/register');
+            case 'search':
+                // search public contacts
+                return $this->createIFrame('/contact/search');
             case 'view':
                 // show a specific contact record
                 return $this->createIFrame('/contact/view');
