@@ -59,7 +59,7 @@ class Configuration
                     'validate' => true,
                     'format' => true,
                     'default_format' => 'INTERNATIONAL',
-                    'maximum_length' => 17
+                    'maximum_length' => 25
                 )
             ),
             'url' => array(
@@ -75,20 +75,45 @@ class Configuration
             'command' => array(
                 'register' => array(
                     'field' => array(
+                        'predefined' => array(
+                            'contact_type',
+                            'category_id'
+                        ),
+                        'visible' => array(
+                            'tags',
+                            'person_gender',
+                            'person_first_name',
+                            'person_last_name',
+                            'company_name',
+                            'company_department',
+                            'communication_email',
+                            'communication_phone',
+                            'address_street',
+                            'address_zip',
+                            'address_city',
+                            'address_country_code',
+                            'note',
+                            'extra_fields'
+                        ),
                         'required' => array(
                             'person_gender',
                             'person_last_name',
                             'company_name'
                         ),
-                        'unused' => array(
-                            'person_title',
-                            "person_birthday",
-                            "person_nick_name",
-                            "communication_cell",
-                            "communication_fax",
-                            "address_area",
-                            "address_state",
-                            "note_content",
+                        'hidden' => array(
+                            'contact_id',
+                            'contact_type',
+                            'category_id',
+                            'category_type_id',
+                            'person_id',
+                            'company_id',
+                            'address_id'
+                        ),
+                        'readonly' => array(
+                            'contact_status',
+                            'category_name'
+                        ),
+                        'tags' => array(
                         )
                     ),
                     'publish' => array(
