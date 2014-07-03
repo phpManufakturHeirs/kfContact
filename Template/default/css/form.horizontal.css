@@ -30,7 +30,7 @@ label.required:after {
   background-color: transparent;
   font-weight: bold;
 }
-span.required {
+.form-group span.required {
   padding-left: 3px;
   color: #da251d;
   background-color: transparent;

@@ -17,6 +17,7 @@
 {% extends getTemplateFile(template_namespace, template_file) %}
 {% block stylesheet %}
   {{ parent() }}
+  <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL ~ '/Contact/Template/default/css/form.horizontal.min.css' }}" media="screen, projection" />
   {% if fileExists(MANUFAKTUR_PATH ~ '/Contact/Template/' ~ FRAMEWORK_TEMPLATES.0 ~ '/css/admin.min.css') %}
     <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL ~ '/Contact/Template/' ~ FRAMEWORK_TEMPLATES.0 ~ '/css/admin.min.css' }}" media="screen, projection" />
   {% else %}
@@ -47,7 +48,7 @@
     </div>
 
     {# assign the bootstrap 3 theming for horizontal forms to the Symfony Form Factory output #}  
-    {% form_theme form '@phpManufaktur/Contact/Template/default/command/form.fields.horizontal.twig' %}
+    {% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form.fields.horizontal.twig' %}
 
     <form action="{{ FRAMEWORK_URL ~ '/admin/contact/import/select' }}" class="form-horizontal" method="post" role="form">
       {{ form_widget(form) }}     
