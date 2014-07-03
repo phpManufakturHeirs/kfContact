@@ -1097,6 +1097,19 @@ class Contact extends Alert
                         'data' => isset($data[$visible]) ? $data[$visible] : ''
                     ));
                     break;
+                case "special_fields":
+                    if (isset($field['special']) && is_array($field['special'])) {
+                        foreach ($field['special'] as $special) {
+                            if (isset($special['enabled']) && $special['enabled']) {
+                                $form->add($special['name'], $special['type'], array(
+                                    'required' => $special['required'],
+                                    'label' => $special['label'],
+                                    'data' => isset($special['data']) ? $special['data'] : null
+                                ));
+                            }
+                        }
+                    }
+                    break;
                 default:
                     if (stripos($visible, 'extra_') == 0) {
                         // possibly an extra field!
