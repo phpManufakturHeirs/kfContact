@@ -42,9 +42,10 @@ class ExtraType
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `extra_type_id` INT(11) NOT NULL AUTO_INCREMENT,
-        `extra_type_type` ENUM('TEXT','HTML','VARCHAR','INT','FLOAT','DATE','DATETIME','TIME') NOT NULL DEFAULT 'VARCHAR',
+        `extra_type_type` ENUM('TEXT','HTML','VARCHAR','INT','FLOAT','DATE','DATETIME','TIME','SELECT_TABLE') NOT NULL DEFAULT 'VARCHAR',
         `extra_type_name` VARCHAR(64) NOT NULL DEFAULT '',
         `extra_type_description` TEXT NOT NULL,
+        `extra_type_option` TEXT NOT NULL,
         `extra_type_timestamp` TIMESTAMP,
         PRIMARY KEY (`extra_type_id`),
         UNIQUE (`extra_type_name`)
@@ -96,6 +97,7 @@ EOD;
             'extra_type_type' => '',
             'extra_type_name' => '',
             'extra_type_description' => '',
+            'extra_type_option' => '',
             'extra_type_timestamp' => '0000-00-00 00:00:00'
         );
     }
@@ -114,7 +116,8 @@ EOD;
             'INT' => 'Integer',
             'FLOAT' => 'Float',
             'DATE' => 'Date',
-            'DATETIME' => 'Date and Time'
+            'DATETIME' => 'Date and Time',
+            'SELECT_TABLE' => 'Select from external table'
         );
     }
 
@@ -155,6 +158,12 @@ EOD;
             foreach ($data as $key => $value) {
                 if (($key == 'extra_type_id') || ($key == 'extra_type_timestamp')) continue;
                 $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+            }
+            if (!isset($insert['extra_type_option']) || ($insert['extra_type_option'] === null)) {
+                $insert['extra_type_option'] = '';
+            }
+            if (!isset($insert['extra_type_description']) || ($insert['extra_type_description'] === null)) {
+                $insert['extra_type_description'] = '';
             }
             $this->app['db']->insert(self::$table_name, $insert);
             $type_id = $this->app['db']->lastInsertId();

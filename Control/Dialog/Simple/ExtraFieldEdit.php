@@ -84,13 +84,16 @@ class ExtraFieldEdit extends Dialog {
             'multiple' => false,
             'label' => 'Field type'
         ))
+        ->add('extra_type_option', 'text', array(
+            'required' => false
+        ))
         ->add('extra_type_description', 'textarea', array(
             'required' => false,
             'label' => 'Description'
         ))
         ->add('delete', 'checkbox', array(
             'required' => false,
-            'label' => 'Delete extra field'
+            'label' => 'delete this extra field'
         ))
         ;
         return $fields;

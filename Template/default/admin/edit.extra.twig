@@ -17,11 +17,12 @@
 {% extends getTemplateFile(template_namespace, template_file) %}
 {% block stylesheet %}
   {{ parent() }}
+  <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL ~ '/Contact/Template/default/css/form.horizontal.min.css' }}" media="screen, projection" />
   {% if fileExists(MANUFAKTUR_PATH ~ '/Contact/Template/' ~ FRAMEWORK_TEMPLATES.0 ~ '/css/admin.min.css') %}
     <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL ~ '/Contact/Template/' ~ FRAMEWORK_TEMPLATES.0 ~ '/css/admin.min.css' }}" media="screen, projection" />
   {% else %}
     <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL ~ '/Contact/Template/default/css/admin.min.css' }}" media="screen, projection" />
-  {% endif %}
+  {% endif %}  
 {% endblock stylesheet %}
 {% block title %}{{ 'Contact Administration - Extra fields'|trans }}{% endblock %}
 
@@ -31,8 +32,7 @@
     
     {% include '@phpManufaktur/Contact/Template/default/admin/toolbar.twig' with {toolbar: extra.toolbar} %}
     
-    <div class="height-15"></div>
-    
+    <h2>{{ 'Edit extra field'|trans }}</h2>
     {% include '@phpManufaktur/Contact/Template/default/pattern/admin/simple/edit.extra.twig' %}
 
   </div>

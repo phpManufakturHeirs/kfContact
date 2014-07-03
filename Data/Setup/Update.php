@@ -294,6 +294,24 @@ class Update
     }
 
     /**
+     * Release 2.0.38
+     */
+    protected function release_2038()
+    {
+        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_type', 'extra_type_option')) {
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_extra_type` ADD `extra_type_option` TEXT NOT NULL AFTER `extra_type_description`";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add field `contact_extra_type` to table `contact_extra_type`');
+        }
+        if (!$this->app['db.utils']->enumValueExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_type', 'extra_type_type', 'SELECT_TABLE')) {
+            // add SELECT_TABLE to extra_type_type
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_extra_type` CHANGE `extra_type_type` `extra_type_type` ENUM('TEXT','HTML','VARCHAR','INT','FLOAT','DATE','DATETIME','TIME','SELECT_TABLE') NOT NULL DEFAULT 'VARCHAR'";
+            $this->app['db']->query($SQL);
+            $this->app['monolog']->addInfo('[Contact Update] Add ENUM value SELECT_TABLE to field `extra_type_type` in table `contact_extra_type`');
+        }
+    }
+
+    /**
      * Execute all available update steps
      *
      * @param Application $app
@@ -337,6 +355,9 @@ class Update
 
             // Release 2.0.36
             $this->release_2036();
+
+            // Release 2.0.38
+            $this->release_2038();
 
 
             // setup kit_framework_contact as Add-on in the CMS
