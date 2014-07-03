@@ -216,6 +216,8 @@ return array(
         => 'den #tag <b>%tag_name%</b> löschen',
     'delete the title <b>%title_identifier%</b>'
         => 'den Titel <b>%title_identifier%</b> löschen',
+    'delete this extra field'
+        => 'dieses Zusatzfeld löschen',
     'deleted'
         => 'Gelöscht',
     'Delivery address'
@@ -265,11 +267,19 @@ return array(
         => 'Exportieren im Format',
     'Export contact records'
         => 'Kontaktdatensätze exportieren',
+    'Extra type option'
+        => 'Optionen',
 
     'Failed to send a email with the subject <b>%subject%</b> to the addresses: <b>%failed%</b>.'
         => 'Eine E-Mail mit dem Betreff <b>%subject%</b> konnte an die folgenden Adressaten nicht übermittelt werden: <b>%failed%</b>.',
     'Female'
         => 'Frau',
+    'Field name'
+        => 'Bezeichner',
+    'Field name (translated)'
+        => 'Bezeichner (übersetzt)',
+    'Field type'
+        => 'Feld Typ',
     'Fields of type `select`, `radio` or `checkbox` need one or more values defined as array in `choices`!'
         => 'Felder vom Typ `select`, `radio` oder `checkbox` benötigen einen oder mehrere Werte, die als Array in `choices` übergeben werden!',
     'File %file% successfull removed.'
