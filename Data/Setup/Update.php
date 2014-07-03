@@ -309,6 +309,20 @@ class Update
             $this->app['db']->query($SQL);
             $this->app['monolog']->addInfo('[Contact Update] Add ENUM value SELECT_TABLE to field `extra_type_type` in table `contact_extra_type`');
         }
+
+        // remove no longer needed files
+        $files = array(
+            '/Contact/Template/default/admin/form.fields.horizontal.twig',
+            '/Contact/Template/default/pattern/form/horizontal/form.fields.horizontal.twig',
+            '/Contact/Template/default/command/form.fields.horizontal.twig',
+        );
+        foreach ($files as $file) {
+            // remove no longer needed directories and files
+            if ($this->app['filesystem']->exists(MANUFAKTUR_PATH.$file)) {
+                $this->app['filesystem']->remove(MANUFAKTUR_PATH.$file);
+                $this->app['monolog']->addInfo(sprintf('[Contact Update] Removed file or directory %s', $file));
+            }
+        }
     }
 
     /**
