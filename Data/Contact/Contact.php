@@ -798,6 +798,7 @@ EOD;
                     "(`$t_address`.`address_appendix_1` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
                     "(`$t_address`.`address_appendix_2` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
                     "(`$t_address`.`address_city` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
+                    "(`$t_address`.`address_zip` LIKE '$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
                     "(`$t_address`.`address_area` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
                     "(`$t_address`.`address_state` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
                     "(`$t_address`.`address_country_code` LIKE '%$search%' AND `$t_address`.`address_status`='ACTIVE') OR ".
