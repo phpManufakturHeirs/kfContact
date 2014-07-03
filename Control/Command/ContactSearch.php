@@ -50,7 +50,7 @@ class ContactSearch extends Basic
         $use_tags = false;
         if (isset($parameter['tags'])) {
             $use_tags = true;
-            if (!empty(trim($parameter['tags']))) {
+            if (!empty($parameter['tags'])) {
                 $TagTypeData = new TagType($app);
                 $tag_array = strpos($parameter['tags'], ',') ? explode(',', $parameter['tags']) : array($parameter['tags']);
                 if (!empty($tag_array)) {
@@ -70,7 +70,7 @@ class ContactSearch extends Basic
         $category_select = array();
         if (isset($parameter['categories'])) {
             $use_categories = true;
-            if (!empty(trim($parameter['categories']))) {
+            if (!empty($parameter['categories'])) {
                 $CategoryTypeData = new CategoryType($app);
                 $category_array = strpos($parameter['categories'], ',') ? explode(',', $parameter['categories']) : array($parameter['categories']);
                 if (!empty($category_array)) {
@@ -108,7 +108,7 @@ class ContactSearch extends Basic
 
 
         // no extra space for the iframe
-        $this->setFrameAdd(300);
+        $this->setFrameAdd(0);
 
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             '@phpManufaktur/Contact/Template', 'command/search.contact.twig',
