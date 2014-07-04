@@ -13,6 +13,8 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class ExtraFieldEdit extends Dialog {
 
@@ -84,16 +86,12 @@ class ExtraFieldEdit extends Dialog {
             'multiple' => false,
             'label' => 'Field type'
         ))
-        ->add('extra_type_option', 'text', array(
-            'required' => false
-        ))
         ->add('extra_type_description', 'textarea', array(
             'required' => false,
             'label' => 'Description'
         ))
         ->add('delete', 'checkbox', array(
-            'required' => false,
-            'label' => 'delete this extra field'
+            'required' => false
         ))
         ;
         return $fields;
@@ -165,6 +163,9 @@ class ExtraFieldEdit extends Dialog {
                         $this->ExtraType->insert($data, self::$type_id);
                         $this->setAlert('The record with the ID %id% was successfull inserted.',
                             array('%id%' => self::$type_id), self::ALERT_TYPE_SUCCESS);
+                        // subrequest to the category list
+                        $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                        return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
                     }
                 }
                 elseif (!empty($type['delete'])) {
@@ -172,17 +173,22 @@ class ExtraFieldEdit extends Dialog {
                     $this->ExtraType->delete(self::$type_id);
                     $this->setAlert('The record with the ID %id% was successfull deleted.',
                         array('%id%' => self::$type_id), self::ALERT_TYPE_SUCCESS);
-                    self::$type_id = -1;
+                    // subrequest to the category list
+                    $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                    return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
                 }
                 else {
                     // update a extra field
                     $data = array(
                         'extra_type_type' => $type['extra_type_type'],
-                        'extra_type_description' => $type['extra_type_description']
+                        'extra_type_description' => !is_null($type['extra_type_description']) ? $type['extra_type_description'] : ''
                     );
                     $this->ExtraType->update($data, self::$type_id);
                     $this->setAlert('The record with the ID %id% was successfull updated.',
                         array('%id%' => self::$type_id), self::ALERT_TYPE_SUCCESS);
+                    // subrequest to the category list
+                    $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                    return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
                 }
 
                 if (self::$type_id > 0) {

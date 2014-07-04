@@ -32,11 +32,8 @@
     
     {% include '@phpManufaktur/Contact/Template/default/admin/toolbar.twig' with {toolbar: extra.toolbar} %}
     
-    {% if form.title_id.vars.value > 0 %}
-      <h1>{{ 'Edit the title %title_identifier%'|trans({'%title_identifier%':form.title_identifier.vars.value}) }}</h1>
-    {% else %}
-      <h1>{{ 'Create a new title'|trans }}</h1>
-    {% endif %}
+    <h2>{{ 'Edit title'|trans }}</h2>
+
     {% include '@phpManufaktur/Contact/Template/default/pattern/admin/simple/edit.title.twig' %}
 
   </div>

@@ -14,6 +14,8 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 use Silex\Application;
 use Symfony\Component\Form\FormBuilder;
 use phpManufaktur\Contact\Data\Contact\TagType as TagTypeData;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class TagEdit extends Dialog {
 
@@ -79,11 +81,14 @@ class TagEdit extends Dialog {
             ->add('tag_name', 'text', array(
                 'required' => true,
                 'read_only' => (isset($tag_type['tag_name']) && !empty($tag_type['tag_name'])) ? true : false,
-                'label' => 'Tag'
+                'label' => 'Name'
             ))
             ->add('tag_description', 'textarea', array(
                 'required' => false,
                 'label' => 'Description'
+            ))
+            ->add('delete', 'checkbox', array(
+              'required' => false
             ));
         return $form->getForm();
     }
@@ -127,65 +132,71 @@ class TagEdit extends Dialog {
         $form = $this->getForm($tag_type);
 
         if ('POST' == $this->app['request']->getMethod()) {
-            $delete = $this->app['request']->get('delete', null);
-            if (!is_null($delete)) {
-                // delete this tag
-                $this->TagTypeData->delete(self::$tag_type_id);
-                $this->setAlert('The record with the ID %id% was successfull deleted.',
-                    array('%id%' => self::$tag_type_id), self::ALERT_TYPE_SUCCESS);
-                self::$tag_type_id = -1;
-                $tag_type = $this->TagTypeData->getDefaultRecord();
+            // the form was submitted, bind the request
+            $form->bind($this->app['request']);
+            if ($form->isValid()) {
+                // get the form data
+                $tag = $form->getData();
+                if (self::$tag_type_id < 1) {
+                    // insert a new TAG
+                    $matches = array();
+                    $tag_name = str_replace(' ', '_', strtoupper($tag['tag_name']));
+                    if (preg_match_all('/[^A-Z0-9_$]/', $tag_name, $matches)) {
+                        // name check fail
+                        $this->setAlert('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
+                            array('%identifier%' => 'Tag'), self::ALERT_TYPE_WARNING);
+                    }
+                    elseif ($this->TagTypeData->existsTag($tag_name)) {
+                        // the tag already exists
+                        $this->setAlert('The tag type %tag_name% already exists!',
+                            array('%tag_name%' => $tag_name), self::ALERT_TYPE_WARNING);
+                    }
+                    else {
+                        $data = array(
+                            'tag_name' => $tag_name,
+                            'tag_description' => !is_null($tag['tag_description']) ? $tag['tag_description'] : ''
+                        );
+                        $this->TagTypeData->insert($data, self::$tag_type_id);
+                        $this->setAlert('The record with the ID %id% was successfull inserted.',
+                            array('%id%' => self::$tag_type_id), self::ALERT_TYPE_SUCCESS);
+                        // subrequest to the tag list
+                        $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                        return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+                    }
+                }
+                elseif (isset($tag['delete']) && $tag['delete']) {
+                    // delete this tag
+                    $this->TagTypeData->delete(self::$tag_type_id);
+                    $this->setAlert('The record with the ID %id% was successfull deleted.',
+                        array('%id%' => self::$tag_type_id), self::ALERT_TYPE_SUCCESS);
+                    // subrequest to the tag list
+                    $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                    return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+                }
+                else {
+                    // update an existing tag
+                    $data = array(
+                       'tag_description' => !is_null($tag['tag_description']) ? $tag['tag_description'] : ''
+                    );
+                    $this->TagTypeData->update($data, self::$tag_type_id);
+                    $this->setAlert('The record with the ID %id% was successfull updated.',
+                        array('%id%' => self::$tag_type_id), self::ALERT_TYPE_SUCCESS);
+                    // subrequest to the tag list
+                    $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                    return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+                }
+
+                // get the changed tag record
+                if (false === ($tag_type = $this->TagTypeData->select(self::$tag_type_id))) {
+                    $tag_type = $this->TagTypeData->getDefaultRecord();
+                }
+                // get the form
                 $form = $this->getForm($tag_type);
             }
             else {
-                // the form was submitted, bind the request
-                $form->bind($this->app['request']);
-                if ($form->isValid()) {
-                    // get the form data
-                    $tag = $form->getData();
-                    if (self::$tag_type_id < 1) {
-                        // insert a new TAG
-                        $matches = array();
-                        $tag_name = str_replace(' ', '_', strtoupper($tag['tag_name']));
-                        if (preg_match_all('/[^A-Z0-9_$]/', $tag_name, $matches)) {
-                            // name check fail
-                            $this->setAlert('Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.',
-                                array('%identifier%' => 'Tag'), self::ALERT_TYPE_WARNING);
-                        }
-                        elseif ($this->TagTypeData->existsTag($tag_name)) {
-                            // the tag already exists
-                            $this->setAlert('The tag type %tag_name% already exists!',
-                                array('%tag_name%' => $tag_name), self::ALERT_TYPE_WARNING);
-                        }
-                        else {
-                            $data = array(
-                                'tag_name' => $tag_name,
-                                'tag_description' => !is_null($tag['tag_description']) ? $tag['tag_description'] : ''
-                            );
-                            $this->TagTypeData->insert($data, self::$tag_type_id);
-                            $this->setAlert('The record with the ID %id% was successfull inserted.',
-                                array('%id%' => self::$tag_type_id), self::ALERT_TYPE_SUCCESS);
-                        }
-                    }
-                    else {
-                        // update an existing tag
-                        $this->TagTypeData->update($tag, self::$tag_type_id);
-                        $this->setAlert('The record with the ID %id% was successfull updated.',
-                            array('%id%' => self::$tag_type_id), self::ALERT_TYPE_SUCCESS);
-                    }
-
-                    // get the changed tag record
-                    if (false === ($tag_type = $this->TagTypeData->select(self::$tag_type_id))) {
-                        $tag_type = $this->TagTypeData->getDefaultRecord();
-                    }
-                    // get the form
-                    $form = $this->getForm($tag_type);
-                }
-                else {
-                    // general error (timeout, CSFR ...)
-                    $this->setAlert('The form is not valid, please check your input and try again!',
-                        array(), self::ALERT_TYPE_DANGER);
-                }
+                // general error (timeout, CSFR ...)
+                $this->setAlert('The form is not valid, please check your input and try again!',
+                    array(), self::ALERT_TYPE_DANGER);
             }
         }
 

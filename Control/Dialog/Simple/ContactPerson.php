@@ -198,7 +198,7 @@ class ContactPerson extends Dialog {
         // person - visible form fields
         ->add('person_gender', 'choice', array(
             'required' => false,
-            'choices' => array('MALE' => 'male', 'FEMALE' => 'female'),
+            'choices' => array('MALE' => 'Male', 'FEMALE' => 'Female'),
             'expanded' => true,
             'label' => 'Gender',
             'data' => $contact['person'][0]['person_gender']

@@ -9,36 +9,27 @@
 
 {{ alert }}
 
-<div class="alert alert-info">
-  <a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>
-  {{ 'Please select the type of contact you want to create. Be aware that you can not change the contact type if the record is created.'|trans }}
+<div class="panel panel-default">
+  <div class="panel-body">
+    {% if app.translator.locale == 'de' %}
+      {# GERMAN #}
+      <p>Bitte legen Sie den Typ des neuen Kontakt fest. Bitte beachten Sie, dass Sie den Typ nicht mehr ändern können wenn der Datensatz angelegt ist.</p>
+    {% else %}
+      {# ENGLISH #}
+      <p>Please select the type of contact you want to create. Be aware that you can not change the contact type if the record is created.</p>
+    {% endif %}
+  </div>
 </div>
 
-<form action="{{ FRAMEWORK_URL ~ route.action }}" method="post" {{ form_enctype(form) }} role="form">
-  {{ form_errors(form) }}
-  {{ form_row(form._token) }}
-  {{ form_row(form.contact_id) }}
+{% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form.fields.horizontal.twig' %}
+
+<form action="{{ FRAMEWORK_URL ~ route.action }}" class="form-horizontal" method="post" role="form">
   
-  <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.select_type) }}</div>
-    <div class="col-lg-6 col-md-6 col-sm-8">
-      {# parse the radio fields #}
-      {% for children in form.select_type.vars.form.children %}
-        <div class="radio">
-          <label>
-            <input type="radio" name="{{ children.vars.full_name }}" id="{{ children.vars.id }}" value="{{ children.vars.value }}"{% if children.vars.data %} checked="checked"{% endif %} />
-            {{ children.vars.value|capitalize|trans }}
-          </label>
-        </div>
-      {% endfor %}
+  {{ form_widget(form) }}     
+  
+  <div class="form-group">
+    <div class="col-sm-9 col-sm-offset-3">
+      <button class="btn btn-default" type="submit">{{ 'Submit'|trans }}</button>
     </div>
   </div>
-  
-  <div class="height-15"></div>
-  <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-4"><label for="submit">&nbsp;</label></div>
-    <div class="col-lg-6 col-md-6 col-sm-8">
-      <button class="btn btn-default" type="submit">{{ 'Create contact'|trans }}</button>
-    </div>
-  </div>
-</form>
+</form>    

@@ -13,6 +13,8 @@ namespace phpManufaktur\Contact\Control\Dialog\Simple;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\Title;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class TitleEdit extends Dialog {
 
@@ -73,7 +75,7 @@ class TitleEdit extends Dialog {
         return $this->app['form.factory']->createBuilder('form', $title)
             ->add('title_id', 'hidden')
             ->add('title_identifier', 'text', array(
-                'label' => 'Identifier',
+                'label' => 'Name',
                 'read_only' => ($title['title_id'] > 0) ? true : false
             ))
             ->add('title_short', 'text', array(
@@ -81,6 +83,9 @@ class TitleEdit extends Dialog {
             ))
             ->add('title_long', 'text', array(
                 'label' => 'Long name'
+            ))
+            ->add('delete', 'checkbox', array(
+                'required' => false
             ))
             ->getForm();
     }
@@ -150,12 +155,14 @@ class TitleEdit extends Dialog {
             $form->bind($this->app['request']);
             if ($form->isValid()) {
                 $title = $form->getData();
-                if (!is_null($this->app['request']->request->get('delete', null))) {
+                if (isset($title['delete']) && $title['delete']) {
                     // delete the title
                     $this->TitleData->delete($title['title_id']);
-                    $this->setAlert('The title %title_identifier% was successfull deleted.',
-                        array('%title_identifier%' => $title['title_identifier']), self::ALERT_TYPE_SUCCESS);
-                    self::$title_id = -1;
+                    $this->setAlert('The record with the ID %id% was successfull deleted.',
+                        array('%id%' => $title['title_id']), self::ALERT_TYPE_SUCCESS);
+                    // subrequest to the title list
+                    $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                    return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
                 }
                 else {
                     // insert or edit a title
@@ -176,6 +183,9 @@ class TitleEdit extends Dialog {
                             $this->TitleData->update($data, $title['title_id']);
                             $this->setAlert('The record with the ID %id% was successfull updated.',
                                 array('%id%' => $title['title_id']), self::ALERT_TYPE_SUCCESS);
+                            // subrequest to the title list
+                            $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                            return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
                         }
                     }
                     else {
@@ -202,8 +212,11 @@ class TitleEdit extends Dialog {
                                 'title_long' => $title['title_long']
                             );
                             $this->TitleData->insert($data, self::$title_id);
-                            $this->setAlert('The title %title_identifier% was successfull inserted.',
-                                array('%title_identifier%' => $title_identifier), self::ALERT_TYPE_SUCCESS);
+                            $this->setAlert('The record with the ID %id% was successfull inserted.',
+                                array('%id%' => self::$title_id), self::ALERT_TYPE_SUCCESS);
+                            // subrequest to the title list
+                            $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                            return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
                         }
                     }
                 }

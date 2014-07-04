@@ -125,7 +125,7 @@
             <div class="radio">
               <label>
                 <input type="radio" name="{{ children.vars.full_name }}" id="{{ children.vars.id }}" value="{{ children.vars.value }}"{% if children.vars.data %} checked="checked"{% endif %} />
-                {{ children.vars.value|trans }}
+                {{ children.vars.value|humanize|trans }}
               </label>
             </div>
           {% endfor %}

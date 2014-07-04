@@ -16,6 +16,8 @@ use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Data\Contact\ExtraCategory;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
 use phpManufaktur\Basic\Data\CMS\Page;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 
 /**
@@ -98,7 +100,7 @@ class CategoryEdit extends Dialog {
             'data' => $category['category_type_id']
         ))
         ->add('category_type_name', 'text', array(
-            'label' => 'Category name',
+            'label' => 'Name',
             'read_only' => ($category['category_type_id'] > 0) ? true : false,
             'data' => $category['category_type_name']
         ))
@@ -151,6 +153,10 @@ class CategoryEdit extends Dialog {
             'label' => 'Add extra field'
         ));
 
+        $form->add('delete', 'checkbox', array(
+            'required' => false
+        ));
+
         return $form->getForm();
     }
 
@@ -174,6 +180,8 @@ class CategoryEdit extends Dialog {
             $category = array(
                 'category_type_id' => -1,
                 'category_type_name' => '',
+                'category_type_access' => 'ADMIN',
+                'category_type_target_url' => '',
                 'category_type_description' => ''
             );
         }
@@ -223,7 +231,12 @@ class CategoryEdit extends Dialog {
                 foreach ($category_extra_fields as $extra_type_id) {
                     if (is_null($category["extra_field_$extra_type_id"])) {
                         // delete the field
-                        $this->ExtraCategory->deleteTypeByCategoryTypeID($extra_type_id, self::$category_type_id);
+                        if (false !== ($extra = $this->ExtraType->select($extra_type_id))) {
+                            $this->setAlert('The extra field %field% is no longer assigned to the category %category%',
+                                array('%field%' => $extra['extra_type_name'], '%category%' => $category['category_type_name']),
+                                self::ALERT_TYPE_SUCCESS);
+                            $this->ExtraCategory->deleteTypeByCategoryTypeID($extra_type_id, self::$category_type_id);
+                        }
                     }
                 }
                 if (!is_null($category['add_extra_field'])) {
@@ -231,16 +244,20 @@ class CategoryEdit extends Dialog {
                     if (false === ($type = $this->ExtraType->selectName($category['add_extra_field']))) {
                         throw new \Exception(sprintf('The extra type field %s does not exists!', $category['add_extra_field']));
                     }
+                    $this->setAlert('The extra field %field% is now assigned to the category %category%',
+                        array('%field%' => $type['extra_type_name'], '%category%' => $category['category_type_name']),
+                        self::ALERT_TYPE_SUCCESS);
                     $this->ExtraCategory->insert($type['extra_type_id'], self::$category_type_id);
                 }
 
-
-                if (!is_null($this->app['request']->request->get('delete', null))) {
+                if (isset($category['delete']) && $category['delete']) {
                     // delete the category
                     $this->CategoryTypeData->delete($category['category_type_id']);
-                    $this->setAlert('The category %category_type_name% was successfull deleted.',
-                        array('%category_type_name%' => $category['category_type_name']), self::ALERT_TYPE_SUCCESS);
-                    self::$category_type_id = -1;
+                    $this->setAlert('The record with the ID %id% was successfull deleted.',
+                        array('%id%' => $category['category_type_id']), self::ALERT_TYPE_SUCCESS);
+                    // subrequest to the category list
+                    $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                    return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
                 }
                 else {
                     // insert or edit a category
@@ -249,11 +266,14 @@ class CategoryEdit extends Dialog {
                         $data = array(
                             'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : '',
                             'category_type_access' => $category['category_type_access'],
-                            'category_type_target_url' => $category['category_type_target_url']
+                            'category_type_target_url' => !is_null($category['category_type_target_url']) ? $category['category_type_target_url'] : ''
                         );
                         $this->CategoryTypeData->update($data, self::$category_type_id);
-                        $this->setAlert('The category %category_type_name% was successfull updated',
-                            array('%category_type_name%' => $category['category_type_name']), self::ALERT_TYPE_SUCCESS);
+                        $this->setAlert('The record with the ID %id% was successfull updated.',
+                            array('%id%' => self::$category_type_id), self::ALERT_TYPE_SUCCESS);
+                        // subrequest to the category list
+                        $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                        return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
                     }
                     else {
                         // insert a new record
@@ -270,11 +290,14 @@ class CategoryEdit extends Dialog {
                                 'category_type_name' => $category_type_name,
                                 'category_type_description' => !is_null($category['category_type_description']) ? $category['category_type_description'] : '',
                                 'category_type_access' => $category['category_type_access'],
-                                'category_type_target_url' => $category['category_type_target_url']
+                                'category_type_target_url' => !is_null($category['category_type_target_url']) ? $category['category_type_target_url'] : ''
                             );
                             $this->CategoryTypeData->insert($data, self::$category_type_id);
-                            $this->setAlert('The category %category_type_name% was successfull inserted.',
-                                array('%category_type_name%' => $category_type_name), self::ALERT_TYPE_SUCCESS);
+                            $this->setAlert('The record with the ID %id% was successfull inserted.',
+                                array('%id%' => self::$category_type_id), self::ALERT_TYPE_SUCCESS);
+                            // subrequest to the category list
+                            $subRequest = Request::create(self::$options['route']['list'], 'GET');
+                            return $this->app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
                         }
                     }
                 }

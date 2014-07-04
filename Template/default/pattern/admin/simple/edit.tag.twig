@@ -9,83 +9,40 @@
 
 {{ alert }}
 
-<form action="{{ FRAMEWORK_URL }}{{ route.action }}" method="post" role="form">
-
-  {{ form_errors(form) }}
-  {{ form_row(form._token) }}
-  {{ form_row(form.tag_type_id) }}
-  
-  <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-4">
-      <label>ID</label>
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-8">
-      {% if form.vars.value.tag_type_id > 0 %}
-        {{ '%03d'|format(form.vars.value.tag_type_id) }}
-      {% else %}
-        {{ '- new tag -'|trans }}
+<div class="panel panel-default">
+  <div class="panel-body">
+    {% if app.translator.locale == 'de' %}
+      {# GERMAN #}
+      <p>Der <strong>Bezeichner</strong> für die Markierung (#tag) wird immer in Großbuchstaben umgewandelt, Leerzeichen werden durch einen Unterstrich ersetzt, Sonderzeichen wie ä, ö, ü oder ß sind im Bezeichner nicht gestattet.</p>
+      <p>In der Voreinstellung werden die <strong>Bezeichner</strong> in allen Dialogen so angezeigt, daß der erste Buchstabe in Großschreibung und alle folgenden Zeichen in Kleinschreibung dargestellt und Unterstriche durch Leerzeichen ersetzt werden.</p>
+      <p>Sie können die <strong>Bezeichner</strong> in jede beliebige Sprache übersetzen, die Sie in Ihrem CMS nutzen. Fügen Sie den <strong>Bezeichner</strong> einfach einer benutzerdefinierten Sprachdatei im Verzeichnis <em>/kit2/extension/phpmanufaktur/phpManufaktur/Contact/Data/Locale/Custom</em> hinzu. Die <em>README.md</em> im gleichen Verzeichnis erklärt Ihnen, wie Sie benutzerdefinierte Sprachdateien anlegen und verwenden.</p>
+      {% if form.tag_type_id.vars.value > 0 %}
+        <p>In der aktuellen Sprache {{ app.translator.locale|upper }} wird der <strong>Bezeichner</strong> von <strong>{{ form.tag_name.vars.value|replace({'_':' '})|capitalize }}</strong> in <strong>{{ form.tag_name.vars.value|replace({'_':' '})|capitalize|trans }}</strong> übersetzt und angezeigt.</p>
       {% endif %}
-    </div>
+    {% else %}
+      {# ENGLISH #}
+      <p>The <strong>name</strong> of the #tag will be always transformed to uppercase and spaces will be replaced by underscores, special chars are not allowed.</p>
+      <p>By default the <strong>name</strong> will be shown in all dialogs with the first character in uppercase, all following characters in lowercase and underscores replaced with a space.</p>
+      <p>You can <em>translate</em> the <strong>name</strong> to any language you are using within your CMS. Just add the <strong>name</strong> to a custom language file in the directory <em>/kit2/extension/phpmanufaktur/phpManufaktur/Contact/Data/Locale/Custom</em>, the <em>README.md</em> in this directory will explain you how to create and use custom language files.</p>
+      {% if form.tag_type_id.vars.value > 0 %}
+        <p>At the current language {{ app.translator.locale|upper }} the <strong>name</strong> will be translated from <strong>{{ form.tag_name.vars.value|replace({'_':' '})|capitalize }}</strong> to <strong>{{ form.tag_name.vars.value|replace({'_':' '})|capitalize|trans }}</strong>.</p>
+      {% endif %}  
+    {% endif %}
   </div>
+</div>
 
-  <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.tag_name) }}</div>
-    <div class="col-lg-6 col-md-6 col-sm-8">{{ form_widget(form.tag_name, {'attr':{'class':'form-control input-sm'}}) }}</div>
-  </div>
-      
-  {% if form.vars.value.tag_type_id > 0 %}  
-    <div class="height-5"></div>
-    <div class="row">
-      <div class="col-lg-3 col-md-3 col-sm-4">
-        <label>{{ 'Tag (translated)'|trans }}</label>
-      </div>
-      <div class="col-lg-6 col-md-6 col-sm-8">
-        {{ form.vars.value.tag_name|capitalize }} &rArr; {{ form.vars.value.tag_name|capitalize|trans }}
-      </div>
-    </div>
-    <div class="height-5"></div>
-  {% endif %}
+{% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form.fields.horizontal.twig' %}
 
-  <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-4">{{ form_label(form.tag_description) }}</div>
-    <div class="col-lg-6 col-md-6 col-sm-8">{{ form_widget(form.tag_description, {'attr':{'class':'form-control input-sm'}}) }}</div>
-  </div>
-   
-  {% if form.vars.value.tag_type_id > 0 %}  
-    <div class="height-5"></div>
-    <div class="row">
-      <div class="col-lg-3 col-md-3 col-sm-4">
-        <label>{{ 'Description (translated)'|trans }}</label>
-      </div>
-      <div class="col-lg-6 col-md-6 col-sm-8">
-        {{ form.vars.value.tag_description|trans }}
-      </div>
-    </div>
-  {% endif %}
-
-  {% if form.vars.value.tag_type_id > 0 %}
-    <div class="height-15"></div>
-    <div class="row">
-      <div class="col-lg-3 col-md-3 col-sm-4">
-        <label>&nbsp;</label>
-      </div>
-      <div class="col-lg-6 col-md-6 col-sm-8">
-        <input type="checkbox" name="delete" value="1" />&nbsp;{{ 'delete the #tag <b>%tag_name%</b>'|trans({'%tag_name%':form.vars.value.tag_name}) }}
-      </div>
-    </div>
-    <div class="height-15"></div>
-  {% endif %}
-
-  {#{ form_rest(form) }#}  
-
-  <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-4">
-      <label for="submit">&nbsp;</label>
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-8">
-      <button class="btn btn-default" type="submit">{{ 'Submit'|trans }}</button>&nbsp;
-      <a class="btn btn-default" href="{{ FRAMEWORK_URL ~ route.list }}" role="button">{{ 'Cancel'|trans }}</a>
-    </div>
-  </div>
+<form action="{{ FRAMEWORK_URL ~ route.action }}" class="form-horizontal" method="post" role="form">
   
-</form>
+  <fieldset>
+    <legend>{{ 'Tag definition'|trans }}</legend>
+    {{ form_widget(form) }}     
+  </fieldset>
+  
+  <div class="form-group">
+    <div class="col-sm-9 col-sm-offset-3">
+      <button class="btn btn-default" type="submit">{{ 'Submit'|trans }}</button>
+    </div>
+  </div>
+</form>    
