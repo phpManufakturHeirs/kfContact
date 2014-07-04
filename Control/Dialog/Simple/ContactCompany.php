@@ -122,6 +122,7 @@ class ContactCompany extends Dialog {
 
         foreach ($contact['address'] as $address) {
             switch ($address['address_type']) {
+                case 'PRIMARY':
                 case 'BUSINESS' :
                     $address_business = $address;
                     break;
@@ -432,7 +433,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['email_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'EMAIL',
-                    'communication_usage' => 'BUSINESS',
+                    'communication_usage' => 'PRIMARY',
                     'communication_value' => $data['email']
                 ),
                 array(
@@ -440,7 +441,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['phone_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'PHONE',
-                    'communication_usage' => 'BUSINESS',
+                    'communication_usage' => 'PRIMARY',
                     'communication_value' => $data['phone']
                 ),
                 array(
@@ -448,7 +449,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['cell_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'CELL',
-                    'communication_usage' => 'BUSINESS',
+                    'communication_usage' => 'PRIMARY',
                     'communication_value' => $data['cell']
                 ),
                 array(
@@ -456,7 +457,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['fax_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'FAX',
-                    'communication_usage' => 'BUSINESS',
+                    'communication_usage' => 'PRIMARY',
                     'communication_value' => $data['fax']
                 ),
                 array(
@@ -464,7 +465,7 @@ class ContactCompany extends Dialog {
                     'communication_id' => $data['url_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'URL',
-                    'communication_usage' => 'BUSINESS',
+                    'communication_usage' => 'PRIMARY',
                     'communication_value' => $data['url']
                 )
             ),
@@ -472,7 +473,7 @@ class ContactCompany extends Dialog {
                 array(
                     'address_id' => $data['address_business_id'],
                     'contact_id' => $data['contact_id'],
-                    'address_type' => 'BUSINESS',
+                    'address_type' => 'PRIMARY',
                     'address_street' => $data['address_business_street'],
                     'address_zip' => $data['address_business_zip'],
                     'address_city' => $data['address_business_city'],

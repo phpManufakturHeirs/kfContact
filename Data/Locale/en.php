@@ -31,7 +31,7 @@ return array(
         => 'Contact ID',
 
     'FEMALE'
-        => 'Femaile',
+        => 'Female',
 
     'MALE'
         => 'Male',

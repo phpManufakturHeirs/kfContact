@@ -115,7 +115,7 @@ class KeepInTouch extends Alert {
                 $addresses[] = array(
                     'address_id' => -1,
                     'contact_id' => -1,
-                    'address_type' => ($contact_type == 'PERSON') ? 'PRIVATE' : 'BUSINESS',
+                    'address_type' => 'PRIMARY',
                     'address_street' => $this->app['utils']->sanitizeText($address['address_street']),
                     'address_zip' => $address['address_zip'],
                     'address_city' => $this->app['utils']->sanitizeText($address['address_city']),

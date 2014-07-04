@@ -42,10 +42,9 @@ class ExtraType
         $SQL = <<<EOD
     CREATE TABLE IF NOT EXISTS `$table` (
         `extra_type_id` INT(11) NOT NULL AUTO_INCREMENT,
-        `extra_type_type` ENUM('TEXT','HTML','VARCHAR','INT','FLOAT','DATE','DATETIME','TIME','SELECT_TABLE') NOT NULL DEFAULT 'VARCHAR',
+        `extra_type_type` ENUM('TEXT','HTML','VARCHAR','INT','FLOAT','DATE','DATETIME','TIME') NOT NULL DEFAULT 'VARCHAR',
         `extra_type_name` VARCHAR(64) NOT NULL DEFAULT '',
         `extra_type_description` TEXT NOT NULL,
-        `extra_type_option` TEXT NOT NULL,
         `extra_type_timestamp` TIMESTAMP,
         PRIMARY KEY (`extra_type_id`),
         UNIQUE (`extra_type_name`)
@@ -116,8 +115,7 @@ EOD;
             'INT' => 'Integer',
             'FLOAT' => 'Float',
             'DATE' => 'Date',
-            'DATETIME' => 'Date and Time',
-            'SELECT_TABLE' => 'Select from external table'
+            'DATETIME' => 'Date and Time'
         );
     }
 
@@ -157,10 +155,7 @@ EOD;
             $insert = array();
             foreach ($data as $key => $value) {
                 if (($key == 'extra_type_id') || ($key == 'extra_type_timestamp')) continue;
-                $insert[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
-            }
-            if (!isset($insert['extra_type_option']) || ($insert['extra_type_option'] === null)) {
-                $insert['extra_type_option'] = '';
+                $insert[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
             }
             if (!isset($insert['extra_type_description']) || ($insert['extra_type_description'] === null)) {
                 $insert['extra_type_description'] = '';
@@ -185,7 +180,7 @@ EOD;
             $update = array();
             foreach ($data as $key => $value) {
                 if (($key == 'extra_type_id') || ($key == 'extra_type_timestamp') || ($key == 'extra_type_name')) continue;
-                $update[$this->app['db']->quoteIdentifier($key)] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+                $update[$key] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
             }
             if (!empty($update)) {
                 $this->app['db']->update(self::$table_name, $update, array('extra_type_id' => $type_id));

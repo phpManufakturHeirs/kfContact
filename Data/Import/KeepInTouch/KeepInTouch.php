@@ -197,20 +197,13 @@ class KeepInTouch
                 foreach ($email_addresses as $email_item) {
                     list($type, $email) = explode('|', $email_item);
                     if (isset($origin['contact_email_standard']) && ($origin['contact_email_standard'] == $i)) {
-                        $usage = 'PRIMARY';
                         // this is also the login !!!
                         $contact['login'] = strtolower(trim($email));
-                    }
-                    elseif ($type == 'typeCompany') {
-                        $usage = 'BUSINESS';
-                    }
-                    else {
-                        $usage = 'PRIVATE';
                     }
                     $contact['communication'][] = array(
                         'type' => 'EMAIL',
                         'address' => strtolower(trim($email)),
-                        'usage' => $usage
+                        'usage' => 'PRIMARY'
                     );
                     $i++;
                 }
@@ -221,12 +214,6 @@ class KeepInTouch
                 $i=0;
                 foreach ($phone_addresses as $phone_item) {
                     list($type, $phone) = explode('|', $phone_item);
-                    if (isset($origin['contact_phone_standard']) && ($origin['contact_phone_standard'] == $i)) {
-                        $usage = 'PRIMARY';
-                    }
-                    else {
-                        $usage = 'PRIVATE';
-                    }
                     if ($type == 'phonePhone') {
                         $use_type = 'PHONE';
                     }
@@ -244,7 +231,7 @@ class KeepInTouch
                     $contact['communication'][] = array(
                         'type' => $use_type,
                         'address' => strtolower(trim($phone)),
-                        'usage' => $usage
+                        'usage' => 'PRIMARY'
                     );
                     $i++;
                 }
@@ -275,7 +262,7 @@ class KeepInTouch
                     $contact['communication'][] = array(
                         'type' => $use_type,
                         'address' => strtolower(trim($internet)),
-                        'usage' => 'PRIVATE'
+                        'usage' => 'PRIMARY'
                     );
                     $i++;
                 }

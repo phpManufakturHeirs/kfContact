@@ -128,4 +128,20 @@ EOD;
         }
     }
 
+    /**
+     * Return all communication types
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function selectAll()
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."`";
+            return $this->app['db']->fetchAll($SQL);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }

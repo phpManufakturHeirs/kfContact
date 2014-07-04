@@ -278,6 +278,7 @@ class Excel extends Alert
                                 switch ($address['address_type']) {
                                     case 'PRIVATE':
                                     case 'BUSINESS':
+                                    case 'PRIMARY':
                                         if (!isset($contact['address_id'])) {
                                             $contact['address_street'] = $address['address_street'];
                                             $contact['address_zip'] = $address['address_zip'];

@@ -661,7 +661,7 @@ class Excel extends Alert
                 array(
                     'address_id' => isset($data['address_id']) ? $data['address_id'] : -1,
                     'contact_id' => $data['contact_id'],
-                    'address_type' => ($data['contact_type'] == 'PERSON') ? 'PRIVATE' : 'BUSINESS',
+                    'address_type' => 'PRIMARY',
                     'address_street' => isset($data['address_street']) ? $data['address_street'] : '',
                     'address_zip' => isset($data['address_zip']) ? $data['address_zip'] : '',
                     'address_city' => isset($data['address_city']) ? $data['address_city'] : '',

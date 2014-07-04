@@ -150,4 +150,19 @@ EOD;
         }
     }
 
+    /**
+     * Delete the given $usage - this will also delete associated communication records!
+     *
+     * @param string $usage
+     * @throws \Exception
+     */
+    public function deleteUsage($usage)
+    {
+        try {
+            $this->app['db']->delete(self::$table_name, array('communication_usage_name' => $usage));
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
 }

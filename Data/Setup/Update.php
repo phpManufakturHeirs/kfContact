@@ -22,6 +22,7 @@ use phpManufaktur\Contact\Control\Configuration;
 use phpManufaktur\Basic\Control\CMS\InstallAdminTool;
 use phpManufaktur\Contact\Data\Contact\Form;
 use phpManufaktur\Contact\Data\Contact\CommunicationUsage;
+use phpManufaktur\Contact\Data\Contact\AddressType;
 
 class Update
 {
@@ -298,18 +299,6 @@ class Update
      */
     protected function release_2038()
     {
-        if (!$this->app['db.utils']->columnExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_type', 'extra_type_option')) {
-            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_extra_type` ADD `extra_type_option` TEXT NOT NULL AFTER `extra_type_description`";
-            $this->app['db']->query($SQL);
-            $this->app['monolog']->addInfo('[Contact Update] Add field `contact_extra_type` to table `contact_extra_type`');
-        }
-        if (!$this->app['db.utils']->enumValueExists(FRAMEWORK_TABLE_PREFIX.'contact_extra_type', 'extra_type_type', 'SELECT_TABLE')) {
-            // add SELECT_TABLE to extra_type_type
-            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_extra_type` CHANGE `extra_type_type` `extra_type_type` ENUM('TEXT','HTML','VARCHAR','INT','FLOAT','DATE','DATETIME','TIME','SELECT_TABLE') NOT NULL DEFAULT 'VARCHAR'";
-            $this->app['db']->query($SQL);
-            $this->app['monolog']->addInfo('[Contact Update] Add ENUM value SELECT_TABLE to field `extra_type_type` in table `contact_extra_type`');
-        }
-
         // remove no longer needed files
         $files = array(
             '/Contact/Template/default/admin/form.fields.horizontal.twig',
@@ -322,6 +311,62 @@ class Update
                 $this->app['filesystem']->remove(MANUFAKTUR_PATH.$file);
                 $this->app['monolog']->addInfo(sprintf('[Contact Update] Removed file or directory %s', $file));
             }
+        }
+
+        // change all communication records with usage PRIVATE or BUSINESS to PRIMARY
+        $SQL = "UPDATE `".FRAMEWORK_TABLE_PREFIX."contact_communication` SET `communication_usage`='PRIMARY' WHERE ".
+            "(`communication_usage`='PRIVATE' OR `communication_usage`='BUSINESS')";
+        $this->app['db']->query($SQL);
+
+        $SQL = "UPDATE `".FRAMEWORK_TABLE_PREFIX."contact_communication` SET `communication_usage`='SECONDARY' WHERE ".
+            "`communication_usage`='OTHER'";
+        $this->app['db']->query($SQL);
+
+        // get all communication types
+        $CommunicationUsage = new CommunicationUsage($this->app);
+        foreach (array('PRIVATE', 'BUSINESS') as $usage) {
+            if ($CommunicationUsage->existsUsage($usage)) {
+                // delete this usage
+                $CommunicationUsage->deleteUsage($usage);
+            }
+        }
+
+        // update the table structure
+        $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_communication` CHANGE `communication_usage` `communication_usage` VARCHAR(32) NOT NULL DEFAULT 'PRIMARY'";
+        $this->app['db']->query($SQL);
+
+        // add missing address types
+        $AddressType = new AddressType($this->app);
+        if (!$AddressType->existsAdressType('PRIMARY')) {
+            $AddressType->insertAddressType('PRIMARY', 'Primary address for all contact types');
+        }
+        if (!$AddressType->existsAdressType('SECONDARY')) {
+            $AddressType->insertAddressType('SECONDARY', 'Secondary address for all contact types');
+        }
+        if (!$AddressType->existsAdressType('BILLING_SECONDARY')) {
+            $AddressType->insertAddressType('BILLING_SECONDARY', 'Secondary billing address for all contact types');
+        }
+        if (!$AddressType->existsAdressType('DELIVERY_SECONDARY')) {
+            $AddressType->insertAddressType('DELIVERY_SECONDARY', 'Secondary delivery address for all contact types');
+        }
+
+        // change all address recods with usage PRIVATE or BUSINESS to PRIMARY
+        $SQL = "UPDATE `".FRAMEWORK_TABLE_PREFIX."contact_address` SET `address_type`='PRIMARY' WHERE ".
+            "(`address_type`='PRIVATE' OR `address_type`='BUSINESS')";
+        $this->app['db']->query($SQL);
+
+        // check the address types
+        foreach (array('PRIVATE', 'BUSINESS') as $type) {
+            if ($AddressType->existsAdressType($type)) {
+                // delete this usage
+                $AddressType->deleteAddressType($type);
+            }
+        }
+
+        if ($AddressType->existsAdressType('OTHER')) {
+            // update the table structure
+            $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_address` CHANGE `address_type` `address_type` VARCHAR(32) NOT NULL DEFAULT 'PRIMARY'";
+            $this->app['db']->query($SQL);
         }
     }
 

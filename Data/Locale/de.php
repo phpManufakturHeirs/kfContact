@@ -99,6 +99,8 @@ return array(
         => 'Kategorie',
     'Category access'
         => 'Kategorie Zugriff',
+    'Category definition'
+        => 'Kategorie Definition',
     'Category description'
         => 'Kategorie Beschreibung',
     'Category description (translated)'
@@ -191,14 +193,8 @@ return array(
         => '%count% Treffer für den Suchbegriff <i>%search%</i>.',
     'Country'
         => 'Land',
-    'Create a new category'
-        => 'Eine neue Kategorie erstellen',
     'Create a new contact'
         => 'Einen neuen Kontakt anlegen',
-    'Create a new Tag <i>#tag</i>'
-        => 'Eine neue Markierung (#tag) erstellen',
-    'Create a new title'
-        => 'Einen neuen Titel erstellen',
     'Create contact'
         => 'Kontakt anlegen',
     'Customer'
@@ -208,16 +204,8 @@ return array(
 
     'DE'
         => 'Deutschland',
-    'Delete Tag'
-        => 'Markierung (#tag) löschen',
-    'delete the category <b>%category_type_name%</b>'
-        => 'die Kategorie <b>%category_type_name%</b> löschen',
-    'delete the #tag <b>%tag_name%</b>'
-        => 'den #tag <b>%tag_name%</b> löschen',
-    'delete the title <b>%title_identifier%</b>'
-        => 'den Titel <b>%title_identifier%</b> löschen',
-    'delete this extra field'
-        => 'dieses Zusatzfeld löschen',
+    'Delete'
+        => 'löschen',
     'deleted'
         => 'Gelöscht',
     'Delivery address'
@@ -234,6 +222,8 @@ return array(
         => 'Vorgabewerte festlegen',
     'doc'
         => 'Dr.',
+    'doctor'
+        => 'Doktor',
 
     'earl'
         => 'Graf',
@@ -255,8 +245,6 @@ return array(
         => 'Die Kategorie %category_type_name% bearbeiten',
     'Edit the <i>#tag</i> %tag_name%'
         => 'Die Markierung #tag <i>%tag_name%</i> bearbeiten',
-    'Edit the title %title_identifier%'
-        => 'Den Titel %title_identifier% bearbeiten',
     'Edit title'
         => 'Titel bearbeiten',
     'Edit titles'
@@ -267,6 +255,8 @@ return array(
         => 'Exportieren im Format',
     'Export contact records'
         => 'Kontaktdatensätze exportieren',
+    'Extra field definition'
+        => 'Extrafeld Definition',
     'Extra type option'
         => 'Optionen',
 
@@ -361,6 +351,8 @@ return array(
     'Missing the `type` field in the definition!'
         => 'Bei den Definitionen für die Eingabefelder ist die Angabe des `type` Feld Pflicht!',
 
+    'Name'
+        => 'Bezeichner',
     'Nick name'
         => 'Spitzname',
     'no extra field assigned'
@@ -415,12 +407,12 @@ return array(
         => 'Bitte wählen Sie mindestens eine Markierung aus!',
     'Please select the target file format to export the kitFramework Contact records: <a href="%xlsx%">XLSX (Excel)</a> or <a href="%csv%">CSV (Text)</a>.'
         => 'Bitte wählen Sie das Ausgabeformat um die kitFramework Contact Datensätze zu exportieren: <a href="%xlsx%">XLSX (Excel)</a> oder <a href="%csv%">CSV (Text)</a>.',
-    'Please select the type of contact you want to create. Be aware that you can not change the contact type if the record is created.'
-        => 'Bitte legen Sie den Typ des neuen Kontakt fest. Bitte beachten Sie, dass Sie den Typ nicht mehr ändern können wenn der Datensatz angelegt ist.',
     'Please specify a search term!'
         => 'Bitte geben Sie einen Suchbegriff ein!',
     'prof'
         => 'Prof.',
+    'professor'
+        => 'Professor',
     'PUBLIC'
         => 'Öffentlich',
     'Publish a contact'
@@ -466,8 +458,8 @@ return array(
 
     'Tag'
         => 'Markierung',
-    'Tag (translated)'
-        => 'Markierung (Übersetzung)',
+    'Tag definition'
+        => '#tag Definition',
     'Tag list'
         => 'Markierungen (#tags) Übersicht',
     'Tags'
@@ -522,6 +514,10 @@ return array(
         => 'Die E-Mail Adresse %email% ist nicht gültig, bitte überprüfen Sie Ihre Eingabe!',
     "The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!"
         => "Der Eintrag %entry% mit der ID %id% wurde nicht aktualisiert, es wurde kein passender Eintrag in der Tabelle gefunden!",
+    'The extra field %field% is no longer assigned to the category %category%'
+        => 'Das Zusatzfeld %field% ist nicht mehr der Kategorie %category% zugeordnet!',
+    'The extra field %field% is now assigned to the category %category%'
+        => 'Das Zusatzfeld %field% ist jetzt der Kategorie %category% zugeordnet und kann verwendet werden!',
     "The field %field% can not be empty!"
         => 'Das Feld %field% darf nicht leer sein!',
     'The form is not valid, please check your input and try again!'
@@ -577,6 +573,8 @@ return array(
 
     'Title'
         => 'Titel',
+    'Title definition'
+        => 'Titel Definition',
     'title_id'
         => 'ID',
     'Title list'
