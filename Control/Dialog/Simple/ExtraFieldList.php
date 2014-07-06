@@ -45,8 +45,8 @@ class ExtraFieldList extends Dialog {
                 'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/simple/list.extra.twig'
             ),
             'route' => array(
-                'edit' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/extra/edit/id/{type_id}',
-                'create' => isset($options['route']['create']) ? $options['route']['create'] : '/admin/contact/simple/extra/edit'
+                'edit' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/extra/edit/id/{type_id}',
+                'create' => isset($options['route']['create']) ? $options['route']['create'] : '/admin/contact/extra/edit'
             )
         ));
         $this->ExtraTypeData = new ExtraType($this->app);

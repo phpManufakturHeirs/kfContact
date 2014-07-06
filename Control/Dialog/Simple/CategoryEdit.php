@@ -60,9 +60,9 @@ class CategoryEdit extends Dialog {
                 'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'pattern/admin/simple/edit.category.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/category/edit',
-                'extra' => isset($options['route']['extra']) ? $options['route']['extra'] : '/admin/contact/simple/extra/list',
-                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/category/list',
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/category/create',
+                'extra' => isset($options['route']['extra']) ? $options['route']['extra'] : '/admin/contact/extra/list',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/category/list',
             )
         ));
         $this->CategoryTypeData = new CategoryType($this->app);

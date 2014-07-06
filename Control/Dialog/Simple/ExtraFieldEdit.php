@@ -48,8 +48,8 @@ class ExtraFieldEdit extends Dialog {
                 'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'pattern/simple/edit.extra.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/extra/edit',
-                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/extra/list'
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/extra/edit',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/extra/list'
             )
         ));
         $this->ExtraType = new ExtraType($this->app);

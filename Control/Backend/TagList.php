@@ -46,8 +46,8 @@ class TagList extends Backend {
                 'list' => 'admin/list.tag.twig'
             ),
             'route' => array(
-                'create' => '/admin/contact/backend/tag/edit?usage='.self::$usage,
-                'edit' => '/admin/contact/backend/tag/edit/id/{tag_id}?usage='.self::$usage
+                'create' => '/admin/contact/tag/edit?usage='.self::$usage,
+                'edit' => '/admin/contact/tag/edit/id/{tag_id}?usage='.self::$usage
             )
         ));
     }

@@ -49,35 +49,35 @@ class Backend extends Alert {
                 'name' => 'contact_list',
                 'text' => 'Contact list',
                 'hint' => 'List of all available contacts',
-                'link' => FRAMEWORK_URL.'/admin/contact/backend/list'.self::$usage_param,
+                'link' => FRAMEWORK_URL.'/admin/contact/list'.self::$usage_param,
                 'active' => ($active == 'contact_list')
             ),
             'contact_edit' => array(
                 'name' => 'contact_edit',
                 'text' => 'Contact',
                 'hint' => 'Create a new contact',
-                'link' => FRAMEWORK_URL.'/admin/contact/backend/select'.self::$usage_param,
+                'link' => FRAMEWORK_URL.'/admin/contact/select'.self::$usage_param,
                 'active' => ($active == 'contact_edit')
             ),
             'categories' => array(
                 'name' => 'categories',
                 'text' => 'Categories',
                 'hint' => 'List of available categories',
-                'link' => FRAMEWORK_URL.'/admin/contact/backend/category/list'.self::$usage_param,
+                'link' => FRAMEWORK_URL.'/admin/contact/category/list'.self::$usage_param,
                 'active' => ($active == 'categories')
             ),
             'tags' => array(
                 'name' => 'tags',
                 'text' => 'Tags',
                 'hint' => 'List of available tags',
-                'link' => FRAMEWORK_URL.'/admin/contact/backend/tag/list'.self::$usage_param,
+                'link' => FRAMEWORK_URL.'/admin/contact/tag/list'.self::$usage_param,
                 'active' => ($active == 'tags')
             ),
             'extra_fields' => array(
                 'name' => 'extra_fields',
                 'text' => 'Extra fields',
                 'hint' => 'List of available extra fields',
-                'link' => FRAMEWORK_URL.'/admin/contact/backend/extra/list'.self::$usage_param,
+                'link' => FRAMEWORK_URL.'/admin/contact/extra/list'.self::$usage_param,
                 'active' => ($active == 'extra_fields')
             ),
 
@@ -85,7 +85,7 @@ class Backend extends Alert {
                 'name' => 'about',
                 'text' => 'About',
                 'hint' => 'Information about the Contact extension',
-                'link' => FRAMEWORK_URL.'/admin/contact/backend/about'.self::$usage_param,
+                'link' => FRAMEWORK_URL.'/admin/contact/about'.self::$usage_param,
                 'active' => ($active == 'about')
                 ),
         );

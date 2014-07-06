@@ -50,8 +50,8 @@ class TagEdit extends Dialog {
                 'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'admin/simple/edit.tag.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/tag/edit',
-                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/tag/list',
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/tag/edit',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/tag/list',
             )
         ));
 

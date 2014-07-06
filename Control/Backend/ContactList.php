@@ -47,11 +47,11 @@ class ContactList extends Backend {
                 'list' => 'admin/list.contact.twig'
             ),
             'route' => array(
-                'pagination' => '/admin/contact/backend/list/page/{page}?order={order}&direction={direction}&usage='.self::$usage,
+                'pagination' => '/admin/contact/list/page/{page}?order={order}&direction={direction}&usage='.self::$usage,
                 'contact' => array(
-                    'person' => '/admin/contact/backend/person/edit/id/{contact_id}?usage='.self::$usage,
-                    'company' => '/admin/contact/backend/company/edit/id/{contact_id}?usage='.self::$usage,
-                    'search' => '/admin/contact/backend/search?usage='.self::$usage
+                    'person' => '/admin/contact/person/edit/id/{contact_id}?usage='.self::$usage,
+                    'company' => '/admin/contact/company/edit/id/{contact_id}?usage='.self::$usage,
+                    'search' => '/admin/contact/search?usage='.self::$usage
                 )
             )
         );

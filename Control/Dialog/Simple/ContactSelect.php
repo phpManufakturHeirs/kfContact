@@ -52,15 +52,15 @@ class ContactSelect extends Dialog {
                 'select' => isset($options['template']['select']) ? $options['template']['select'] : 'pattern/admin/simple/select.contact.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact',
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/select',
                 'contact' => array(
                     'person' => array(
-                        'create' => isset($options['route']['contact']['person']['create']) ? $options['route']['contact']['person']['create'] : '/admin/contact/simple/contact/person',
-                        'edit' => isset($options['route']['contact']['person']['edit']) ? $options['route']['contact']['person']['edit'] : '/admin/contact/simple/contact/person/id/{contact_id}'
+                        'create' => isset($options['route']['contact']['person']['create']) ? $options['route']['contact']['person']['create'] : '/admin/contact/person/edit',
+                        'edit' => isset($options['route']['contact']['person']['edit']) ? $options['route']['contact']['person']['edit'] : '/admin/contact/person/edit/id/{contact_id}'
                     ),
                     'company' => array(
-                        'create' => isset($options['route']['contact']['company']['create']) ? $options['route']['contact']['company']['create'] : '/admin/contact/simple/contact/company',
-                        'edit' => isset($options['route']['contact']['company']['edit']) ? $options['route']['contact']['company']['edit'] : '/admin/contact/simple/contact/company/id/{contact_id}'
+                        'create' => isset($options['route']['contact']['company']['create']) ? $options['route']['contact']['company']['create'] : '/admin/contact/company/edit',
+                        'edit' => isset($options['route']['contact']['company']['edit']) ? $options['route']['contact']['company']['edit'] : '/admin/contact/company/edit/id/{contact_id}'
                     )
                 )
             )

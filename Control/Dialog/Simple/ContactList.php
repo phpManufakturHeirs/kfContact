@@ -56,11 +56,11 @@ class ContactList extends Dialog {
                 'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/admin/simple/list.contact.twig'
             ),
             'route' => array(
-                'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/simple/contact/list/page/{page}?order={order}&direction={direction}',
+                'pagination' => isset($options['route']['pagination']) ? $options['route']['pagination'] : '/admin/contact/list/page/{page}?order={order}&direction={direction}',
                 'contact' => array(
-                    'person' => isset($options['route']['contact']['person']) ? $options['route']['contact']['person'] : '/admin/contact/simple/contact/person/id/{contact_id}',
-                    'company' => isset($options['route']['contact']['company']) ? $options['route']['contact']['company'] : '/admin/contact/simple/contact/company/id/{contact_id}',
-                    'search' => isset($options['route']['contact']['search']) ? $options['route']['contact']['search'] : '/admin/contact/simple/search'
+                    'person' => isset($options['route']['contact']['person']) ? $options['route']['contact']['person'] : '/admin/contact/person/id/{contact_id}',
+                    'company' => isset($options['route']['contact']['company']) ? $options['route']['contact']['company'] : '/admin/contact/company/id/{contact_id}',
+                    'search' => isset($options['route']['contact']['search']) ? $options['route']['contact']['search'] : '/admin/contact/search'
                 )
             )
         ));

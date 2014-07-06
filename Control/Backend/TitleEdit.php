@@ -46,8 +46,8 @@ class TitleEdit extends Backend {
                 'edit' => 'admin/edit.title.twig'
             ),
             'route' => array(
-                'action' => '/admin/contact/backend/title/edit?usage='.self::$usage,
-                'list' => '/admin/contact/backend/title/list?usage='.self::$usage
+                'action' => '/admin/contact/title/edit?usage='.self::$usage,
+                'list' => '/admin/contact/title/list?usage='.self::$usage
             )
         ));
     }

@@ -45,8 +45,8 @@ class CategoryList extends Dialog {
                 'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/admin/simple/list.category.twig'
             ),
             'route' => array(
-                'create' => isset($options['route']['create']) ? $options['route']['create'] : '/admin/contact/simple/category/edit',
-                'edit' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/category/edit/id/{category_id}'
+                'create' => isset($options['route']['create']) ? $options['route']['create'] : '/admin/contact/category/edit',
+                'edit' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/category/edit/id/{category_id}'
             )
         ));
         $this->CategoryTypeData = new CategoryType($this->app);

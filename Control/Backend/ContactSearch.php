@@ -48,9 +48,9 @@ class ContactSearch extends Backend {
             ),
             'route' => array(
                 'contact' => array(
-                    'person' => '/admin/contact/backend/person/edit/id/{contact_id}?usage='.self::$usage,
-                    'company' => '/admin/contact/backend/company/edit/id/{contact_id}?usage='.self::$usage,
-                    'search' => '/admin/contact/backend/search?usage='.self::$usage
+                    'person' => '/admin/contact/person/edit/id/{contact_id}?usage='.self::$usage,
+                    'company' => '/admin/contact/company/edit/id/{contact_id}?usage='.self::$usage,
+                    'search' => '/admin/contact/search?usage='.self::$usage
                 )
             )
         );

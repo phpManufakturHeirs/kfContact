@@ -50,11 +50,11 @@ class ContactPerson extends Dialog {
                 'contact' => isset($options['template']['contact']) ? $options['template']['contact'] : 'pattern/admin/simple/edit.contact.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/contact/person',
-                'category' => isset($options['route']['category']) ? $options['route']['category'] : '/admin/contact/simple/category/list',
-                'title' => isset($options['route']['title']) ? $options['route']['title'] : '/admin/contact/simple/title/list',
-                'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/simple/tag/list',
-                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/list'
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/person',
+                'category' => isset($options['route']['category']) ? $options['route']['category'] : '/admin/contact/category/list',
+                'title' => isset($options['route']['title']) ? $options['route']['title'] : '/admin/contact/title/list',
+                'tag' => isset($options['route']['tag']) ? $options['route']['tag'] : '/admin/contact/tag/list',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/list'
             )
         ));
         $this->ContactControl = new ContactControl($this->app);

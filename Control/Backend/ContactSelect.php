@@ -46,15 +46,15 @@ class ContactSelect extends Backend {
                 'select' => 'admin/select.contact.twig'
             ),
             'route' => array(
-                'action' => '/admin/contact/backend/select?usage='.self::$usage,
+                'action' => '/admin/contact/select?usage='.self::$usage,
                 'contact' => array(
                     'person' => array(
-                        'create' => '/admin/contact/backend/person/edit?usage='.self::$usage,
-                        'edit' => '/admin/contact/backend/person/edit/id/{contact_id}?usage='.self::$usage
+                        'create' => '/admin/contact/person/edit?usage='.self::$usage,
+                        'edit' => '/admin/contact/person/edit/id/{contact_id}?usage='.self::$usage
                     ),
                     'company' => array(
-                        'create' => '/admin/contact/backend/company/edit?usage='.self::$usage,
-                        'edit' => '/admin/contact/backend/company/edit/id/{contact_id}?usage='.self::$usage
+                        'create' => '/admin/contact/company/edit?usage='.self::$usage,
+                        'edit' => '/admin/contact/company/edit/id/{contact_id}?usage='.self::$usage
                     )
                 )
             )

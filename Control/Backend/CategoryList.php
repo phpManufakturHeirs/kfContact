@@ -41,8 +41,8 @@ class CategoryList extends Backend {
                 'list' => 'admin/list.category.twig'
             ),
             'route' => array(
-                'create' => '/admin/contact/backend/category/create?usage='.self::$usage,
-                'edit' => '/admin/contact/backend/category/edit/id/{category_id}?usage='.self::$usage
+                'create' => '/admin/contact/category/create?usage='.self::$usage,
+                'edit' => '/admin/contact/category/edit/id/{category_id}?usage='.self::$usage
             )
         ));
     }

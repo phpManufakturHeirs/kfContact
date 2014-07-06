@@ -45,8 +45,8 @@ class TitleList extends Dialog {
                 'list' => isset($options['template']['list']) ? $options['template']['list'] : 'pattern/admin/simple/list.title.twig'
             ),
             'route' => array(
-                'create' => isset($options['route']['create']) ? $options['route']['create'] : '/admin/contact/simple/title/edit',
-                'edit' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/simple/title/edit/id/{title_id}'
+                'create' => isset($options['route']['create']) ? $options['route']['create'] : '/admin/contact/title/edit',
+                'edit' => isset($options['route']['edit']) ? $options['route']['edit'] : '/admin/contact/title/edit/id/{title_id}'
             )
         ));
         $this->TitleData = new Title($this->app);

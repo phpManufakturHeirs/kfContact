@@ -46,8 +46,8 @@ class TagEdit extends Backend {
                 'edit' => 'admin/edit.tag.twig'
             ),
             'route' => array(
-                'action' => '/admin/contact/backend/tag/edit?usage='.self::$usage,
-                'list' => '/admin/contact/backend/tag/list?usage='.self::$usage
+                'action' => '/admin/contact/tag/edit?usage='.self::$usage,
+                'list' => '/admin/contact/tag/list?usage='.self::$usage
             )
         ));
     }

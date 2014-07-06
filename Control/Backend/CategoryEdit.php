@@ -37,9 +37,9 @@ class CategoryEdit extends Backend {
                 'edit' => 'admin/edit.category.twig'
             ),
             'route' => array(
-                'action' => '/admin/contact/backend/category/create?usage='.self::$usage,
-                'extra' => '/admin/contact/backend/extra/list?usage='.self::$usage,
-                'list' => '/admin/contact/backend/category/list?usage='.self::$usage
+                'action' => '/admin/contact/category/create?usage='.self::$usage,
+                'extra' => '/admin/contact/extra/list?usage='.self::$usage,
+                'list' => '/admin/contact/category/list?usage='.self::$usage
             )
         ));
     }

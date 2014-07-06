@@ -48,8 +48,8 @@ class TitleEdit extends Dialog {
                 'edit' => isset($options['template']['edit']) ? $options['template']['edit'] : 'pattern/admin/simple/edit.title.twig'
             ),
             'route' => array(
-                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/simple/title/edit',
-                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/simple/title/list'
+                'action' => isset($options['route']['action']) ? $options['route']['action'] : '/admin/contact/title/edit',
+                'list' => isset($options['route']['list']) ? $options['route']['list'] : '/admin/contact/title/list'
             )
         ));
         $this->TitleData = new Title($this->app);
