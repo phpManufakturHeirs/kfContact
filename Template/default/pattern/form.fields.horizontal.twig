@@ -33,7 +33,7 @@
   {% endif %}
   <div class="form-group">
     {{ block('form_label') }}
-    <div class="col-sm-9">
+    <div class="{% if attr.route is defined %}col-sm-7{% else %}col-sm-9{% endif %}">
       {% if attr.prefix is defined %}
         <span class="prefix-block">{{ attr.prefix|trans }}</span>
       {% endif %}
@@ -42,6 +42,11 @@
         <span class="help-block">{{ attr.help|trans }}</span>
       {% endif %}  
     </div>
+    {% if attr.route is defined %}
+      <div class="col-sm-2">
+        <a class="btn btn-default input-sm" href="{{ attr.route }}" role="button" title="{{ 'Edit'|trans }}"><i class="fa fa-pencil-square-o"></i></a>
+      </div>
+    {% endif %}  
   </div>
 {% endblock %}
 

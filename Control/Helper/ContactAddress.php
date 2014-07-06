@@ -73,7 +73,7 @@ class ContactAddress extends ContactParent
                         $address_data[$key] = -1;
                         break;
                     case 'address_type':
-                        $address_data[$key] = 'OTHER';
+                        $address_data[$key] = 'SECONDARY';
                         break;
                     case 'address_identifier':
                     case 'address_description':
@@ -145,7 +145,6 @@ class ContactAddress extends ContactParent
         if ((isset($data['address_street']) && (!empty($data['address_street']))) ||
             (isset($data['address_city']) && !empty($data['address_city'])) ||
             (isset($data['address_zip']) && !empty($data['address_zip']))) {
-
             // insert only, if street, city or zip isset
             $this->Address->insert($data, $address_id);
             $has_inserted = true;

@@ -368,6 +368,15 @@ class Update
             $SQL = "ALTER TABLE `".FRAMEWORK_TABLE_PREFIX."contact_address` CHANGE `address_type` `address_type` VARCHAR(32) NOT NULL DEFAULT 'PRIMARY'";
             $this->app['db']->query($SQL);
         }
+
+        $config = $this->Configuration->getConfiguration();
+        if (!isset($config['dialog'])) {
+            $default = $this->Configuration->getDefaultConfigArray();
+            $config['dialog'] = $default['dialog'];
+            $this->Configuration->setConfiguration($config);
+            $this->Configuration->saveConfiguration();
+        }
+
     }
 
     /**

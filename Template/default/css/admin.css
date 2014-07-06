@@ -8,6 +8,7 @@
   @license MIT License (MIT) http://www.opensource.org/licenses/MIT
 */
 
+.container-fluid,
 .container {
   padding-left: 0;
   padding-right: 0;

@@ -28,6 +28,10 @@
   {% endif %}
 {% endblock stylesheet %}
 {% block title %}{{ 'Contact Administration - Create or edit contact'|trans }}{% endblock %}
+{% block jquery %}
+  {{ parent() }}
+  <script type="text/javascript" src="{{ MANUFAKTUR_URL }}/CKEditor/Source/ckeditor.js"></script>
+{% endblock jquery %}
 
 {% block content %}
   <!-- {{ _self.getTemplateName() }} -->  
@@ -37,10 +41,11 @@
     
     <h2>{{ 'Edit contact'|trans }}</h2>
     
-    {% include '@phpManufaktur/Contact/Template/default/pattern/admin/simple/edit.contact.twig' %}
-
+    {% include '@phpManufaktur/Contact/Template/default/pattern/implement/edit.contact.twig' %}
+    
   </div>
 {% endblock content %}
+
 {% block footer_jquery %}
   {{ parent() }}
   {% if form.contact_type.vars.value == 'PERSON' %}
@@ -48,7 +53,17 @@
     <script type="text/javascript" src="{{ LIBRARY_URL }}/jquery/ui/latest/ui/minified/i18n/jquery-ui-i18n.min.js"></script>
   {% endif %}
 {% endblock footer_jquery %}
+
 {% block footer %}
+  
+  {# the CKEditor need extra space - loop through the form and search for attr.type == 'html' #}
+  {% set iframe_add_height = 0 %}
+  {% for item in form %}
+    {% if item.vars.attr.type is defined and item.vars.attr.type == 'html' %}
+      {% set iframe_add_height = iframe_add_height + 180 %}
+    {% endif %}
+  {% endfor %}  
+  
   {{ parent() }}
   <script type="text/javascript">
     if (typeof 'jQuery' !== 'undefined') {

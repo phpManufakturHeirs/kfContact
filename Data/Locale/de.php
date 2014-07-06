@@ -47,10 +47,30 @@ return array(
         => 'Adresse',
     'Address area'
         => 'Bezirk',
+    'Address billing'
+        => 'Rechungsadresse',
+    'Address billing city'
+        => 'Stadt',
+    'Address billing country code'
+        => 'Land',
+    'Address billing street'
+        => 'Straße',
+    'Address billing zip'
+        => 'PLZ',
     'Address city'
         => 'Stadt',
     'Address country code'
         => 'Land',
+    'Address delivery'
+        => 'Lieferadresse',
+    'Address delivery city'
+        => 'Stadt',
+    'Address delivery country code'
+        => 'Land',
+    'Address delivery street'
+        => 'Straße',
+    'Address delivery zip'
+        => 'PLZ',
     'Address state'
         => 'Bundesland',
     'Address street'
@@ -175,6 +195,8 @@ return array(
         => 'Login',
     'Contact records successfull exported as <a href="%url%">%file_name%</a>. Please <a href="%remove%">remove the file</a> after download.'
         => 'Kontaktdatensätze erfolgreich exportiert als <a href="%url%">%file_name%</a>. Bitte <a href="%remove%">entfernen Sie die Datei</a> nach dem Herunterladen.',
+    'Contact settings'
+        => 'Kontakt Information',
     'Contact since'
         => 'Kontakt seit',
     'Contact status'
