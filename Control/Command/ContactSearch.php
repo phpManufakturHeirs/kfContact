@@ -88,8 +88,15 @@ class ContactSearch extends Basic
 
         $contacts = array();
 
-        if ('POST' == $this->app['request']->getMethod()) {
-            $search = $app['request']->get('search');
+        $cms_parameter = $this->getCMSgetParameters();
+        $search = $app['request']->get('search');
+        if (is_null($search) && isset($cms_parameter['search'])) {
+            $search = $cms_parameter['search'];
+        }
+
+        if (!is_null($search)) {
+            //$search = trim($app['request']->get('search'));
+            $search = trim($search);
             $search_tags = $tags;
             if ($use_tags && empty($search_tags)) {
                 if ((null !== ($tag = $app['request']->get('tag'))) && ($tag != -1)) {
@@ -103,7 +110,21 @@ class ContactSearch extends Basic
                 }
             }
             $Contact = new Contact($app);
-            $contacts = $Contact->searchPublicContact($search, $search_tags, $search_categories);
+            if (false !== ($contacts = $Contact->searchPublicContact($search, $search_tags, $search_categories))) {
+                // search was successfull
+                if (!empty($search)) {
+                    $this->setAlert('%hits% hits for the search of <strong>%search%</strong>', array(
+                        '%hits%' => count($contacts), '%search%' => $search), self::ALERT_TYPE_SUCCESS);
+                }
+                else {
+                    $this->setAlert('Please use a search term to reduce the hits!', array(), self::ALERT_TYPE_WARNING);
+                }
+            }
+            else {
+                // no hits
+                $this->setAlert('No hits for the search of %search%', array(
+                    '%search%' => $search), self::ALERT_TYPE_INFO);
+            }
         }
 
 
@@ -122,7 +143,8 @@ class ContactSearch extends Basic
                 'categories' => $categories,
                 'category_select' => $category_select,
                 'contacts' => $contacts,
-                'columns' => self::$list_configuration['columns']
+                'columns' => self::$list_configuration['columns'],
+                'search' => $search
             ));
     }
 }
