@@ -232,8 +232,18 @@ class PermanentLink
             'command' => 'contact',
             'action' => 'view',
             'contact_id' => $contact_id,
-            'canonical' => FRAMEWORK_URL."/contact/public/view/id/$contact_id"
+            'canonical' => FRAMEWORK_URL."/contact/public/view/id/$contact_id",
         );
+
+        // gather all GET parameter
+        $gets = $app['request']->query->all();
+        if (is_array($gets)) {
+            foreach ($gets as $key => $value) {
+                if (!in_array($key, array('pid'))) {
+                    $parameter[$key] = $value;
+                }
+            }
+        }
 
         // create the target URL and set the needed parameters
         $target_url = $target_url.'?'.http_build_query($parameter, '', '&');

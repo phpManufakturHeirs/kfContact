@@ -85,13 +85,19 @@ class ContactView extends Basic
             return $this->promptAlert();
         }
 
+        $cms_parameter = $this->getCMSgetParameters();
+        $origin = isset($cms_parameter['origin']) ? urldecode($cms_parameter['origin']) : null;
+        $search = isset($cms_parameter['search']) ? urldecode($cms_parameter['search']) : null;
+
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             '@phpManufaktur/Contact/Template', 'command/view.contact.twig',
             $this->getPreferredTemplateStyle()),
             array(
                 'basic' => $this->getBasicSettings(),
                 'contact' => $contact,
-                'parameter' => self::$parameter
+                'parameter' => self::$parameter,
+                'origin' => $origin,
+                'search' => $search
             ));
     }
 }

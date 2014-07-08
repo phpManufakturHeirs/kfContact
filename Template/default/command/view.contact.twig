@@ -75,10 +75,13 @@
  
   {% for extra in contact.extra_fields %}
     {# loop through the contact extra fields #}
-    <div class="row">
-      <div class="col-sm-4">{{ extra.extra_type_name|trans }}</div>
-      <div class="col-sm-8">{{ extra.extra_value }}</div>
-    </div>
+    {% if extra.extra_value|length > 0 %}
+      {# show only fields which contain a value #}
+      <div class="row">
+        <div class="col-sm-4">{{ extra.extra_type_name|humanize|trans }}</div>
+        <div class="col-sm-8">{{ extra.extra_value }}</div>
+      </div>
+    {% endif %}
   {% endfor %}  
   
   {% if parameter.edit is defined and parameter.edit == true %}
@@ -89,4 +92,11 @@
     </div>
   {% endif %}
   
+  {% if origin is defined and origin|length > 0 %}
+    {% set search_parameter = '' %}
+    {% if search is defined and search|length > 0 %}
+      {% set search_parameter = '?search=' ~ search|url_encode() %}
+    {% endif %}
+    <a class="btn btn-default" href="{{ origin ~ search_parameter }}" target="_parent" role="button">{{ 'Back'|trans }}</a> 
+  {% endif %}
 {% endblock %}

@@ -36,9 +36,9 @@
               {% for key in columns %}
                 <td class="{{ key }}">
                   {% if key == 'contact_id' %}
-                    <a href="{{ FRAMEWORK_URL ~ '/contact/public/view/id/' ~ contact.contact_id }}" target="_parent">{{ '%05d'|format(contact.contact_id) }}</a>
+                    <a href="{{ FRAMEWORK_URL ~ '/contact/public/view/id/' ~ contact.contact_id ~ '?&origin=' ~ basic.cms.page_url|url_encode() }}" target="_parent">{{ '%05d'|format(contact.contact_id) }}</a>
                   {% elseif (key == 'order_name') or (key == 'contact_name') %}
-                    <a href="{{ FRAMEWORK_URL ~ '/contact/public/view/id/' ~ contact.contact_id }}" target="_parent">{{ attribute(contact, key) }}</a>
+                    <a href="{{ FRAMEWORK_URL ~ '/contact/public/view/id/' ~ contact.contact_id  ~ '?&origin=' ~ basic.cms.page_url|url_encode() }}" target="_parent">{{ attribute(contact, key) }}</a>
                   {% elseif key == 'person_gender' %}
                     {{ attribute(contact, key)|trans }}  
                   {% elseif key == 'communication_email' %}

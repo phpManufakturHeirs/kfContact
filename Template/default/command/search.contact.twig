@@ -22,8 +22,6 @@
 {% block content %}
   <!-- {{ _self.getTemplateName() }} -->
   
-  {{ basic.alert }}
-  
   <form action="{{ FRAMEWORK_URL ~ '/contact/search?pid=' ~ basic.pid }}" class="form-inline" method="post" role="form">
     <div class="row">
     {% if use_categories and categories|length == 0 %}
@@ -62,7 +60,9 @@
       </div>
     </div>
   </form>   
-    
+   
+  {{ basic.alert }}
+         
   {% if contacts|length > 0 %}    
     <div class="table-responsive">
       <table class="table table-striped table-condensed table-hover">
@@ -77,9 +77,9 @@
               {% for key in columns %}
                 <td class="{{ key }}">
                   {% if key == 'contact_id' %}
-                    <a href="{{ FRAMEWORK_URL ~ '/contact/public/view/id/' ~ contact.contact_id }}" target="_parent">{{ '%05d'|format(contact.contact_id) }}</a>
+                    <a href="{{ FRAMEWORK_URL ~ '/contact/public/view/id/' ~ contact.contact_id  ~ '?&origin=' ~ basic.cms.page_url|url_encode() ~ '&search=' ~ search|url_encode() }}" target="_parent">{{ '%05d'|format(contact.contact_id) }}</a>
                   {% elseif (key == 'order_name') or (key == 'contact_name') %}
-                    <a href="{{ FRAMEWORK_URL ~ '/contact/public/view/id/' ~ contact.contact_id }}" target="_parent">{{ attribute(contact, key) }}</a>
+                    <a href="{{ FRAMEWORK_URL ~ '/contact/public/view/id/' ~ contact.contact_id  ~ '?&origin=' ~ basic.cms.page_url|url_encode() ~ '&search=' ~ search|url_encode() }}" target="_parent">{{ attribute(contact, key) }}</a>
                   {% elseif key == 'person_gender' %}
                     {{ attribute(contact, key)|trans }}  
                   {% elseif key == 'communication_email' %}
@@ -94,9 +94,43 @@
         </tbody>
       </table>
     </div> 
-  {% else %}
-    {% include '@phpManufaktur/Basic/Template/default/pattern/bootstrap/alert.twig' 
-        with {content:'No hits for this search!'|trans} only %}
   {% endif %}
   
 {% endblock content %}
+{% block footer_jquery %}
+  {{ parent() }}
+  {# tablesorter #}
+  <script src="{{ LIBRARY_URL ~ '/jquery/tablesorter/latest/js/jquery.tablesorter.js' }}"></script>
+  <script src="{{ LIBRARY_URL ~ '/jquery/tablesorter/latest/js/jquery.tablesorter.widgets.js' }}"></script>
+  <script type="text/javascript">
+    $(function() {
+      $.extend($.tablesorter.themes.bootstrap, {
+        table      : 'table table-bordered',
+        caption    : 'caption',
+        header     : 'bootstrap-header',
+        footerRow  : '',
+        footerCells: '',
+        icons      : '',
+        sortNone   : 'bootstrap-icon-unsorted',
+        sortAsc    : 'icon-chevron-up glyphicon glyphicon-chevron-up',
+        sortDesc   : 'icon-chevron-down glyphicon glyphicon-chevron-down',
+        active     : '',
+        hover      : '',
+        filterRow  : '',
+        even       : '',
+        odd        : '' 
+      });
+
+      $("table").tablesorter({
+        theme : "bootstrap",
+        widthFixed: true,
+        headerTemplate : '{content} {icon}', 
+        widgets : [ "uitheme", "zebra" ],  // add "filter" for additional filter row
+        widgetOptions : {
+          zebra : ["even", "odd"],
+          filter_reset : ".reset"
+        }
+      })
+    });
+  </script>
+{% endblock %}
