@@ -193,7 +193,7 @@ class ContactList extends Basic
             array(
                 'basic' => $this->getBasicSettings(),
                 'contacts' => $contacts,
-                'columns' => self::$config['columns'],
+                'columns' => self::$config['columns']
             ));
     }
 }
