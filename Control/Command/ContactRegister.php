@@ -326,13 +326,20 @@ class ContactRegister extends Basic
             ));
     }
 
+    /**
+     * Get the field array for the form
+     *
+     * @return array
+     */
     protected function getFieldArray()
     {
         // get the basic field definition
         $field = self::$config['command']['register']['field'];
 
-        // set the available tags from the parameters
-        $field['tags'] = array_keys(self::$parameter['tags']);
+        if (isset(self::$parameter['tags']) && is_array(self::$parameter['tags'])) {
+            // set the available tags from the parameters
+            $field['tags'] = array_keys(self::$parameter['tags']);
+        }
 
         // set the available categories from the parameters
         $field['categories'] = array_keys(self::$parameter['categories']);
@@ -340,6 +347,11 @@ class ContactRegister extends Basic
         return $field;
     }
 
+    /**
+     * Return the form to register a new contact
+     *
+     * @return \phpManufaktur\Basic\Control\Pattern\rendered
+     */
     protected function registerContact()
     {
         $data = array(
