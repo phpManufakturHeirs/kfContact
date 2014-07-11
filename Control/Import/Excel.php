@@ -26,7 +26,6 @@ class Excel extends Alert
     protected static $usage = null;
     protected static $import_type = null;
     protected static $import_file = null;
-    protected static $import_xlsx = null;
     protected static $counter_insert = null;
     protected static $counter_update = null;
 
@@ -195,7 +194,7 @@ class Excel extends Alert
             ));
         }
         $form->add('import', 'file', array(
-            'attr' => array('title' => $this->app['translator']->trans('Select the %type% file', array('%type%' => strtoupper($type))))
+            'attr' => array('title' => $this->app['translator']->trans('Click to select the %type% file for import', array('%type%' => strtoupper($type))))
         ));
 
         return $form->getForm();
@@ -204,9 +203,7 @@ class Excel extends Alert
     protected function formFileAssociation()
     {
         try {
-            $objReader = new \PHPExcel_Reader_Excel2007();
-            $objPHPExcel = $objReader->load(self::$import_xlsx);
-
+            $objPHPExcel = \PHPExcel_IOFactory::load(self::$import_file);
             $objWorksheet = $objPHPExcel->getActiveSheet();
             // get the first row and extract the column headers
             $cells = array();
@@ -322,61 +319,22 @@ class Excel extends Alert
         $form->bind($this->app['request']);
         if ($form->isValid()) {
             $data = $form->getData();
-            $extension = $form['import']->getData()->guessExtension();
-            if (!$extension) {
-                // extension cannot be guessed
-                $extension = 'bin';
-            }
+
+            // get the file extension
+            $extension = $form['import']->getData()->getClientOriginalExtension();
+
             self::$import_type = $type;
             self::$import_file = FRAMEWORK_TEMP_PATH.'/'.$this->app['utils']->createGUID().'.'.$extension;
-            self::$import_xlsx = FRAMEWORK_TEMP_PATH.'/'.$this->app['utils']->createGUID().'.xlsx';
+
             $form['import']->getData()->move(FRAMEWORK_TEMP_PATH, basename(self::$import_file));
-
-            try {
-                if ($type === 'xlsx') {
-                    $objReader = new \PHPExcel_Reader_Excel2007();
-                    $objReader->setReadDataOnly(true);
-                    $objPHPExcel = $objReader->load(self::$import_file);
-                }
-                elseif ($type === 'xls') {
-                    $objReader = new \PHPExcel_Reader_Excel5();
-                    $objReader->setReadDataOnly(true);
-                    $objPHPExcel = $objReader->load(self::$import_file);
-                }
-                elseif ($type === 'ods') {
-                    $objReader = new \PHPExcel_Reader_OOCalc();
-                    $objReader->setReadDataOnly(true);
-                    $objPHPExcel = $objReader->load(self::$import_file);
-                }
-                elseif ($type === 'csv') {
-                    $objReader = new \PHPExcel_Reader_CSV();
-                    $objReader->setInputEncoding($data['encoding']);
-                    $delimiter = ($data['delimiter'] === 'comma') ? ',' : ';';
-                    $objReader->setDelimiter($delimiter);
-                    $enclosures = ($data['enclosures'] === 'doublequote') ? '"' : '';
-                    $objReader->setEnclosure($enclosures);
-                    $objReader->setLineEnding("\r\n");
-                    $objReader->setSheetIndex(0);
-                    $objPHPExcel = $objReader->load(self::$import_file);
-                }
-
-                // save the Excel Sheet for the next step
-                $objWriter = new \PHPExcel_Writer_Excel2007($objPHPExcel);
-                $objWriter->save(self::$import_xlsx);
-
-                if (false !== ($form = $this->formFileAssociation())) {
-                    return $this->app['twig']->render($this->app['utils']->getTemplateFile(
-                        '@phpManufaktur/Contact/Template', 'admin/import/assign.fields.twig'),
-                        array(
-                            'alert' => $this->getAlert(),
-                            'usage' => self::$usage,
-                            'form' => $form->createView()
-                        ));
-                }
-            } catch (\PHPExcel_Reader_Exception $e) {
-                $this->setAlert('[%file%:%line%] Excel Error: %error%',
-                    array('%error%' => $e->getMessage(),
-                        '%file%' => basename($e->getFile()), '%line%' => $e->getLine()), self::ALERT_TYPE_DANGER);
+            if (false !== ($form = $this->formFileAssociation())) {
+                return $this->app['twig']->render($this->app['utils']->getTemplateFile(
+                    '@phpManufaktur/Contact/Template', 'admin/import/assign.fields.twig'),
+                    array(
+                        'alert' => $this->getAlert(),
+                        'usage' => self::$usage,
+                        'form' => $form->createView()
+                    ));
             }
         }
         else {
@@ -387,6 +345,13 @@ class Excel extends Alert
         return $this->promptAlertFramework();
     }
 
+    /**
+     * Proceed the import
+     *
+     * @param array $data
+     * @param array $defaults
+     * @return boolean
+     */
     protected function importContact($data, $defaults)
     {
         if (!isset($data['contact_login']) && !isset($data['communication_email'])) {
@@ -927,7 +892,7 @@ class Excel extends Alert
         }
         self::$import_type = $request['import_type'];
         self::$import_file = $request['import_file'];
-        self::$import_xlsx = $request['import_xlsx'];
+        //self::$import_xlsx = $request['import_xlsx'];
 
         if (false === ($form = $this->formFileAssociation())) {
             $this->setAlert('The form seems to be manipulated, abort action!', array(), self::ALERT_TYPE_DANGER);
@@ -975,8 +940,7 @@ class Excel extends Alert
                         'address_country_code' => isset($data['address_country_code']) ? $data['address_country_code'] : 'DE'
                     );
 
-                    $objReader = new \PHPExcel_Reader_Excel2007();
-                    $objPHPExcel = $objReader->load(self::$import_xlsx);
+                    $objPHPExcel = \PHPExcel_IOFactory::load(self::$import_file);
 
                     $objWorksheet = $objPHPExcel->getActiveSheet();
                     $start = true;
@@ -1001,7 +965,11 @@ class Excel extends Alert
                             }
                             $contact[$cell_type[$i]] = $cell->getValue();
                         }
-                        $this->importContact($contact, $defaults);
+                        try {
+                            $this->importContact($contact, $defaults);
+                        } catch (\Exception $e) {
+                            $this->setAlert($e->getMessage());
+                        }
                     }
 
                 } catch (\PHPExcel_Reader_Exception $e) {
