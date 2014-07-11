@@ -41,6 +41,8 @@ return array(
         => 'Eine neue Markierung (#tag) erstellen',
     'Add a new title'
         => 'Einen neuen Titel hinzufügen',
+    'Add extra field'
+        => 'Zusatzfeld hinzufügen',
     'Additional'
         => 'Zusatz',
     'Address'
@@ -98,6 +100,8 @@ return array(
     "At minimum you must specify a street, a city or a zip code for a valid address"
         => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
 
+    'Back'
+        => 'Zurück',
     'baron'
         => 'Baron',
     'Birthday'
@@ -143,6 +147,8 @@ return array(
         => 'Schweiz',
     'City'
         => 'Stadt',
+    'Click to select the %type% file for import'
+        => '%type% Datei für den Import auswählen',
     'Click to sort column ascending'
         => 'Anklicken um die Spalte aufsteigend zu sortieren',
     'Click to sort column descending'
@@ -185,6 +191,8 @@ return array(
         => 'Kontakt Bezeichner',
     'contact_name'
         => 'Bezeichner',
+    'Contact list'
+        => 'Kontaktliste',
     'Contact login'
         => 'Kontakt Anmeldename',
     'Contact pending'
@@ -193,6 +201,8 @@ return array(
         => 'Kontaktdaten veröffentlicht',
     'contact_login'
         => 'Login',
+    'Contact record'
+        => 'Kontaktdatensatz',
     'Contact records successfull exported as <a href="%url%">%file_name%</a>. Please <a href="%remove%">remove the file</a> after download.'
         => 'Kontaktdatensätze erfolgreich exportiert als <a href="%url%">%file_name%</a>. Bitte <a href="%remove%">entfernen Sie die Datei</a> nach dem Herunterladen.',
     'Contact settings'
@@ -203,8 +213,10 @@ return array(
         => 'Status',
     'Contact timestamp'
         => 'Letzte Änderung',
+    'Contact Type'
+        => 'Kontakttyp',
     'contact_type'
-        =>'Typ',
+        =>'Kontakttyp',
     'Contact data submitted'
         => 'Kontaktdaten übermittelt',
     "Contact insert fail, but the process does not return the reason!"
@@ -277,8 +289,10 @@ return array(
         => 'Exportieren im Format',
     'Export contact records'
         => 'Kontaktdatensätze exportieren',
+    'Extra fields'
+        => 'Zusatzfelder',
     'Extra field definition'
-        => 'Extrafeld Definition',
+        => 'Zusatzfelder Definition',
     'Extra type option'
         => 'Optionen',
 
@@ -396,6 +410,8 @@ return array(
         => 'Bezeichnung',
     'Organization'
         => 'Organisation',
+    'Overview'
+        => 'Übersicht',
 
     'pending'
         => 'Ungeklärt',
@@ -480,12 +496,16 @@ return array(
 
     'Tag'
         => 'Markierung',
+    'Tag (translated)'
+        => 'Markierung (übersetzt)',
     'Tag definition'
         => '#tag Definition',
     'Tag list'
         => 'Markierungen (#tags) Übersicht',
     'Tags'
         => 'Markierungen',
+    'Target URL'
+        => 'Ziel URL',
     "The Address with the ID %address_id% was successfull deleted."
         => 'Die Adresse mit der ID %address_id% wurde erfolgreich gelöscht.',
     'The category %category_type_name% was successfull deleted.'
@@ -542,6 +562,8 @@ return array(
         => 'Das Zusatzfeld %field% ist jetzt der Kategorie %category% zugeordnet und kann verwendet werden!',
     "The field %field% can not be empty!"
         => 'Das Feld %field% darf nicht leer sein!',
+    'The field list is empty, please define a extra field!'
+        => 'Die Liste der Zusatzfelder ist leer, bitte definieren Sie ein Zusatzfeld!',
     'The form is not valid, please check your input and try again!'
         => 'Das Formular ist nicht gültig, bitte überprüfen Sie Ihre Eingabe und übermitteln Sie das Formular erneut!',
     'The import from KeepInTouch was successfull finished.'
