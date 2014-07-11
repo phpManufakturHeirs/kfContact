@@ -26,6 +26,11 @@
   {{ block('form_row_simple') }}
 {% endblock %}
 
+{% block file_row %}
+  {% set type = 'file' %}
+  {{ block('form_row_simple') }}
+{% endblock %}  
+
 {% block choice_row %}
   {% if name == 'tags' %}
     {% set translate = 1 %}
@@ -65,7 +70,11 @@
       {% if attr.prefix is defined %}
         <span class="prefix-block">{{ attr.prefix|trans }}</span>
       {% endif %}
-      <input type="{{ type }}" class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+      {% if type == 'file' %}
+        <span class="btn btn-default btn-file">{% if attr.title is defined %}{{ attr.title|trans }}{% else %}{{ 'Browse'|trans }}{% endif %}<input type="{{ type }}" class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" {{ block('widget_attributes') }}/></span>
+      {% else %}
+        <input type="{{ type }}" class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+      {% endif %}
       {% if attr.help is defined %}
         <span class="help-block">{{ attr.help|trans }}</span>
       {% endif %}
