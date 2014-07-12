@@ -1606,5 +1606,16 @@ class Contact extends ContactParent
         return $email;
     }
 
+    /**
+     * Return the contact ID for the given contact login
+     *
+     * @param string $contact_login
+     * @return mixed <integer|boolean>
+     */
+    public function getContactID($contact_login)
+    {
+        return $this->ContactData->getContactID($contact_login);
+    }
+
 }
 

@@ -705,6 +705,24 @@ EOD;
     }
 
     /**
+     * Get the contact ID for the given contact login
+     *
+     * @param string $contact_login
+     * @throws \Exception
+     * @return Ambigous <boolean, integer>
+     */
+    public function getContactID($contact_login)
+    {
+        try {
+            $SQL = "SELECT `contact_id` FROM `".self::$table_name."` WHERE `contact_login`='$contact_login'";
+            $id = $this->app['db']->fetchColumn($SQL);
+            return ($id > 0) ? $id : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
      * Search for public contacts in all relevant data fields.
      *
      * @param string $search_term

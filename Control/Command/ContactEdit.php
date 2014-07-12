@@ -137,7 +137,6 @@ class ContactEdit extends Basic
                     'pid' => $this->getParameterID()));
                 return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
             }
-            $checked = true;
             self::$contact_id = intval($login['contact_id']);
             $roles = array();
             $errors = $app['validator']->validateValue($login['email'], new Assert\Email());
