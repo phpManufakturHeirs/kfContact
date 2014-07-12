@@ -17,6 +17,7 @@ use phpManufaktur\Basic\Control\kitCommand\Basic;
 use phpManufaktur\Contact\Control\Configuration;
 use phpManufaktur\Contact\Data\Contact\CategoryType;
 use phpManufaktur\Contact\Data\Contact\TagType;
+use Carbon\Carbon;
 
 /**
  * Class ContactRegister
@@ -592,6 +593,15 @@ class ContactRegister extends Basic
 
         if (false === ($contact = $this->app['contact']->selectOverview($account['email']))) {
             $this->setAlert('The GUID was valid but can not get the contact record desired to the account!',
+                array(), self::ALERT_TYPE_DANGER);
+            return $this->promptAlert();
+        }
+
+        $guid_datetime = Carbon::createFromFormat('Y-m-d H:i:s', $account['guid_timestamp']);
+        $guid_datetime->addHours(24);
+        if ($guid_datetime->lt(Carbon::now())) {
+            // the GUID is expired
+            $this->setAlert('The GUID was only valid for 24 hours and is expired, please contact the webmaster.',
                 array(), self::ALERT_TYPE_DANGER);
             return $this->promptAlert();
         }
