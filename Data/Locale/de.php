@@ -566,6 +566,8 @@ return array(
         => 'Die Liste der Zusatzfelder ist leer, bitte definieren Sie ein Zusatzfeld!',
     'The form is not valid, please check your input and try again!'
         => 'Das Formular ist nicht gültig, bitte überprüfen Sie Ihre Eingabe und übermitteln Sie das Formular erneut!',
+    'The GUID was only valid for 24 hours and is expired, please contact the webmaster.'
+        => 'Der Aktivierungslink war 24 Stunden gültig und ist abgelaufen, bitte nehmen Sie Kontakt mit dem Webmaster auf.',
     'The import from KeepInTouch was successfull finished.'
         => 'Der Import aus KeepInTouch wurde erfolgreich abgeschlossen.',
     'The last name must be at least two characters long!'
