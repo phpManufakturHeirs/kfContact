@@ -36,6 +36,12 @@
     {% set translate = 1 %}
     {% set columns = 2 %}
   {% endif %}
+  {% if attr.translate is defined %}
+    {% set translate = 1 %}
+  {% endif %}
+  {% if attr.columns is defined %}
+    {% set columns = attr.columns %}
+  {% endif %}
   <div class="form-group">
     {{ block('form_label') }}
     <div class="{% if attr.route is defined %}col-sm-7{% else %}col-sm-9{% endif %}">
@@ -90,8 +96,15 @@
         <span class="prefix-block">{{ attr.prefix|trans }}</span>
       {% endif %}
       {% if attr.type is defined and attr.type == 'html' %}
-        {{ CKEditor(id, full_name, value, '100%', '150px',
-          MANUFAKTUR_URL ~ '/Contact/Template/default/command/ckeditor.simple.js') }}  
+        {# load the CKEditor instead of the textarea #}
+        {% if attr.config is defined %}
+          {# a configuration file for the CKEditor is defined #}
+          {% set config = attr.config %}
+        {% else %}
+          {# use the default configuration file from /Contact #}
+          {% set config = MANUFAKTUR_URL ~ '/Contact/Template/default/command/ckeditor.simple.js' %}
+        {% endif %}
+        {{ CKEditor(id, full_name, value, '100%', '150px', config) }}  
       {% else %}  
         <textarea class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" rows="3" {{ block('widget_attributes') }}>{{ value }}</textarea>
       {% endif %}
