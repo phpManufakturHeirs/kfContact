@@ -52,7 +52,6 @@ class Contact extends Alert
         'address_id'
     );
 
-
     /**
      * (non-PHPdoc)
      * @see \phpManufaktur\Basic\Control\Pattern\Alert::initialize()
@@ -292,9 +291,10 @@ class Contact extends Alert
      *
      * @param array $data
      * @param array $field settings for the form
+     * @param boolean $ignore_status override the check for the contact status
      * @return boolean|array
      */
-    public function checkData($data, $field=array())
+    public function checkData($data, $field=array(), $ignore_status=false)
     {
         if (!is_array($field) || empty($field)) {
             // use the default configuration from config.contact.json
@@ -341,7 +341,7 @@ class Contact extends Alert
                 return false;
             }
 
-            if (!$this->app['account']->isAuthenticated() || !$this->app['account']->isGranted('ROLE_CONTACT_ADMIN')) {
+            if (!$ignore_status && (!$this->app['account']->isAuthenticated() || !$this->app['account']->isGranted('ROLE_CONTACT_ADMIN'))) {
                 // only admins can change the contact status and the contact type!
                 if (($existing_contact['contact']['contact_status'] !== 'ACTIVE') &&
                     ((!in_array('contact_status', $field['visible']) ||
