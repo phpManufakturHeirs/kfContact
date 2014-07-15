@@ -641,6 +641,10 @@ return array(
 
     'You are authenticated but not allowed to edit this contact'
         => 'Sie sind angemeldet, verfügen jedoch nicht über die Berechtigung diesen Kontaktdatensatz zu bearbeiten!',
+    'Your contact record is complete but not approved yet, please be patient.'
+        => 'Ihr Kontaktdatensatz ist vollständig, wurde aber noch nicht geprüft und freigegeben, bitte haben Sie noch ein wenig Geduld.',
+    'Your contact record is not complete, please check your address. You will not be able to publish anything at the portal as long as your contact record is locked.'
+        => 'Ihr Kontaktdatensatz ist nicht vollständig, bitte prüfen Sie die Adressangaben. Sie können keine Informationen auf dem Portal veröffentlichen solange Ihr Kontaktdatensatz gesperrt ist.',
     'Your contact record is now published, we have send you a confirmation mail with further information.'
         => 'Ihr Kontaktdatensatz wurde veröffentlicht, wir haben Ihnen eine E-Mail mit weiteren Informationen zugesendet.',
 
