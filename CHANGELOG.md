@@ -6,6 +6,25 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.38** - 2014-07-16
+
+* centralized usage of `form.fields.horizontal.twig`
+* bugfix: used `trim()` in write context in `ContactSearch`
+* bugfix: missing `WHERE` in SQL statement in `Category`
+* introduce extra field type `SELECT_TABLE`
+* introduce special fields in contact form
+* bugfix: public search does not look for ZIPs
+* simplified usage of the standard dialogs and templates
+* changed address and communication usage types - removed PRIVATE and BUSINESS, use PRIMARY instead
+* changed route for admin access to contact
+* finished reworking of the main contact dialog for all extensions
+* `action[list]` and `action[search]` can now handle a "go back" if a contact detail is viewed
+* changed Excel import handling
+* PermanentLink is now using BASIC PermanentLinkBase
+* add function `getContactID()` to interface
+* add check if GUID is expired
+* add check for form attributes `translate`, `columns` and `config`
+
 **2.0.37** - 2014-07-02
 
 * introduce search function for contacts with public access, just use the kitCommand `~~ command action[search] ~~`
