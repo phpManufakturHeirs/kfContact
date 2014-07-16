@@ -91,6 +91,8 @@ return array(
         => 'Administrator',
     'Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.'
         => 'Erlaubte Zeichen für den %identifier% Bezeichner sind A-Z, 0-9 und der Unterstrich. Der Bezeichner wird stets in Großbuchstaben umgewandelt.',
+    'Archived'
+        => 'Archiviert',
     'Area'
         => 'Bezirk, Region',
     'Assign the fields'
@@ -221,6 +223,8 @@ return array(
         => 'Kontaktdaten übermittelt',
     "Contact insert fail, but the process does not return the reason!"
         => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
+    'Contact record confirmed'
+        => 'Kontaktdatensatz bestätigt',
     'Contact Type: %type%'
         => 'Kontakt Typ: %type%',
     '%count% hits for the search term </i>%search%</i>.'
@@ -241,6 +245,8 @@ return array(
     'Delete'
         => 'löschen',
     'deleted'
+        => 'Gelöscht',
+    'Deleted'
         => 'Gelöscht',
     'Delivery address'
         => 'Lieferadresse',
@@ -415,6 +421,8 @@ return array(
 
     'pending'
         => 'Ungeklärt',
+    'Pending'
+        => 'Ungeklärt',
     'PERSON'
         => 'Person',
     'Person birthday'
@@ -455,6 +463,10 @@ return array(
         => 'Öffentlich',
     'Publish a contact'
         => 'Kontaktdaten freigeben',
+    'Published'
+        => 'Veröffentlicht',
+    'Published exposed'
+        => 'Veröffentlicht, hervorgehoben',
 
     'Register a contact'
         => 'Kontaktdaten bestätigen',
