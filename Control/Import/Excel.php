@@ -228,9 +228,6 @@ class Excel extends Alert
             ->add('import_file', 'hidden', array(
                 'data' => self::$import_file
             ))
-            ->add('import_xlsx', 'hidden', array(
-                'data' => self::$import_xlsx
-            ))
             ->add('count_cells', 'hidden', array(
                 'data' => count($cells)
             ));
