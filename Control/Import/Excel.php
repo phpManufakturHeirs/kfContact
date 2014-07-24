@@ -883,13 +883,12 @@ class Excel extends Alert
         $this->initialize($app);
 
         $request = $this->app['request']->get('form');
-        if (!isset($request['import_type']) || !isset($request['import_file']) || !isset($request['import_xlsx'])) {
+        if (!isset($request['import_type']) || !isset($request['import_file'])) {
             $this->setAlert('The form seems to be manipulated, abort action!', array(), self::ALERT_TYPE_DANGER);
             return $this->promptAlertFramework();
         }
         self::$import_type = $request['import_type'];
         self::$import_file = $request['import_file'];
-        //self::$import_xlsx = $request['import_xlsx'];
 
         if (false === ($form = $this->formFileAssociation())) {
             $this->setAlert('The form seems to be manipulated, abort action!', array(), self::ALERT_TYPE_DANGER);
