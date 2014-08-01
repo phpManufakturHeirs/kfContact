@@ -15,20 +15,6 @@ if ('á' != "\xc3\xa1") {
 }
 
 return array(
-    '- new category -'
-        => '- neue Kategorie -',
-    '- new contact -'
-        => '- neuer Kontakt -',
-    '- new tag -'
-        => '- neue Markierung -',
-    '- no contact selected -'
-        => '- kein Kontakt ausgewählt -',
-    '- not assigned -'
-        => '- nicht zugeordnet -',
-    '- select category (optional) -'
-        => '- Kategorie auswählen (optional) -',
-    'active'
-        => 'Aktiv',
     'Active'
         => 'Aktiv',
     'Add a new category'
@@ -79,15 +65,7 @@ return array(
         => 'Straße',
     'Address zip'
         => 'PLZ',
-    'address_city'
-        => 'Stadt',
-    'address_country_code'
-        => 'Land',
-    'address_street'
-        => 'Straße',
-    'address_zip'
-        => 'PLZ',
-    'ADMIN'
+    'Admin'
         => 'Administrator',
     'Allowed characters for the %identifier% identifier are only A-Z, 0-9 and the Underscore. The identifier will be always converted to uppercase.'
         => 'Erlaubte Zeichen für den %identifier% Bezeichner sind A-Z, 0-9 und der Unterstrich. Der Bezeichner wird stets in Großbuchstaben umgewandelt.',
@@ -99,8 +77,6 @@ return array(
         => 'Datenfelder zuordnen',
     'AT'
         => 'Österreich',
-    "At minimum you must specify a street, a city or a zip code for a valid address"
-        => "Für eine gültige Adresse müssen Sie mindestens eine Straße, eine Stadt oder eine Postleitzahl angeben.",
 
     'Back'
         => 'Zurück',
@@ -117,8 +93,6 @@ return array(
         => "Die Notiz mit der ID %note_id% kann nicht gelöscht werden, da sie als primäre Information für den Kontakt verwendet wird.",
     "Can't read the contact with the ID %contact_id% - it is possibly deleted."
         => 'Der Kontakt Datensatz mit der ID %contact_id% konnte nicht gelesen werden, er wurde möglicher Weise gelöscht.',
-    'category_type_id'
-        => 'Kategorie ID',
     'Categories'
         => 'Kategorien',
     'Category'
@@ -139,10 +113,6 @@ return array(
         => 'Kategorie Zugriff',
     'Category type id'
         => 'Kategorie',
-    'Category type list'
-        => 'Übersicht über die Kategorien',
-    'Change to the overview'
-        => 'Zur Übersicht wechseln',
     'Cell'
         => 'Mobilfunk',
     'CH'
@@ -161,38 +131,24 @@ return array(
         => 'Mobil',
     'Communication email'
         => 'E-Mail',
-    'communication_email'
-        => 'E-Mail',
     'Communication fax'
         => 'Telefax',
     'Communication phone'
-        => 'Telefon',
-    'communication_phone'
         => 'Telefon',
     'Communication url'
         => 'URL',
     'Company'
         => 'Firma',
-    'COMPANY'
-        => 'Firma',
     'Company department'
-        => 'Abteilung',
-    'company_department'
         => 'Abteilung',
     'Company name'
         => 'Firma',
-    'company_name'
-        => 'Firma',
-    'contact_id'
-        => 'ID',
     'Contact'
         => 'Kontakt',
     'Contact id'
         => 'ID',
     'Contact name'
         => 'Kontakt Bezeichner',
-    'contact_name'
-        => 'Bezeichner',
     'Contact list'
         => 'Kontaktliste',
     'Contact login'
@@ -201,8 +157,6 @@ return array(
         => 'Kontaktdaten werden geprüft',
     'Contact published'
         => 'Kontaktdaten veröffentlicht',
-    'contact_login'
-        => 'Login',
     'Contact record'
         => 'Kontaktdatensatz',
     'Contact records successfull exported as <a href="%url%">%file_name%</a>. Please <a href="%remove%">remove the file</a> after download.'
@@ -215,14 +169,10 @@ return array(
         => 'Status',
     'Contact timestamp'
         => 'Letzte Änderung',
-    'Contact Type'
+    'Contact type'
         => 'Kontakttyp',
-    'contact_type'
-        =>'Kontakttyp',
     'Contact data submitted'
         => 'Kontaktdaten übermittelt',
-    "Contact insert fail, but the process does not return the reason!"
-        => "Der Datensatz konnte nicht eingefügt werden, der Prozess hat leider keinen Grund dafür mitgeteilt.",
     'Contact record confirmed'
         => 'Kontaktdatensatz bestätigt',
     'Contact Type: %type%'
@@ -233,8 +183,6 @@ return array(
         => 'Land',
     'Create a new contact'
         => 'Einen neuen Kontakt anlegen',
-    'Create contact'
-        => 'Kontakt anlegen',
     'Customer'
         => 'Kunde',
     'Customer relationship management for the kitFramework'
@@ -244,8 +192,6 @@ return array(
         => 'Deutschland',
     'Delete'
         => 'löschen',
-    'deleted'
-        => 'Gelöscht',
     'Deleted'
         => 'Gelöscht',
     'Delivery address'
@@ -281,10 +227,6 @@ return array(
         => 'Markierungen bearbeiten',
     'Edit tag'
         => 'Markierung bearbeiten',
-    'Edit the category %category_type_name%'
-        => 'Die Kategorie %category_type_name% bearbeiten',
-    'Edit the <i>#tag</i> %tag_name%'
-        => 'Die Markierung #tag <i>%tag_name%</i> bearbeiten',
     'Edit title'
         => 'Titel bearbeiten',
     'Edit titles'
@@ -299,8 +241,6 @@ return array(
         => 'Zusatzfelder',
     'Extra field definition'
         => 'Zusatzfelder Definition',
-    'Extra type option'
-        => 'Optionen',
 
     'Failed to send a email with the subject <b>%subject%</b> to the addresses: <b>%failed%</b>.'
         => 'Eine E-Mail mit dem Betreff <b>%subject%</b> konnte an die folgenden Adressaten nicht übermittelt werden: <b>%failed%</b>.',
@@ -318,8 +258,6 @@ return array(
         => 'Datei %file% erfolgreich entfernt.',
     'First name'
         => 'Vorname',
-    'Forms'
-        => 'Formulare',
     'FR'
         => 'Frankreich',
 
@@ -363,12 +301,8 @@ return array(
         => 'Liste der verfügbaren Zusatzfelder',
     'List of available tags'
         => 'Liste der verfügbaren Markierungen',
-    'locked'
-        => 'Gesperrt',
     'Locked'
         => 'Gesperrt',
-    'login_name'
-        => 'Kontakt Anmeldename',
     'Long name'
         => 'Langbezeichnung',
     'Long name (translated)'
@@ -401,8 +335,6 @@ return array(
         => 'kein Zusatzfeld zugeordnet',
     'No hits for the search term <i>%search%</i>!'
         => 'Keine Treffer für den Suchbegriff <i>%search%</i>!',
-    'No hits for this search!'
-        => 'Keine Treffer für diese Suche!',
     'Note'
         => 'Notiz',
     'Note content'
@@ -410,20 +342,14 @@ return array(
     'Nothing to do ...'
         => 'Nichts zu tun ...',
 
-    'Options'
-        => 'Optionen',
-    'Order name'
-        => 'Bezeichnung',
     'Organization'
         => 'Organisation',
     'Overview'
         => 'Übersicht',
 
-    'pending'
-        => 'Ungeklärt',
     'Pending'
         => 'Ungeklärt',
-    'PERSON'
+    'Person'
         => 'Person',
     'Person birthday'
         => 'Geburtstag',
@@ -435,22 +361,12 @@ return array(
         => 'Nachname',
     'Person nick name'
         => 'Spitzname',
-    'person_birthday'
-        => 'Geburtstag',
-    'person_first_name'
-        => 'Vorname',
-    'person_last_name'
-        => 'Nachname',
-    'person_nick_name'
-        => 'Spitzname',
     'Person title'
         => 'Titel',
     'Phone'
         => 'Telefon',
     'Please define a short name for the title!'
         => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
-    'Please select one #tag at minimum!'
-        => 'Bitte wählen Sie mindestens eine Markierung aus!',
     'Please select the target file format to export the kitFramework Contact records: <a href="%xlsx%">XLSX (Excel)</a> or <a href="%csv%">CSV (Text)</a>.'
         => 'Bitte wählen Sie das Ausgabeformat um die kitFramework Contact Datensätze zu exportieren: <a href="%xlsx%">XLSX (Excel)</a> oder <a href="%csv%">CSV (Text)</a>.',
     'Please specify a search term!'
@@ -459,14 +375,10 @@ return array(
         => 'Prof.',
     'professor'
         => 'Professor',
-    'PUBLIC'
+    'Public'
         => 'Öffentlich',
     'Publish a contact'
         => 'Kontaktdaten freigeben',
-    'Published'
-        => 'Veröffentlicht',
-    'Published exposed'
-        => 'Veröffentlicht, hervorgehoben',
 
     'Register a contact'
         => 'Kontaktdaten bestätigen',
@@ -512,20 +424,12 @@ return array(
         => 'Markierung (übersetzt)',
     'Tag definition'
         => '#tag Definition',
-    'Tag list'
-        => 'Markierungen (#tags) Übersicht',
     'Tags'
         => 'Markierungen',
     'Target URL'
         => 'Ziel URL',
     "The Address with the ID %address_id% was successfull deleted."
         => 'Die Adresse mit der ID %address_id% wurde erfolgreich gelöscht.',
-    'The category %category_type_name% was successfull deleted.'
-        => 'Die Kategorie %category_type_name% wurde erfolgreich gelöscht.',
-    'The category %category_type_name% was successfull inserted.'
-        => 'Die Kategorie %category_type_name% wurde erfolgreich eingefügt.',
-    'The category %category_type_name% was successfull updated'
-        => 'Die Kategorie %category_type_name% wurde erfolgreich aktualisiert.',
     'The category type with the ID %category_id% does not exists!'
         => 'Die Kategorie mit der ID %category_id% existiert nicht!',
     "The communication entry %communication% was successfull deleted."
@@ -546,14 +450,8 @@ return array(
         => 'Der Kontakt <b>Login</b> muss gesetzt sein!',
     "The contact name %name% already exists! The update has still executed, please check if you really want this duplicate name."
         => "Der Kontakt Name <b>%name%</b> wird bereits verwendet! Der Datensatz wurde trotzdem aktualisiert, bitte prüfen Sie ob sie den doppelten Eintrag beibehalten möchten.",
-    'The contact record has been successfull inserted.'
-        => 'Der Kontaktdatensatz wurde erfolgreich eingefügt.',
-    'The contact record has been successfull updated'
-        => 'Der Kontaktdatensatz wurde erfolgreich aktualisiert',
     'The contact record is now published, the submitter has received an email with further information.'
         => 'Der Kontaktdatensatz wurde veröffentlicht, dem Übermittler wurde eine E-Mail mit weiteren Informationen zugesendet.',
-    'The contact record must contain a email address or a login name as unique identifier!'
-        => 'Der Kontakt Datensatz muss eine E-Mail Adresse oder einen Anmeldenamen (Login) für eine eindeutige Identifizierung enthalten!',
     "The contact record was not changed!"
         => 'Der Kontakt Datensatz wurde nicht geändert.',
     "The contact_type must be always set (%contact_types%)."
@@ -582,8 +480,6 @@ return array(
         => 'Der Aktivierungslink war 24 Stunden gültig und ist abgelaufen, bitte nehmen Sie Kontakt mit dem Webmaster auf.',
     'The import from KeepInTouch was successfull finished.'
         => 'Der Import aus KeepInTouch wurde erfolgreich abgeschlossen.',
-    'The last name must be at least two characters long!'
-        => 'Der Nachname muss aus mindestens zwei Buchstaben bestehen!',
     'The login <b>%login%</b> is already in use, please choose another one!'
         => "Der Login <b>%login%</b> wird bereits verwendet, bitte legen Sie einen anderen Login fest!",
     "The login_name or a email address must be always set, can't insert the record!"
@@ -592,8 +488,6 @@ return array(
         => 'Die Telefonnummer %number% überschreitet die maximal zulässige Länge von %max% Zeichen.',
     'The phone number %number% failed the validation, please check it!'
         => 'Die Telefonnummer %number% ist wahrscheinlich fehlerhaft, bitte überprüfen!',
-    "The process has not returned a status message"
-        => 'Der Prozess hat keinen Status für den Vorgang gemeldet',
     'The record with the ID %id% was successfull inserted.'
         => 'Der Datensatz mit der ID %id% wurde erfolgreich eingefügt.',
     'The record with the ID %id% was successfull updated.'
@@ -606,8 +500,6 @@ return array(
         => 'Die Markierung %tag_name% existiert bereits und kann nicht erneut eingefügt werden!',
     "The %type% entry %value% is marked for primary communication and can not removed!"
         => 'Der Typ %type% mit dem Wert %value% ist für die primäre Kommunikation mit dem Kontakt festgelegt und kann nicht gelöscht werden!',
-    "The update returned 'FALSE' but no message ..."
-        => "Die Aktualisierungsfunktion hat den Datensatz <b>nicht</b> aktualisiert und keinen Grund dafür mitgeteilt.",
     'The URL %url% is not valid, accepted is a pattern like http://example.com or https://www.example.com.'
         => 'Die URL %url% ist nicht gültig. Akzeptiert werden nur vollständige URL Angaben wie z.B. http://example.com oder https://www.example.com',
     'The zip %zip% is not valid!'
@@ -633,8 +525,6 @@ return array(
         => 'Titel',
     'Title definition'
         => 'Titel Definition',
-    'title_id'
-        => 'ID',
     'Title list'
         => 'Titel Übersicht',
     'To prevent a timeout of the script the import was aborted after import of %counter% records. Please reload this page to continue the import process.'

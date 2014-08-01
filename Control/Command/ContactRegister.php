@@ -207,8 +207,7 @@ class ContactRegister extends Basic
 
                     if (($contact['contact']['contact_id'] > 0) && ($contact['contact']['contact_status'] !== 'ACTIVE')) {
                         // this contact is not ACTIVE - reject the registering!
-                        $this->setAlert('There exists already a contact record for you, but the status of this record is <strong>%status%</strong>. '.
-                            'Please contact the webmaster to activate the existing record.',
+                        $this->setAlert('There exists already a contact record for you, but the status of this record is <strong>%status%</strong>. Please contact the webmaster to activate the existing record.',
                             array('%status%' => $this->app['translator']->trans($this->app['utils']->humanize($contact['contact']['contact_status']))),
                             self::ALERT_TYPE_WARNING);
                         return $this->promptAlert();

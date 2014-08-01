@@ -137,7 +137,7 @@ class ContactPerson extends Dialog {
 
         $form = $this->app['form.factory']->createBuilder('form')
         // contact - hidden fields
-        ->add('contact_type', 'hidden', array(
+        ->add("contact_type", 'hidden', array(
             'data' => $contact['contact']['contact_type']
         ))
         ->add('contact_id', 'hidden', array(
@@ -145,22 +145,23 @@ class ContactPerson extends Dialog {
         ))
         ->add('contact_name', 'text', array(
             'required' => false,
-            'label' => 'Contact name',
             'data' => $contact['contact']['contact_name']
         ))
         ->add('contact_login', 'text', array(
             'required' => !self::$config['email']['required'],
-            'label' => 'Contact login',
             'data' => $contact['contact']['contact_login']
         ))
         // contact visible form fields
         ->add('contact_status', 'choice', array(
-            'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'PENDING' => 'pending', 'DELETED' => 'deleted'),
+            'choices' => array(
+                'ACTIVE' => $this->app['translator']->trans('Active'),
+                'LOCKED' => $this->app['translator']->trans('Locked'),
+                'PENDING' => $this->app['translator']->trans('Pending'),
+                'DELETED' => $this->app['translator']->trans('Deleted')),
             'empty_value' => false,
             'expanded' => false,
             'multiple' => false,
             'required' => false,
-            'label' => 'Status',
             'data' => $contact['contact']['contact_status']
         ))
 
@@ -171,7 +172,6 @@ class ContactPerson extends Dialog {
             'expanded' => false,
             'multiple' => false,
             'required' => false,
-            'label' => 'Category',
             'data' => isset($contact['category'][0]['category_type_name']) ? $contact['category'][0]['category_type_name'] : ''
         ))
 
@@ -200,7 +200,6 @@ class ContactPerson extends Dialog {
             'required' => false,
             'choices' => array('MALE' => 'Male', 'FEMALE' => 'Female'),
             'expanded' => true,
-            'label' => 'Gender',
             'data' => $contact['person'][0]['person_gender']
         ))
         ->add('person_title', 'choice', array(
@@ -209,23 +208,19 @@ class ContactPerson extends Dialog {
             'expanded' => false,
             'multiple' => false,
             'required' => false,
-            'label' => 'Person title',
             'data' => $contact['person'][0]['person_title']
         ))
         ->add('person_first_name', 'text', array(
             'required' => false,
-            'label' => 'First name',
             'data' => $contact['person'][0]['person_first_name']
         ))
         ->add('person_last_name', 'text', array(
             'required' => false,
-            'label' => 'Last name',
             'data' => $contact['person'][0]['person_last_name']
         ))
         //->add('person_birthday', 'date', $birthday_array)
         ->add('person_birthday', 'text', array(
             'required' => false,
-            'label' => 'Birthday',
             'data' => (!empty($contact['person'][0]['person_birthday']) && ($contact['person'][0]['person_birthday'] != '0000-00-00')) ? date($this->app['translator']->trans('DATE_FORMAT'), strtotime($contact['person'][0]['person_birthday'])) : '',
         ))
 
@@ -235,7 +230,6 @@ class ContactPerson extends Dialog {
         ))
         ->add('email', 'email', array(
             'required' => self::$config['email']['required'],
-            'label' => 'E-Mail',
             'data' => $email['communication_value']
         ))
         ->add('phone_id', 'hidden', array(
@@ -243,7 +237,6 @@ class ContactPerson extends Dialog {
         ))
         ->add('phone', 'text', array(
             'required' => false,
-            'label' => 'Phone',
             'data' => $phone['communication_value']
         ))
         ->add('cell_id', 'hidden', array(
@@ -251,7 +244,6 @@ class ContactPerson extends Dialog {
         ))
         ->add('cell', 'text', array(
             'required' => false,
-            'label' => 'Cell',
             'data' => $cell['communication_value']
         ))
         ->add('fax_id', 'hidden', array(
@@ -259,7 +251,6 @@ class ContactPerson extends Dialog {
         ))
         ->add('fax', 'text', array(
             'required' => false,
-            'label' => 'Fax',
             'data' => $fax['communication_value']
         ))
 
@@ -269,27 +260,22 @@ class ContactPerson extends Dialog {
         ))
         ->add('address_street', 'text', array(
             'required' => false,
-            'label' => 'Street',
             'data' => $address_private['address_street']
         ))
         ->add('address_zip', 'text', array(
             'required' => false,
-            'label' => 'Zip',
             'data' => $address_private['address_zip']
         ))
         ->add('address_city', 'text', array(
             'required' => false,
-            'label' => 'City',
             'data' => $address_private['address_city']
         ))
         ->add('address_area', 'text', array(
             'required' => false,
-            'label' => 'Area',
             'data' => $address_private['address_area']
         ))
         ->add('address_state', 'text', array(
             'required' => false,
-            'label' => 'State',
             'data' => $address_private['address_state']
         ))
         ->add('address_country', 'choice', array(
@@ -298,7 +284,6 @@ class ContactPerson extends Dialog {
             'expanded' => false,
             'multiple' => false,
             'required' => false,
-            'label' => 'Country',
             'data' => $address_private['address_country_code'],
             'preferred_choices' => self::$config['countries']['preferred']
         ))
@@ -308,7 +293,6 @@ class ContactPerson extends Dialog {
         ))
         ->add('note', 'textarea', array(
             'required' => false,
-            'label' => 'Note',
             'data' => isset($contact['note'][0]['note_content']) ? $contact['note'][0]['note_content'] : ''
         ));
 

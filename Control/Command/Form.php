@@ -584,7 +584,7 @@ class Form extends Basic
             // check if the TAG `FORMS` exists and create it if needed
             if (!$this->app['contact']->existsTagName('FORMS')) {
                 $this->app['contact']->createTagName('FORMS',
-                    'This tag will be assigned to all user-defined `Contact` forms.');
+                    $this->app['translator']->trans('This tag will be assigned to all user-defined `Contact` forms.'));
             }
 
             $tags = array();

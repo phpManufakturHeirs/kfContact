@@ -347,8 +347,7 @@ class Contact extends Alert
                     ((!in_array('contact_status', $field['visible']) ||
                      (in_array('contact_status', $field['visible']) && in_array('contact_status', $field['readonly']))))) {
                     // the existing contact is not ACTIVE and the status of the submitted record can not be changed!
-                    $this->setAlert('There exists already a contact record for you, but the status of this record is <strong>%status%</strong>. '.
-                        'Please contact the webmaster to activate the existing record.',
+                    $this->setAlert('There exists already a contact record for you, but the status of this record is <strong>%status%</strong>. Please contact the webmaster to activate the existing record.',
                         array('%status%' => $this->app['translator']->trans($this->app['utils']->humanize($existing_contact['contact']['contact_status']))),
                         self::ALERT_TYPE_WARNING);
                     return false;
@@ -356,8 +355,10 @@ class Contact extends Alert
 
                 if ($existing_contact['contact']['contact_type'] !== $data['contact_type']) {
                     // problem: the contact type differ!
+                    $contact_type = $this->app['utils']->humanize($existing_contact['contact']['contact_type']);
+                    $contact_type = $this->app['translator']->trans($contact_type);
                     $this->setAlert('There exists already a contact record for you, but this record is assigned to a <strong>%type%</strong> and can not be changed. Please use the same type or contact the webmaster.',
-                        array('%type%' => $this->app['translator']->trans($this->app['utils']->humanize($existing_contact['contact']['contact_type']))),
+                        array('%type%' => $contact_type),
                         self::ALERT_TYPE_WARNING);
                     return false;
                 }
@@ -980,7 +981,11 @@ class Contact extends Alert
                     break;
                 case 'contact_status':
                     $form->add($visible, 'choice', array(
-                        'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'PENDING' => 'pending', 'DELETED' => 'deleted'),
+                        'choices' => array(
+                            'ACTIVE' => $this->app['translator']->trans('Active'),
+                            'LOCKED' => $this->app['translator']->trans('Locked'),
+                            'PENDING' => $this->app['translator']->trans('Pending'),
+                            'DELETED' => $this->app['translator']->trans('Deleted')),
                         'empty_value' => false,
                         'required' => in_array($visible, $field['required']),
                         'read_only' => in_array($visible, $field['readonly']),

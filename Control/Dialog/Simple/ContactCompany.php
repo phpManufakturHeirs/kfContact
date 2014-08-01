@@ -141,7 +141,11 @@ class ContactCompany extends Dialog {
             'data' => $contact['contact']['contact_type']
         ))
         ->add('contact_status', 'choice', array(
-            'choices' => array('ACTIVE' => 'active', 'LOCKED' => 'locked', 'PENDING' => 'pending', 'DELETED' => 'deleted'),
+            'choices' => array(
+                'ACTIVE' => $this->app['translator']->trans('Active'),
+                'LOCKED' => $this->app['translator']->trans('Locked'),
+                'PENDING' => $this->app['translator']->trans('Pending'),
+                'DELETED' => $this->app['translator']->trans('Deleted')),
             'empty_value' => false,
             'expanded' => false,
             'multiple' => false,

@@ -47,44 +47,44 @@ class Backend extends Alert {
         $toolbar_array = array(
             'contact_list' => array(
                 'name' => 'contact_list',
-                'text' => 'Contact list',
-                'hint' => 'List of all available contacts',
+                'text' => $this->app['translator']->trans('Contact list'),
+                'hint' => $this->app['translator']->trans('List of all available contacts'),
                 'link' => FRAMEWORK_URL.'/admin/contact/list'.self::$usage_param,
                 'active' => ($active == 'contact_list')
             ),
             'contact_edit' => array(
                 'name' => 'contact_edit',
-                'text' => 'Contact',
-                'hint' => 'Create a new contact',
+                'text' => $this->app['translator']->trans('Contact'),
+                'hint' => $this->app['translator']->trans('Create a new contact'),
                 'link' => FRAMEWORK_URL.'/admin/contact/select'.self::$usage_param,
                 'active' => ($active == 'contact_edit')
             ),
             'categories' => array(
                 'name' => 'categories',
-                'text' => 'Categories',
-                'hint' => 'List of available categories',
+                'text' => $this->app['translator']->trans('Categories'),
+                'hint' => $this->app['translator']->trans('List of available categories'),
                 'link' => FRAMEWORK_URL.'/admin/contact/category/list'.self::$usage_param,
                 'active' => ($active == 'categories')
             ),
             'tags' => array(
                 'name' => 'tags',
-                'text' => 'Tags',
-                'hint' => 'List of available tags',
+                'text' => $this->app['translator']->trans('Tags'),
+                'hint' => $this->app['translator']->trans('List of available tags'),
                 'link' => FRAMEWORK_URL.'/admin/contact/tag/list'.self::$usage_param,
                 'active' => ($active == 'tags')
             ),
             'extra_fields' => array(
                 'name' => 'extra_fields',
-                'text' => 'Extra fields',
-                'hint' => 'List of available extra fields',
+                'text' => $this->app['translator']->trans('Extra fields'),
+                'hint' => $this->app['translator']->trans('List of available extra fields'),
                 'link' => FRAMEWORK_URL.'/admin/contact/extra/list'.self::$usage_param,
                 'active' => ($active == 'extra_fields')
             ),
 
             'about' => array(
                 'name' => 'about',
-                'text' => 'About',
-                'hint' => 'Information about the Contact extension',
+                'text' => $this->app['translator']->trans('About'),
+                'hint' => $this->app['translator']->trans('Information about the Contact extension'),
                 'link' => FRAMEWORK_URL.'/admin/contact/about'.self::$usage_param,
                 'active' => ($active == 'about')
                 ),

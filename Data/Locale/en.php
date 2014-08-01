@@ -27,14 +27,6 @@ return array(
         => 'Category access',
     'Communication email'
         => 'Email',
-    'contact_id'
-        => 'Contact ID',
-
-    'FEMALE'
-        => 'Female',
-
-    'MALE'
-        => 'Male',
 
     'Person first name'
         => 'First name',
@@ -42,7 +34,5 @@ return array(
         => 'Gender',
     'Person last name'
         => 'Last name',
-    'Person nick name'
-        => 'Nickname',
 
 );

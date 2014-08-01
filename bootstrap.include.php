@@ -47,8 +47,8 @@ if (!$rule_exists) {
 $entry_points = $app['security.role_entry_points'];
 $entry_points['ROLE_ADMIN'][] = array(
     'route' => '/admin/contact/list',
-    'name' => 'Contact',
-    'info' => 'Customer relationship management for the kitFramework',
+    'name' => $app['translator']->trans('Contact'),
+    'info' => $app['translator']->trans('Customer relationship management for the kitFramework'),
     'icon' => array(
         'path' => '/extension/phpmanufaktur/phpManufaktur/Contact/extension.jpg',
         'url' => MANUFAKTUR_URL.'/Contact/extension.jpg'
