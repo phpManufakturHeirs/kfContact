@@ -493,7 +493,7 @@ return array(
     'The record with the ID %id% was successfull updated.'
         => 'Der Datensatz mit der ID %id% wurde erfolgreich aktualisiert.',
     'The record with the ID %id% was successfull deleted.'
-        => 'Der Datensatz mit der ID %id% wurde erfolgreich gelöscht.',
+        => 'Der Datensatz mit der ID %id% wurde gelöscht.',
     'The submitted contact record will be proofed and published as soon as possible, we will send you an email!'
         => 'Der übermittelte Kontaktdatensatz wird so rasch wie möglich geprüft und veröffentlicht, wir melden uns bei Ihnen per E-Mail!',
     'The tag type %tag_name% already exists!'
