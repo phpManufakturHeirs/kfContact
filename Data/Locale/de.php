@@ -191,7 +191,7 @@ return array(
     'DE'
         => 'Deutschland',
     'Delete'
-        => 'löschen',
+        => 'Löschen',
     'Deleted'
         => 'Gelöscht',
     'Delivery address'

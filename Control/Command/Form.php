@@ -749,8 +749,9 @@ class Form extends Basic
         // send the message
         $failed = array();
         if (!$this->app['mailer']->send($message, $failed)) {
+            $subject = $this->app['translator']->trans($header);
             $this->setAlert('Failed to send a email with the subject <b>%subject%</b> to the addresses: <b>%failed%</b>.',
-                array('%subject%' => $this->app['translator']->trans($header),
+                array('%subject%' => $subject,
                     '%failed%' => implode(', ', $failed)), self::ALERT_TYPE_DANGER);
             return false;
         }
@@ -778,8 +779,9 @@ class Form extends Basic
             // send the message
             $failed = array();
             if (!$this->app['mailer']->send($message, $failed)) {
+                $subject = $this->app['translator']->trans($header);
                 $this->setAlert('Failed to send a email with the subject <b>%subject%</b> to the addresses: <b>%failed%</b>.',
-                    array('%subject%' => $this->app['translator']->trans($header),
+                    array('%subject%' => $subject,
                         '%failed%' => implode(', ', $failed)), self::ALERT_TYPE_DANGER);
                 return false;
             }
