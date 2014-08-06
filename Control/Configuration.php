@@ -268,6 +268,7 @@ class Configuration
                             ),
                             'tags' => array(),
                             'route' => array(
+                                'person' => '/admin/contact/person/edit',
                                 'company' => '/admin/contact/company/edit',
                                 'tag' => '/admin/contact/tag/list',
                                 'category' => '/admin/contact/category/list',

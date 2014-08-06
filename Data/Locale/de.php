@@ -188,8 +188,6 @@ return array(
     'Customer relationship management for the kitFramework'
         => 'Kontakt- und Adressverwaltung (CRM) für das kitFramework',
 
-    'DE'
-        => 'Deutschland',
     'Delete'
         => 'Löschen',
     'Deleted'
@@ -258,8 +256,6 @@ return array(
         => 'Datei %file% erfolgreich entfernt.',
     'First name'
         => 'Vorname',
-    'FR'
-        => 'Frankreich',
 
     'Gender'
         => 'Geschlecht',
@@ -474,8 +470,6 @@ return array(
         => 'Das Feld %field% darf nicht leer sein!',
     'The field list is empty, please define a extra field!'
         => 'Die Liste der Zusatzfelder ist leer, bitte definieren Sie ein Zusatzfeld!',
-    'The form is not valid, please check your input and try again!'
-        => 'Das Formular ist nicht gültig, bitte überprüfen Sie Ihre Eingabe und übermitteln Sie das Formular erneut!',
     'The GUID was only valid for 24 hours and is expired, please contact the webmaster.'
         => 'Der Aktivierungslink war 24 Stunden gültig und ist abgelaufen, bitte nehmen Sie Kontakt mit dem Webmaster auf.',
     'The import from KeepInTouch was successfull finished.'

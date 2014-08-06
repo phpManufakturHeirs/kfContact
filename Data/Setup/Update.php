@@ -379,6 +379,18 @@ class Update
 
     }
 
+    protected function release_2039()
+    {
+        $config = $this->Configuration->getConfiguration();
+        if (!isset($config['dialog']['contact']['company']['field']['route']['person'])) {
+            $default = $this->Configuration->getDefaultConfigArray();
+            $config['dialog']['contact']['company']['field']['route']['person'] =
+                $default['dialog']['contact']['company']['field']['route']['person'];
+            $this->Configuration->setConfiguration($config);
+            $this->Configuration->saveConfiguration();
+        }
+    }
+
     /**
      * Execute all available update steps
      *
@@ -427,6 +439,8 @@ class Update
             // Release 2.0.38
             $this->release_2038();
 
+            // Release 2.0.39
+            $this->release_2039();
 
             // setup kit_framework_contact as Add-on in the CMS
             $admin_tool = new InstallAdminTool($app);
