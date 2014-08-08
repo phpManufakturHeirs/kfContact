@@ -33,8 +33,6 @@ return array(
     => '- Kategorie auswählen (optional) -',
   '- select country (optional) -'
     => '- Land auswählen (optional) -',
-  'AT'
-    => 'Österreich',
   'Active'
     => 'Aktiv',
   'Add a new category'
@@ -117,14 +115,16 @@ return array(
     => 'Bezirk, Region',
   'Assign the fields'
     => 'Datenfelder zuordnen',
+  'AT'
+    => 'Österreich',
   'Back'
     => 'Zurück',
+  'baron'
+    => 'Baron',
   'Birthday'
     => 'Geburtstag',
   'Business address'
     => 'Geschäftsadresse',
-  'CH'
-    => 'Schweiz',
   'Can not create GUID, submission aborted, please contact the webmaster.'
     => 'Konnte die Guid nicht erzeugen, die Übermittlung wurde abgebrochen. Bitte nehmen Sie Kontakt mit dem Webmaster auf!',
   'Can\'t delete the Adress with the ID %address_id% because it is used as primary address.'
@@ -169,6 +169,8 @@ return array(
     => 'Mobilfunk',
   'Cell id'
     => 'ID',
+  'CH'
+    => 'Schweiz',
   'City'
     => 'Stadt',
   'Click to select the %type% file for import'
@@ -205,6 +207,8 @@ return array(
     => 'Firma',
   'Contact'
     => 'Kontakt',
+  'contact'
+    => 'Kontakt',
   'Contact Administration - About'
     => 'Kontakt Verwaltung - Über',
   'Contact Administration - Categories'
@@ -215,8 +219,6 @@ return array(
     => 'Kontaktverwaltung - Zusatzfelder',
   'Contact Administration - Tags'
     => 'Kontaktverwaltung - Schlagwörter',
-  'Contact Type: %type%'
-    => 'Kontakt Typ: %type%',
   'Contact data submitted'
     => 'Kontaktdaten übermittelt',
   'Contact id'
@@ -253,6 +255,10 @@ return array(
     => 'Letzte Änderung',
   'Contact type'
     => 'Kontakttyp',
+  'Contact Type: %type%'
+    => 'Kontakt Typ: %type%',
+  'contact_id'
+    => 'ID',
   'Country'
     => 'Land',
   'Create a new contact'
@@ -279,8 +285,14 @@ return array(
     => 'Kontakt Typ festlegen',
   'Determine default values'
     => 'Vorgabewerte festlegen',
+  'doc'
+    => 'Dr.',
+  'doctor'
+    => 'Doktor',
   'Don\'t understand the value %value% for the entry: command->register->publish->activate, please check the configuration!'
     => 'Verstehen den Wert %value% für den Eintrag: command->register->publish->activate nicht, bitte prüfen Sie die Konfiguration!',
+  'earl'
+    => 'Graf',
   'Edit categories'
     => 'Kategorien bearbeiten',
   'Edit category'
@@ -395,6 +407,8 @@ return array(
     => 'Langbezeichnung (Übersetzung)',
   'Male'
     => 'Herr',
+  'mandatory field'
+    => 'Pflichtfeld',
   'Merchant'
     => 'Händler',
   'Missing one or more keys in the field definition array! At least are needed: predefined, visible, hidden, required, readonly'
@@ -425,14 +439,22 @@ return array(
     => 'Vermissen den Parameter <em>form</em>!',
   'Name'
     => 'Bezeichner',
+  'Name (translated)'
+    => 'Bezeichnung (übersetzt)',
   'Nick name'
     => 'Spitzname',
+  'no extra field assigned'
+    => 'kein Zusatzfeld zugeordnet',
+  'No hits for the search of %search%'
+    => 'Keine Treffer für die Suche nach %search%',
   'No hits for the search term <i>%search%</i>!'
     => 'Keine Treffer für den Suchbegriff <i>%search%</i>!',
   'Note'
     => 'Notiz',
   'Note content'
     => 'Notiz',
+  'Note id'
+    => 'ID',
   'Nothing to do ...'
     => 'Nichts zu tun ...',
   'Organization'
@@ -449,6 +471,8 @@ return array(
     => 'Vorname',
   'Person gender'
     => 'Anrede',
+  'Person id'
+    => 'ID',
   'Person last name'
     => 'Nachname',
   'Person nick name'
@@ -457,18 +481,30 @@ return array(
     => 'Titel',
   'Phone'
     => 'Telefon',
+  'Phone id'
+    => 'ID',
   'Please define a short name for the title!'
     => 'Bitte legen Sie eine Kurzbezeichnung für den Titel fest!',
   'Please select the target file format to export the kitFramework Contact records: <a href="%xlsx%">XLSX (Excel)</a> or <a href="%csv%">CSV (Text)</a>.'
     => 'Bitte wählen Sie das Ausgabeformat um die kitFramework Contact Datensätze zu exportieren: <a href="%xlsx%">XLSX (Excel)</a> oder <a href="%csv%">CSV (Text)</a>.',
   'Please specify a search term!'
     => 'Bitte geben Sie einen Suchbegriff ein!',
+  'Please use a search term to reduce the hits!'
+    => 'Bitte verwenden Sie einen Suchbegriff um die Anzahl der Treffer zu verringern!',
+  'Please use the parameter <em>categories[]</em> to specify at minimum one category with PUBLIC access!'
+    => 'Bitte verwenden Sie den Parameter <em>categories[]</em> und geben Sie mindestens eine Kategorie mit <em>PUBLIC</em> Zugriff an!',
+  'prof'
+    => 'Prof.',
+  'professor'
+    => 'Professor',
   'Public'
     => 'Öffentlich',
   'Publish a contact'
     => 'Kontaktdaten freigeben',
   'Register a contact'
     => 'Kontaktdaten bestätigen',
+  'Register a public contact record'
+    => 'Öffentlichen Kontaktdatensatz registrieren',
   'Search'
     => 'Suche',
   'Search contact'
@@ -485,6 +521,8 @@ return array(
     => 'Kurzbezeichnung',
   'Short name (translated)'
     => 'Kurzbezeichnung (Übersetzung)',
+  'Skipped contact record %login% because it ist deleted or locked for any reason!'
+    => 'Der Kontaktdatensatz %login% wurde übersprungen - dieser ist gelöscht oder aus irgendeinem Grund gesperrt!',
   'Sorry, but there occured a problem while processing the form. We have informed the webmaster.'
     => 'Entschuldigung, während der Verarbeitung des Formulars ist ein Problem aufgetreten. Wir haben den Webmaster informiert.',
   'Sorry, but we have a problem. Please contact the webmaster and tell him to check the status of the email address %email%.'
@@ -509,16 +547,28 @@ return array(
     => 'Markierung (übersetzt)',
   'Tag definition'
     => '#tag Definition',
+  'Tag type id'
+    => 'ID',
   'Tags'
     => 'Markierungen',
   'Target URL'
     => 'Ziel URL',
+  'The #tag %tag_name% does not exists!'
+    => 'Das #Schlagwort %tagname% existiert nicht!',
   'The %entry% entry with the ID %id% was not processed, there exists no fitting record for comparison!'
     => 'Der Eintrag %entry% mit der ID %id% wurde nicht aktualisiert, es wurde kein passender Eintrag in der Tabelle gefunden!',
   'The %type% entry %value% is marked for primary communication and can not removed!'
     => 'Der Typ %type% mit dem Wert %value% ist für die primäre Kommunikation mit dem Kontakt festgelegt und kann nicht gelöscht werden!',
+  'The action <b>%action%</b> is unknown, please check the parameters for the kitCommand!'
+    => 'Der Wert <strong>%action%</strong> für den Parameter <em>action</em> ist unbekannt, bitte prüfen Sie Ihre Angaben für das kitCommand!',
   'The Address with the ID %address_id% was successfull deleted.'
     => 'Die Adresse mit der ID %address_id% wurde erfolgreich gelöscht.',
+  'The category %category% does not exists!'
+    => 'Die Kategorie %category% existiert nicht!',
+  'The category type with the ID %category_id% does not exists!'
+    => 'Die Kategorie mit der ID %category_id% existiert nicht!',
+  'The communication entry %communication% was successfull deleted.'
+    => 'Der Kommunikationseintrag <b>%communication%</b> wurde gelöscht.',
   'The COMMUNICATION TYPE %type% does not exists!'
     => 'Der Kommunikationstyp <b>%type%</b> existiert nicht, bitte prüfen Sie Ihre Eingabe!',
   'The COMMUNICATION TYPE must be set!'
@@ -529,24 +579,24 @@ return array(
     => 'Das Feld <b>communication usage</b> muss gesetzt sein!',
   'The COMMUNICATION VALUE should not be empty!'
     => 'Der Kommunikationswert darf nicht leer oder Null sein!',
-  'The GUID was only valid for 24 hours and is expired, please contact the webmaster.'
-    => 'Der Aktivierungslink war 24 Stunden gültig und ist abgelaufen, bitte nehmen Sie Kontakt mit dem Webmaster auf.',
-  'The URL %url% is not valid, accepted is a pattern like http://example.com or https://www.example.com.'
-    => 'Die URL %url% ist nicht gültig. Akzeptiert werden nur vollständige URL Angaben wie z.B. http://example.com oder https://www.example.com',
-  'The category type with the ID %category_id% does not exists!'
-    => 'Die Kategorie mit der ID %category_id% existiert nicht!',
-  'The communication entry %communication% was successfull deleted.'
-    => 'Der Kommunikationseintrag <b>%communication%</b> wurde gelöscht.',
+  'The contact block must be set always!'
+    => 'Der <em>contact</em> Block muss immer gesetzt sein!',
   'The contact list is empty.'
     => 'Die Kontaktliste enthält keine Einträge!',
   'The contact login must be set!'
     => 'Der Kontakt <b>Login</b> muss gesetzt sein!',
   'The contact name %name% already exists! The update has still executed, please check if you really want this duplicate name.'
     => 'Der Kontakt Name <b>%name%</b> wird bereits verwendet! Der Datensatz wurde trotzdem aktualisiert, bitte prüfen Sie ob sie den doppelten Eintrag beibehalten möchten.',
+  'The contact name must be set!'
+    => 'Der Kontaktbezeichner muss gesetzt sein!',
+  'The contact process has not returned a status message'
+    => 'Der Prozess hat keine Statusmeldung zurückgegeben.',
   'The contact record is now published, the submitter has received an email with further information.'
     => 'Der Kontaktdatensatz wurde veröffentlicht, dem Übermittler wurde eine E-Mail mit weiteren Informationen zugesendet.',
   'The contact record was not changed!'
     => 'Der Kontakt Datensatz wurde nicht geändert.',
+  'The contact was rejected and an email send to the submitter'
+    => 'Der Kontakt wurde zurückgewiesen und eine E-Mail an den Übermittler gesendet.',
   'The contact with the ID %contact_id% does not exists!'
     => 'Es existiert kein Kontakt Datensatz mit der ID %contact_id%!',
   'The contact with the ID %contact_id% was successfull updated.'
@@ -563,14 +613,28 @@ return array(
     => 'Das Zusatzfeld %field% ist jetzt der Kategorie %category% zugeordnet und kann verwendet werden!',
   'The field %field% can not be empty!'
     => 'Das Feld %field% darf nicht leer sein!',
+  'The field %field% is required, please check your input!'
+    => 'Das Feld %field% wird benötigt, bitte prüfen Sie Ihre Eingabe!',
+  'The field %field% is unknown, please check the configuration!'
+    => 'Das Feld %field% ist unbekannt, bitte prüfen Sie die Konfiguration!',
   'The field list is empty, please define a extra field!'
     => 'Es wurden noch keine Zusatzfelder definiert, bitte erstellen Sie ein neues Zusatzfeld!',
+  'The filter %filter% is unknown, please check the kitCommand!'
+    => 'Der Filter %filter% ist nicht bekannt, bitte prüfen Sie das kitCommand!',
+  'The form seems to be manipulated, abort action!'
+    => 'Das Formular wurde vermutlich manipuliert, Aktion abgebrochen!',
+  'The GUID was only valid for 24 hours and is expired, please contact the webmaster.'
+    => 'Der Aktivierungslink war 24 Stunden gültig und ist abgelaufen, bitte nehmen Sie Kontakt mit dem Webmaster auf.',
+  'The GUID was valid but can not get the contact record desired to the account!'
+    => 'Die GUID war gültig, kann aber den Kontaktdatensatz nicht finden, der dem Benutzerkonto zugeordnet ist!',
   'The import from KeepInTouch was successfull finished.'
     => 'Der Import aus KeepInTouch wurde erfolgreich abgeschlossen.',
   'The login <b>%login%</b> is already in use, please choose another one!'
     => 'Der Login <b>%login%</b> wird bereits verwendet, bitte legen Sie einen anderen Login fest!',
   'The login_name or a email address must be always set, can\'t insert the record!'
     => 'Das Feld <i>Anmeldename</i> oder eine <i>E-Mail Adresse</i> müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
+  'The name'
+    => 'Der Bezeichner "%name%" enthält ungültige Zeichen. Bezeichner sollten mit einem Buchstaben; Zeichen oder Unterstrich beginnen und stets nur Buchstaben, Zahlen, Unterstriche ("_"), Trennzeichen ("-") und Doppelpunkte (":") enthalten.',
   'The phone number %number% exceeds the maximum length of %max% characters.'
     => 'Die Telefonnummer %number% überschreitet die maximal zulässige Länge von %max% Zeichen.',
   'The phone number %number% failed the validation, please check it!'
@@ -585,16 +649,24 @@ return array(
     => 'Der übermittelte Kontaktdatensatz wird so rasch wie möglich geprüft und veröffentlicht, wir melden uns bei Ihnen per E-Mail!',
   'The tag type %tag_name% already exists!'
     => 'Die Markierung %tag_name% existiert bereits und kann nicht erneut eingefügt werden!',
+  'The title with the ID %title_id% does not exists!'
+    => 'Die Anrede mit der ID %title_id% existiert nicht!',
+  'The URL %url% is not valid, accepted is a pattern like http://example.com or https://www.example.com.'
+    => 'Die URL %url% ist nicht gültig. Akzeptiert werden nur vollständige URL Angaben wie z.B. http://example.com oder https://www.example.com',
   'The value of the parameter contact_id must be an integer value and greater than 0'
     => 'Der Wert für den Parameter <i>contact_id</i> muss eine Ganzzahl größer als Null sein!',
   'The zip %zip% is not valid!'
     => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
   'There a no contacts to export.'
     => 'Es existieren keine Kontaktdatensätze, die exportiert werden könnten.',
+  'There exists already a contact record for %login%, but this record is assigned to a <strong>%type%</strong> and can not be changed.'
+    => 'Es existiert bereits ein Kontaktdatensatz für %login%, dieser ist jedoch einer <strong>%type%</strong> zugeordnet und kann nicht geändert werden.',
   'There exists already a contact record for you, but the status of this record is <strong>%status%</strong>. Please contact the webmaster to activate the existing record.'
     => 'Es existiert bereits ein Adressdatensatz für Sie, der Status dieses Datensatz ist jedoch auf <strong>%status%</strong> gesetzt. Bitte setzen Sie sich mit dem Webmaster in Verbindung um den Datensatz freizugeben.',
   'There exists already a contact record for you, but this record is assigned to a <strong>%type%</strong> and can not be changed. Please use the same type or contact the webmaster.'
     => 'Es existiert bereits ein Adressdatensatz für Sie, dieser ist jedoch einer <strong>%type%</strong> zugeordnet, der Typ kann nicht geändert werden. Bitte verwenden Sie den gleichen Kontakttyp oder kontaktieren Sie den Webmaster, damit dieser den Datensatz ändert.',
+  'There exists no handling for the field type `%type%` neither as form nor as contact field!'
+    => 'Es besteht kein Handlungsanweisung für das Feld vom Typ <em>%type%</em>, weder als Formular noch als Kontaktfeld!',
   'There exists no KeepInTouch installation at the parent CMS!'
     => 'Es existiert keine KeepInTouch Installation auf dem übergeordneten Content Management System!',
   'There where no contact records inserted or updated.'
@@ -607,8 +679,16 @@ return array(
     => 'Titel',
   'Title definition'
     => 'Titel Definition',
+  'Title id'
+    => 'ID',
+  'Title identifier'
+    => 'Bezeichnung',
   'Title list'
     => 'Titel Übersicht',
+  'Title long'
+    => 'Anrede, lang',
+  'Title short'
+    => 'Anrede, kurz',
   'To prevent a timeout of the script the import was aborted after import of %counter% records. Please reload this page to continue the import process.'
     => 'Das Script wurde nach dem Import von %counter% Datensätzen abgebrochen, um eine Überschreitung der zulässigen Ausführungsdauer zu vermeiden. Bitte laden Sie diese Seite erneut um den Import forzusetzen.',
   'Totally inserted %count% contact records'
@@ -621,8 +701,14 @@ return array(
     => 'Unbekanntes Dateiformat <strong>%format%</strong> zu Sicherung der Kontaktdatensätze.',
   'Unknown phone number format <strong>%format%</strong>, please check the settings!'
     => 'Unbekannte Telefonnummer Formatierung <strong>%format%</strong>, bitte prüfen Sie die Einstellungen!',
+  'Url'
+    => 'URL',
+  'Url id'
+    => 'ID',
   'You are authenticated but not allowed to edit this contact'
     => 'Sie sind angemeldet, verfügen jedoch nicht über die Berechtigung diesen Kontaktdatensatz zu bearbeiten!',
+  'You have assigned the field %field% twice! Please check the assignment!'
+    => 'Sie haben das Feld <strong>%field%</strong> zweimal zugewiesen! Bitte prüfen Sie die Zuordnung!',
   'Your contact record is complete but not approved yet, please be patient.'
     => 'Ihr Kontaktdatensatz ist vollständig, wurde aber noch nicht geprüft und freigegeben, bitte haben Sie noch ein wenig Geduld.',
   'Your contact record is not complete, please check your address. You will not be able to publish anything at the portal as long as your contact record is locked.'
@@ -631,25 +717,5 @@ return array(
     => 'Ihr Kontaktdatensatz wurde veröffentlicht, wir haben Ihnen eine E-Mail mit weiteren Informationen zugesendet.',
   'Zip'
     => 'Postleitzahl',
-  'baron'
-    => 'Baron',
-  'contact'
-    => 'Kontakt',
-  'contact_id'
-    => 'ID',
-  'doc'
-    => 'Dr.',
-  'doctor'
-    => 'Doktor',
-  'earl'
-    => 'Graf',
-  'mandatory field'
-    => 'Pflichtfeld',
-  'no extra field assigned'
-    => 'kein Zusatzfeld zugeordnet',
-  'prof'
-    => 'Prof.',
-  'professor'
-    => 'Professor',
   
 );
