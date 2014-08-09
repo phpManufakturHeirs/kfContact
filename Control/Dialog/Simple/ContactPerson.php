@@ -135,6 +135,9 @@ class ContactPerson extends Dialog {
             }
         }
 
+        $access_type = $this->app['contact']->getAccessType($contact['contact']['contact_id']);
+        $access_type = $this->app['translator']->trans($access_type);
+
         $form = $this->app['form.factory']->createBuilder('form')
         // contact - hidden fields
         ->add("contact_type", 'hidden', array(
@@ -176,7 +179,7 @@ class ContactPerson extends Dialog {
         ))
 
         ->add('category_access', 'text', array(
-            'data' => $this->app['translator']->trans($this->app['contact']->getAccessType($contact['contact']['contact_id'])),
+            'data' => $access_type,
             'required' => false,
             'read_only' => true
         ))

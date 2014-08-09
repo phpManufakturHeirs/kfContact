@@ -207,8 +207,6 @@ return array(
     => 'Firma',
   'Contact'
     => 'Kontakt',
-  'contact'
-    => 'Kontakt',
   'Contact Administration - About'
     => 'Kontakt Verwaltung - Über',
   'Contact Administration - Categories'
@@ -257,8 +255,6 @@ return array(
     => 'Kontakttyp',
   'Contact Type: %type%'
     => 'Kontakt Typ: %type%',
-  'contact_id'
-    => 'ID',
   'Country'
     => 'Land',
   'Create a new contact'
@@ -633,7 +629,7 @@ return array(
     => 'Der Login <b>%login%</b> wird bereits verwendet, bitte legen Sie einen anderen Login fest!',
   'The login_name or a email address must be always set, can\'t insert the record!'
     => 'Das Feld <i>Anmeldename</i> oder eine <i>E-Mail Adresse</i> müssen immer gesetzt sein, kann den neuen Datensatz nicht einfügen!',
-  'The name'
+  'The name "%name%" contains illegal characters. Names should start with a letter, digit or underscore and only contain letters, digits, numbers, underscores ("_"), hyphens ("-") and colons (":").'
     => 'Der Bezeichner "%name%" enthält ungültige Zeichen. Bezeichner sollten mit einem Buchstaben; Zeichen oder Unterstrich beginnen und stets nur Buchstaben, Zahlen, Unterstriche ("_"), Trennzeichen ("-") und Doppelpunkte (":") enthalten.',
   'The phone number %number% exceeds the maximum length of %max% characters.'
     => 'Die Telefonnummer %number% überschreitet die maximal zulässige Länge von %max% Zeichen.',

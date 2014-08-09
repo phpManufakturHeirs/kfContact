@@ -1026,8 +1026,10 @@ class Contact extends Alert
                     ));
                     break;
                 case 'category_access':
+                    $access_type = $this->app['contact']->getAccessType($data['contact_id']);
+                    $access_type = $this->app['translator']->trans($access_type);
                     $form->add($visible, 'text', array(
-                        'data' => $this->app['translator']->trans($this->app['contact']->getAccessType($data['contact_id'])),
+                        'data' => $access_type,
                         'required' => false,
                         'read_only' => true
                     ));
