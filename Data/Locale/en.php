@@ -21,8 +21,6 @@ return array(
     => 'Area',
   'Address billing'
     => 'Billing address',
-  'Address billing area'
-    => 'Area',
   'Address billing city'
     => 'City',
   'Address billing country code'
@@ -31,15 +29,11 @@ return array(
     => 'Street',
   'Address billing zip'
     => 'ZIP',
-  'Address business'
-    => 'Billing address',
   'Address business area'
     => 'Area',
   'Address business city'
     => 'City',
   'Address business country'
-    => 'Country',
-  'Address business country code'
     => 'Country',
   'Address business id'
     => 'ID',
@@ -57,8 +51,6 @@ return array(
     => 'Country',
   'Address delivery'
     => 'Billing address',
-  'Address delivery area'
-    => 'Area',
   'Address delivery city'
     => 'City',
   'Address delivery country'
@@ -101,5 +93,5 @@ return array(
     => 'Gender',
   'Person last name'
     => 'Last name',
-  
+
 );
