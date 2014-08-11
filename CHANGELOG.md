@@ -6,6 +6,12 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.39** - 2014-08-11
+
+* improved translation handling, added support for i18nEditor
+* generate extended debug information if the form submission is not valid 
+* buxfix: `import_xlsx` is no longer used
+
 **2.0.38** - 2014-07-16
 
 * centralized usage of `form.fields.horizontal.twig`
