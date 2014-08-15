@@ -123,7 +123,7 @@ class ContactCompany extends Dialog {
         foreach ($contact['address'] as $address) {
             switch ($address['address_type']) {
                 case 'PRIMARY':
-                case 'BUSINESS' :
+                case 'BUSINESS': // no longer in use!
                     $address_business = $address;
                     break;
                 case 'DELIVERY':
