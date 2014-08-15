@@ -13,12 +13,12 @@
 {% block stylesheet %}
   {{ parent() }}
   <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/Contact/Template/default/css/command.min.css" />
-{% endblock %}  
+{% endblock %}
 {% block canonical %}
   <link rel="canonical" url="{{ FRAMEWORK_URL ~ '/contact/public/id/' ~ contact.contact.contact_id }}">
-{% endblock %}  
+{% endblock %}
 {% block content %}
-  
+
   <!-- {{ _self.getTemplateName() }} -->
   {# need the parent to enable prompting messages #}
   {{ parent() }}
@@ -29,10 +29,10 @@
         {# PERSON #}
         {% set person = contact.person.0 %}
         <div itemscope itemtype="http://schema.org/Person">
-          <span itemprop="gender">{{ person.person_gender|trans }}</span><br>
+          <span itemprop="gender">{{ person.person_gender|humanize|trans }}</span><br>
           <span itemprop="name">{% if person.person_first_name|length > 0 %}{{ person.person_first_name }} {% endif %}{{ person.person_last_name }}</span>
       {% else %}
-        {# COMPANY #}        
+        {# COMPANY #}
         <div itemscope itemtype="http://schema.org/Organization">
           <p><span itemprop="name">{{ contact.company.0.company_name }}</span></p>
       {% endif %}
@@ -40,8 +40,8 @@
           {% set address = contact.address.0 %}
           <span itemprop="streetAddress">{{ address.address_street }}</span><br>
           <span itemprop="postalCode">{{ address.address_zip }}</span>&nbsp;
-          <span itemprop="addressLocality">{{ address.address_city }}</span> 
-        </div>  
+          <span itemprop="addressLocality">{{ address.address_city }}</span>
+        </div>
         {% for item in contact.communication %}
           {% if item.communication_type == 'PHONE' and item.communication_usage == 'PRIMARY' %}
             <span itemprop="telephone">{{ item.communication_value }}</span><br>
@@ -54,7 +54,7 @@
         {% endfor %}
       </div>{# end of itemscope PERSON/COMPANY #}
     </div>
-    
+
     {% if parameter.map is defined and parameter.map == true %}
       <div class="col-sm-6">
         {# google map #}
@@ -63,16 +63,16 @@
       </div>
     {% endif %}
   </div>
-  
-  {% if contact.note.0 is defined and contact.note.0.note_status == 'ACTIVE' %} 
+
+  {% if contact.note.0 is defined and contact.note.0.note_status == 'ACTIVE' %}
     {# content of the regular contact note field #}
     <div class="row">
       <div class="col-sm-12">
         {{ contact.note.0.note_content }}
       </div>
-    </div>  
+    </div>
   {% endif %}
- 
+
   {% for extra in contact.extra_fields %}
     {# loop through the contact extra fields #}
     {% if extra.extra_value|length > 0 %}
@@ -82,8 +82,8 @@
         <div class="col-sm-8">{{ extra.extra_value }}</div>
       </div>
     {% endif %}
-  {% endfor %}  
-  
+  {% endfor %}
+
   {% if parameter.edit is defined and parameter.edit == true %}
     <div class="row">
       <div class="col-sm-12 text-right">
@@ -91,12 +91,12 @@
       </div>
     </div>
   {% endif %}
-  
+
   {% if origin is defined and origin|length > 0 %}
     {% set search_parameter = '' %}
     {% if search is defined and search|length > 0 %}
       {% set search_parameter = '?search=' ~ search|url_encode() %}
     {% endif %}
-    <a class="btn btn-default" href="{{ origin ~ search_parameter }}" target="_parent" role="button">{{ 'Back'|trans }}</a> 
+    <a class="btn btn-default" href="{{ origin ~ search_parameter }}" target="_parent" role="button">{{ 'Back'|trans }}</a>
   {% endif %}
 {% endblock %}
