@@ -129,7 +129,8 @@ class ContactPerson extends Dialog {
 
         foreach ($contact['address'] as $address) {
             switch ($address['address_type']) {
-                case 'PRIVATE':
+                case 'PRIVATE': // no longer in use!
+                case 'PRIMARY':
                     $address_private = $address;
                     break;
             }
@@ -418,7 +419,7 @@ class ContactPerson extends Dialog {
                     'communication_id' => $data['cell_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'CELL',
-                    'communication_usage' => 'PRIVATE',
+                    'communication_usage' => 'PRIMARY', //'PRIVATE',
                     'communication_value' => $data['cell']
                 ),
                 array(
@@ -426,7 +427,7 @@ class ContactPerson extends Dialog {
                     'communication_id' => $data['fax_id'],
                     'contact_id' => $data['contact_id'],
                     'communication_type' => 'FAX',
-                    'communication_usage' => 'PRIVATE',
+                    'communication_usage' => 'PRIMARY', //'PRIVATE',
                     'communication_value' => $data['fax']
                 ),
             ),
@@ -434,7 +435,7 @@ class ContactPerson extends Dialog {
                 array(
                     'address_id' => $data['address_id'],
                     'contact_id' => $data['contact_id'],
-                    'address_type' => 'PRIVATE',
+                    'address_type' => 'PRIMARY', //'PRIVATE',
                     'address_street' => $data['address_street'],
                     'address_zip' => $data['address_zip'],
                     'address_city' => $data['address_city'],

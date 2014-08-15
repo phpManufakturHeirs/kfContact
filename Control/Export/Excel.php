@@ -276,8 +276,8 @@ class Excel extends Alert
                         foreach ($record['address'] as $address) {
                             if (($address['address_status'] == 'ACTIVE') && ($address['address_id'] > 0)) {
                                 switch ($address['address_type']) {
-                                    case 'PRIVATE':
-                                    case 'BUSINESS':
+                                    case 'PRIVATE': // no longer in use!
+                                    case 'BUSINESS': // no longer in use!
                                     case 'PRIMARY':
                                         if (!isset($contact['address_id'])) {
                                             $contact['address_street'] = $address['address_street'];

@@ -31,6 +31,26 @@
   {{ block('form_row_simple') }}
 {% endblock %}  
 
+{% block percent_row %}
+  {% set type = 'percent' %}
+  {{ block('form_row_simple') }}
+{% endblock %}
+
+{% block integer_row %}
+  {% set type = 'integer' %}
+  {{ block('form_row_simple') }}
+{% endblock %}
+
+{% block number_row %}
+  {% set type = 'number' %}
+  {{ block('form_row_simple') }}
+{% endblock %}
+
+{% block money_row %}
+  {% set type = 'money' %}
+  {{ block('form_row_simple') }}
+{% endblock %}
+
 {% block choice_row %}
   {% if name == 'tags' %}
     {% set translate = 1 %}

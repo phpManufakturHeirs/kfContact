@@ -75,7 +75,7 @@ class Contact extends ContactParent
         'company',
         'communication' => array(
                 'usage' => array(
-                    'default' => 'PRIVATE'
+                    'default' => 'PRIMARY' // was: PRIVATE (no longer in use)
                 ),
                 'value' => array(
                     'ignore_if_empty' => true

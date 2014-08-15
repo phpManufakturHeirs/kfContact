@@ -176,8 +176,8 @@ class Contact extends Alert
             foreach ($contact['address'] as $address) {
                 if (($address['address_status'] == 'ACTIVE') && ($address['address_id'] > 0)) {
                     switch ($address['address_type']) {
-                        case 'PRIVATE':
-                        case 'BUSINESS':
+                        case 'PRIVATE': // no longer in use!
+                        case 'BUSINESS': // no longer in use!
                         case 'PRIMARY':
                             if (!isset($data['address_id'])) {
                                 $data['address_id'] = $address['address_id'];

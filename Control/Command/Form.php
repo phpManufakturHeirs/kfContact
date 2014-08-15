@@ -553,7 +553,7 @@ class Form extends Basic
                         array(
                             'contact_id' => -1,
                             'address_id' => -1,
-                            'address_type' => 'PRIVATE',
+                            'address_type' => 'PRIMARY', // PRIVATE is no longer in use,
                             'address_street' => isset($contact_data['address_street']) ? $contact_data['address_street'] : '',
                             'address_zip' => isset($contact_data['address_zip']) ? $contact_data['address_zip'] : '',
                             'address_city' => isset($contact_data['address_city']) ? $contact_data['address_city'] : ''
