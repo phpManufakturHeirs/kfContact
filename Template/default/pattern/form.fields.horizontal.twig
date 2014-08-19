@@ -111,7 +111,12 @@
 {% block form_row_textarea %}
   <div class="form-group">
     {{ block('form_label') }}
-    <div class="col-sm-9">
+    {% if attr.widget_column is defined %}
+      {% set widget_column = attr.widget_column %}
+    {% else %}
+      {% set widget_column = 'col-sm-9' %}
+    {% endif %}
+    <div class="{{ widget_column }}">
       {% if attr.prefix is defined %}
         <span class="prefix-block">{{ attr.prefix|trans }}</span>
       {% endif %}
@@ -124,7 +129,13 @@
           {# use the default configuration file from /Contact #}
           {% set config = MANUFAKTUR_URL ~ '/Contact/Template/default/command/ckeditor.simple.js' %}
         {% endif %}
-        {{ CKEditor(id, full_name, value, '100%', '150px', config) }}  
+        {% if attr.height is defined %}
+          {# set the height for the CKEditor #}
+          {% set height = attr.height %}
+        {% else %}
+          {% set height = '150px' %}
+        {% endif %}
+        {{ CKEditor(id, full_name, value, '100%', height, config) }}  
       {% else %}  
         <textarea class="form-control{% if attr.class is defined %} {{ attr.class }}{% endif %}" rows="3" {{ block('widget_attributes') }}>{{ value }}</textarea>
       {% endif %}
@@ -239,7 +250,12 @@
       {% if label is empty %}
           {% set label = name|humanize %}
       {% endif %}
-      <label class="col-sm-3 control-label{{ required ? ' required' : '' }}"{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain) }}</label>
+      {% if attr.label_column is defined %}
+        {% set label_column = attr.label_column %}
+      {% else %}
+        {% set label_column = 'col-sm-3' %}
+      {% endif %}
+      <label class="{{ label_column }} control-label{{ required ? ' required' : '' }}"{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain) }}</label>
     {% endif %}
   {% endspaceless %}
 {% endblock form_label %}
