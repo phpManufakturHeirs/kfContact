@@ -938,7 +938,8 @@ class Contact extends Alert
         $data['contact_type'] = (isset($data['contact_type'])) ? $data['contact_type'] : 'PERSON';
 
         // create the form
-        $form = $this->app['form.factory']->createBuilder('form');
+        $csrf_protection = (isset($field['csrf_protection'])) ? $field['csrf_protection'] : true;
+        $form = $this->app['form.factory']->createBuilder('form', null, array('csrf_protection' => $csrf_protection));
 
         // loop through the hidden fields
         if (isset($field['hidden']) && is_array($field['hidden'])) {
@@ -1269,11 +1270,29 @@ class Contact extends Alert
                     if (isset($field['special']) && is_array($field['special'])) {
                         foreach ($field['special'] as $special) {
                             if (isset($special['enabled']) && $special['enabled']) {
-                                $form->add($special['name'], $special['type'], array(
-                                    'required' => $special['required'],
-                                    'label' => $special['label'],
-                                    'data' => isset($special['data']) ? $special['data'] : null
-                                ));
+                                switch ($special['type']) {
+                                    case 'hidden':
+                                        $form->add($special['name'], $special['type'], array(
+                                            'data' => isset($special['data']) ? $special['data'] : null
+                                        ));
+                                        break;
+                                    default:
+                                        $property = array();
+                                        foreach ($special as $key => $value) {
+                                            switch ($key) {
+                                                case 'name':
+                                                case 'type':
+                                                    // this is no property
+                                                    break;
+                                                default:
+                                                    // add property
+                                                    $property[$key] = $value;
+                                                    break;
+                                            }
+                                        }
+                                        $form->add($special['name'], $special['type'], $property);
+                                        break;
+                                }
                             }
                         }
                     }
