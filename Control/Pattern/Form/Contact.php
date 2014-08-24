@@ -518,7 +518,7 @@ class Contact extends Alert
                 else {
                     // use the category information from the existing contact record
                     $data['category_id'] = $existing_contact['category'][0]['category_id'];
-                    $data['category_type_id'] = $existing_contact['contact'][0]['category_type_id'];
+                    $data['category_type_id'] = $existing_contact['category'][0]['category_type_id'];
                 }
             }
 
