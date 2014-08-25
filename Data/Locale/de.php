@@ -17,8 +17,6 @@ if ('á' != "\xc3\xa1") {
 }
 
 return array(
-    'No category'
-    => 'Keine Kategorie zugeordnet',
   '%count% hits for the search term </i>%search%</i>.'
     => '%count% Treffer für den Suchbegriff <i>%search%</i>.',
   '%hits% hits for the search of <strong>%search%</strong>'
@@ -443,6 +441,8 @@ return array(
     => 'Bezeichnung (übersetzt)',
   'Nick name'
     => 'Spitzname',
+  'No category'
+    => 'Keine Kategorie zugeordnet',
   'no extra field assigned'
     => 'kein Zusatzfeld zugeordnet',
   'No hits for the search of %search%'
@@ -505,6 +505,8 @@ return array(
     => 'Kontaktdaten bestätigen',
   'Register a public contact record'
     => 'Öffentlichen Kontaktdatensatz registrieren',
+  'required'
+    => 'erforderlich',
   'Search'
     => 'Suche',
   'Search contact'
@@ -719,5 +721,5 @@ return array(
     => 'Ihr Kontaktdatensatz wurde veröffentlicht, wir haben Ihnen eine E-Mail mit weiteren Informationen zugesendet.',
   'Zip'
     => 'Postleitzahl',
-
+  
 );
