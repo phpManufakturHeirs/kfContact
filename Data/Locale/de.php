@@ -17,10 +17,14 @@ if ('á' != "\xc3\xa1") {
 }
 
 return array(
+    'No category'
+    => 'Keine Kategorie zugeordnet',
   '%count% hits for the search term </i>%search%</i>.'
     => '%count% Treffer für den Suchbegriff <i>%search%</i>.',
   '%hits% hits for the search of <strong>%search%</strong>'
     => '%hits% Treffer für die Suche nach %search%',
+  '<strong>%number%</strong> is not a valid phone number.'
+    => '<strong>%number%</strong> ist keine gültige Telefonnummer.',
   '- new contact -'
     => '- neuer Kontakt -',
   '- no category -'
@@ -653,6 +657,8 @@ return array(
     => 'Der Wert für den Parameter <i>contact_id</i> muss eine Ganzzahl größer als Null sein!',
   'The zip %zip% is not valid!'
     => 'Die Postleitzahl <b>%zip%</b> ist nicht gültig, bitte prüfen Sie Ihre Eingabe!',
+  'The zip <strong>%zip%</strong> is not valid.'
+    => 'Die Postleitzahl <strong>%zip%</strong> ist nicht gültig.',
   'There a no contacts to export.'
     => 'Es existieren keine Kontaktdatensätze, die exportiert werden könnten.',
   'There exists already a contact record for %login%, but this record is assigned to a <strong>%type%</strong> and can not be changed.'
@@ -713,5 +719,5 @@ return array(
     => 'Ihr Kontaktdatensatz wurde veröffentlicht, wir haben Ihnen eine E-Mail mit weiteren Informationen zugesendet.',
   'Zip'
     => 'Postleitzahl',
-  
+
 );
