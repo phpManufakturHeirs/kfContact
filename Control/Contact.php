@@ -1477,6 +1477,26 @@ class Contact extends ContactParent
     }
 
     /**
+     * Parse a ZIP with a simple RegEx (German ZIP only)
+     *
+     * @param string $zip
+     * @param string $country
+     * @return boolean|string
+     */
+    public function parseZIP($zip, $country=null)
+    {
+        if (self::$config['zip']['parse']['enabled']) {
+            if ((strtoupper($country) === 'DE') && !preg_match('#^[0-9]{5}$#' , $zip)) {
+                $this->setAlert('The zip <strong>%zip%</strong> is not valid.',
+                    array('%zip%' => $zip), self::ALERT_TYPE_WARNING, true, array(__METHOD__, __LINE__));
+                return false;
+            }
+        }
+        return $zip;
+    }
+
+
+    /**
      * Parse a phone number using the library libphonenumber and the settings in
      * config.contact.json as default
      *
@@ -1531,7 +1551,10 @@ class Contact extends ContactParent
                     $number = $phoneUtil->format($prototype, $format_id);
                 }
             } catch (NumberParseException $e) {
-                throw new \Exception($e);
+                $this->setAlert('<strong>%number%</strong> is not a valid phone number.',
+                    array('%number%' => $number), self::ALERT_TYPE_WARNING, true,
+                    array(__METHOD__, __LINE__, $e->getCode()));
+                return false;
             }
         }
         return $number;

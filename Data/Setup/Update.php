@@ -379,6 +379,9 @@ class Update
 
     }
 
+    /**
+     * Release 2.0.39
+     */
     protected function release_2039()
     {
         $config = $this->Configuration->getConfiguration();
@@ -386,6 +389,20 @@ class Update
             $default = $this->Configuration->getDefaultConfigArray();
             $config['dialog']['contact']['company']['field']['route']['person'] =
                 $default['dialog']['contact']['company']['field']['route']['person'];
+            $this->Configuration->setConfiguration($config);
+            $this->Configuration->saveConfiguration();
+        }
+    }
+
+    /**
+     * Release 2.0.40
+     */
+    protected function release_2040()
+    {
+        $config = $this->Configuration->getConfiguration();
+        if (!isset($config['zip'])) {
+            $default = $this->Configuration->getDefaultConfigArray();
+            $config['zip'] = $default['zip'];
             $this->Configuration->setConfiguration($config);
             $this->Configuration->saveConfiguration();
         }
@@ -441,6 +458,9 @@ class Update
 
             // Release 2.0.39
             $this->release_2039();
+
+            // Release 2.0.40
+            $this->release_2040();
 
             // setup kit_framework_contact as Add-on in the CMS
             $admin_tool = new InstallAdminTool($app);

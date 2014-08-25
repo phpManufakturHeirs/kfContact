@@ -294,7 +294,7 @@ class Contact extends Alert
      * @param boolean $ignore_status override the check for the contact status
      * @return boolean|array
      */
-    public function checkData($data, $field=array(), $ignore_status=false)
+    public function checkData($data, $field=array(), $ignore_status=false, &$validation_errors=array())
     {
         if (!is_array($field) || empty($field)) {
             // use the default configuration from config.contact.json
@@ -606,16 +606,25 @@ class Contact extends Alert
                         throw new \Exception("Unknown address prefix: $prefix!");
                 }
 
+                $country_code = isset($data[$prefix.'country_code']) ? $data[$prefix.'country_code'] : '';
+                $check_zip = isset($data[$prefix.'zip']) ? $data[$prefix.'zip'] : '';
+                if (!empty($check_zip) && !empty($country_code) && (false === ($zip = $this->app['contact']->parseZIP($check_zip, $country_code)))) {
+                    $validation_errors[] = $prefix.'zip';
+                    $zip = $check_zip;
+                }
+                else {
+                    $zip = $check_zip;
+                }
                 $contact['address'][] = array(
                     'address_id' => isset($data[$prefix.'id']) ? $data[$prefix.'id'] : -1,
                     'contact_id' => $data['contact_id'],
                     'address_type' => $type,
                     'address_street' => isset($data[$prefix.'street']) ? $data[$prefix.'street'] : '',
-                    'address_zip' => isset($data[$prefix.'zip']) ? $data[$prefix.'zip'] : '',
+                    'address_zip' => $zip,
                     'address_city' => isset($data[$prefix.'city']) ? $data[$prefix.'city'] : '',
                     'address_area' => isset($data[$prefix.'area']) ? $data[$prefix.'area'] : '',
                     'address_state' => isset($data[$prefix.'state']) ? $data[$prefix.'state'] : '',
-                    'address_country_code' => isset($data[$prefix.'country_code']) ? $data[$prefix.'country_code'] : '',
+                    'address_country_code' => $country_code,
                     'address_identifier' => isset($data[$prefix.'identifier']) ? $data[$prefix.'identifier'] : '',
                     'address_appendix_1' => isset($data[$prefix.'appendix_1']) ? $data[$prefix.'appendix_1'] : '',
                     'address_appendix_2' => isset($data[$prefix.'appendix_2']) ? $data[$prefix.'appendix_2'] : '',
@@ -663,6 +672,7 @@ class Contact extends Alert
 
         if (isset($data['communication_email']) && !empty($data['communication_email'])) {
             if (false === ($email = $this->app['contact']->parseEMail($data['communication_email']))) {
+                $validation_errors[] = 'communication_email';
                 $email = $data['communication_email'];
             }
             $contact['communication'][] = array(
@@ -676,6 +686,7 @@ class Contact extends Alert
 
         if (isset($data['communication_email_secondary']) && !empty($data['communication_email_secondary'])) {
             if (false === ($email = $this->app['contact']->parseEMail($data['communication_email_secondary']))) {
+                $validation_errors[] = 'communication_email_secondary';
                 $email = $data['communication_email_secondary'];
             }
             $contact['communication'][] = array(
@@ -691,6 +702,7 @@ class Contact extends Alert
 
         if (isset($data['communication_phone']) && !empty($data['communication_phone'])) {
             if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_phone'], $country_code))) {
+                $validation_errors[] = 'communication_phone';
                 $number = $data['communication_phone'];
             }
             $contact['communication'][] = array(
@@ -703,6 +715,7 @@ class Contact extends Alert
         }
         if (isset($data['communication_phone_secondary']) && !empty($data['communication_phone_secondary'])) {
             if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_phone_secondary'], $country_code))) {
+                $validation_errors[] = 'communication_phone_secondary';
                 $number = $data['communication_phone_secondary'];
             }
             $contact['communication'][] = array(
@@ -716,6 +729,7 @@ class Contact extends Alert
 
         if (isset($data['communication_cell']) && !empty($data['communication_cell'])) {
             if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_cell'], $country_code))) {
+                $validation_errors[] = 'communication_cell';
                 $number = $data['communication_cell'];
             }
             $contact['communication'][] = array(
@@ -728,6 +742,7 @@ class Contact extends Alert
         }
         if (isset($data['communication_cell_secondary']) && !empty($data['communication_cell_secondary'])) {
             if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_cell_secondary'], $country_code))) {
+                $validation_errors[] = 'communication_cell_secondary';
                 $number = $data['communication_cell_secondary'];
             }
             $contact['communication'][] = array(
@@ -741,6 +756,7 @@ class Contact extends Alert
 
         if (isset($data['communication_fax']) && !empty($data['communication_fax'])) {
             if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_fax'], $country_code))) {
+                $validation_errors[] = 'communication_fax';
                 $number = $data['communication_fax'];
             }
             $contact['communication'][] = array(
@@ -753,6 +769,7 @@ class Contact extends Alert
         }
         if (isset($data['communication_fax_secondary']) && !empty($data['communication_fax_secondary'])) {
             if (false === ($number = $this->app['contact']->parsePhoneNumber($data['communication_fax_secondary'], $country_code))) {
+                $validation_errors[] = 'communication_fax_secondary';
                 $number = $data['communication_fax_secondary'];
             }
             $contact['communication'][] = array(
@@ -766,6 +783,7 @@ class Contact extends Alert
 
         if (isset($data['communication_url']) && !empty($data['communication_url'])) {
             if (false === ($url = $this->app['contact']->parseURL($data['communication_url']))) {
+                $validation_errors[] = 'communication_url';
                 $url = $data['communication_url'];
             }
             $contact['communication'][] = array(
@@ -779,6 +797,7 @@ class Contact extends Alert
 
         if (isset($data['communication_url_secondary']) && !empty($data['communication_url_secondary'])) {
             if (false === ($url = $this->app['contact']->parseURL($data['communication_url_secondary']))) {
+                $validation_errors[] = 'communication_url_secondary';
                 $url = $data['communication_url_secondary'];
             }
             $contact['communication'][] = array(
@@ -1276,12 +1295,42 @@ class Contact extends Alert
                                             'data' => isset($special['data']) ? $special['data'] : null
                                         ));
                                         break;
+                                    case 'choice':
+                                        // set the default properties
+                                        $label = $this->app['utils']->humanize($special['name']);
+                                        $property = array(
+                                            'choices' => array(),
+                                            'empty_value' => '- please select -',
+                                            'expanded' => false,
+                                            'multiple' => false,
+                                            'preferred_choices' => array(),
+                                            'label' => $this->app['translator']->trans($label),
+                                            'required' => true,
+                                            'read_only' => false,
+                                            'attr' => array()
+                                        );
+                                        foreach ($special as $key => $value) {
+                                            switch ($key) {
+                                                case 'name':
+                                                case 'type':
+                                                case 'enabled':
+                                                    // this is no property
+                                                    break;
+                                                default:
+                                                    // add property
+                                                    $property[$key] = $value;
+                                                    break;
+                                            }
+                                        }
+                                        $form->add($special['name'], $special['type'], $property);
+                                        break;
                                     default:
                                         $property = array();
                                         foreach ($special as $key => $value) {
                                             switch ($key) {
                                                 case 'name':
                                                 case 'type':
+                                                case 'enabled':
                                                     // this is no property
                                                     break;
                                                 default:

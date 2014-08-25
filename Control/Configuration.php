@@ -62,6 +62,11 @@ class Configuration
                     'maximum_length' => 25
                 )
             ),
+            'zip' => array(
+                'parse' => array(
+                    'enabled' => true
+                )
+            ),
             'url' => array(
                 'parse' => array(
                     'enabled' => true,
