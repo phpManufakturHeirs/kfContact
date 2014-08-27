@@ -18,6 +18,10 @@
 label {
   margin: 0 0 3px 0;
 }
+.checkbox label {
+  text-align: left;
+}
+
 @media (max-width: 767px) {
   label {
     text-align: left;

@@ -1047,6 +1047,7 @@ class Contact extends Alert
                     break;
                 case 'category_access':
                     $access_type = $this->app['contact']->getAccessType($data['contact_id']);
+                    $access_type = $this->app['utils']->humanize($access_type);
                     $access_type = $this->app['translator']->trans($access_type);
                     $form->add($visible, 'text', array(
                         'data' => $access_type,

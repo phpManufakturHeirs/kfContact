@@ -133,7 +133,7 @@ EOD;
             $categories = $this->app['db']->fetchAll($SQL);
             $result = array();
             foreach ($categories as $category) {
-                $result[$category['category_type_name']] = ucfirst(strtolower($category['category_type_name']));
+                $result[$category['category_type_name']] = $this->app['utils']->humanize($category['category_type_name']);
             }
             return $result;
         } catch (\Doctrine\DBAL\DBALException $e) {

@@ -211,14 +211,6 @@ return array(
     => 'Kontakt',
   'Contact Administration - About'
     => 'Kontakt Verwaltung - Über',
-  'Contact Administration - Categories'
-    => 'Kontakt Verwaltung - Kategorien',
-  'Contact Administration - Create or edit contact'
-    => 'Kontakt Verwaltung - Kontakt erstellen oder bearbeiten',
-  'Contact Administration - Extra fields'
-    => 'Kontaktverwaltung - Zusatzfelder',
-  'Contact Administration - Tags'
-    => 'Kontaktverwaltung - Schlagwörter',
   'Contact data submitted'
     => 'Kontaktdaten übermittelt',
   'Contact id'
@@ -257,10 +249,22 @@ return array(
     => 'Kontakttyp',
   'Contact Type: %type%'
     => 'Kontakt Typ: %type%',
+  'Contacts'
+    => 'Kontakte',
   'Country'
     => 'Land',
   'Create a new contact'
     => 'Einen neuen Kontakt anlegen',
+  'Create or edit category'
+    => 'Kategorie erstellen oder bearbeiten',
+  'Create or edit contact'
+    => 'Kontakt erstellen oder bearbeiten',
+  'Create or edit extra field'
+    => 'Zusatzfeld erstellen oder bearbeiten',
+  'Create or edit tag'
+    => 'Markierung erstellen oder bearbeiten',
+  'Create or edit title'
+    => 'Anrede erstellen oder bearbeiten',
   'Customer'
     => 'Kunde',
   'Customer relationship management for the kitFramework'
@@ -693,6 +697,8 @@ return array(
     => 'Anrede, lang',
   'Title short'
     => 'Anrede, kurz',
+  'Titles'
+    => 'Anreden',
   'To prevent a timeout of the script the import was aborted after import of %counter% records. Please reload this page to continue the import process.'
     => 'Das Script wurde nach dem Import von %counter% Datensätzen abgebrochen, um eine Überschreitung der zulässigen Ausführungsdauer zu vermeiden. Bitte laden Sie diese Seite erneut um den Import forzusetzen.',
   'Totally inserted %count% contact records'
