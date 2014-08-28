@@ -6,6 +6,15 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.40** - 2014-08-28
+
+* the `PRIVATE` flag is no longer in use, fixed multiple files
+* added filter `|humanize` for person gender
+* add form field formatting for `attr.label_column` and `attr.widget_column`
+* fixed a strong typo - using 'contact' instead of 'category' in contact pattern
+* added `parseZIP()` to the contact interface and implement it in the contact pattern
+* improved translation and formatting
+
 **2.0.39** - 2014-08-11
 
 * improved translation handling, added support for i18nEditor
