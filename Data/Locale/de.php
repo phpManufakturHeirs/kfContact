@@ -23,6 +23,10 @@ return array(
     => '%hits% Treffer für die Suche nach %search%',
   '<strong>%number%</strong> is not a valid phone number.'
     => '<strong>%number%</strong> ist keine gültige Telefonnummer.',
+  '%type% Import'
+    => '%type% Import',
+  '- delete field -'
+    => '- Feld löschen -',
   '- new contact -'
     => '- neuer Kontakt -',
   '- no category -'
@@ -125,6 +129,8 @@ return array(
     => 'Baron',
   'Birthday'
     => 'Geburtstag',
+  'Browse'
+    => 'Durchsuchen',
   'Business address'
     => 'Geschäftsadresse',
   'Can not create GUID, submission aborted, please contact the webmaster.'
@@ -327,6 +333,8 @@ return array(
     => 'Exportieren im Format',
   'Export contact records'
     => 'Kontaktdatensätze exportieren',
+  'Extra field'
+    => 'Zusatzfeld',
   'Extra field definition'
     => 'Zusatzfelder Definition',
   'Extra fields'
@@ -523,6 +531,8 @@ return array(
     => 'Kontakt Typ',
   'Select tags'
     => 'Markierungen auswählen',
+  'Select type'
+    => 'Typ auswählen',
   'Short name'
     => 'Kurzbezeichnung',
   'Short name (translated)'
@@ -553,6 +563,10 @@ return array(
     => 'Markierung (übersetzt)',
   'Tag definition'
     => '#tag Definition',
+  'Tag description'
+    => '#Hashtag Beschreibung',
+  'Tag name'
+    => 'Bezeichner',
   'Tag type id'
     => 'ID',
   'Tags'
@@ -633,6 +647,8 @@ return array(
     => 'Der Aktivierungslink war 24 Stunden gültig und ist abgelaufen, bitte nehmen Sie Kontakt mit dem Webmaster auf.',
   'The GUID was valid but can not get the contact record desired to the account!'
     => 'Die GUID war gültig, kann aber den Kontaktdatensatz nicht finden, der dem Benutzerkonto zugeordnet ist!',
+  'The identifier %identifier% already exists!'
+    => 'Der Bezeichner %identifier% existiert bereits!',
   'The import from KeepInTouch was successfull finished.'
     => 'Der Import aus KeepInTouch wurde erfolgreich abgeschlossen.',
   'The login <b>%login%</b> is already in use, please choose another one!'
@@ -705,6 +721,8 @@ return array(
     => 'Insgesamt wurden %count% Kontaktdatensätze eingefügt',
   'Totally updated %count% contact records'
     => 'Insgesamt wurden %count% Kontaktdatensätze aktualisiert',
+  'Type'
+    => 'Typ',
   'Unchecked'
     => '- ungeprüft -',
   'Unknown file format <strong>%format%</strong> to save the contact records.'
