@@ -103,7 +103,8 @@ EOD;
                 foreach ($types as $type) {
                     $this->app['db']->insert(self::$table_name, array(
                         'category_type_name' => $type['type'],
-                        'category_type_description' => $this->app['utils']->sanitizeText($type['description'])
+                        'category_type_description' => $this->app['utils']->sanitizeText($type['description']),
+                        'category_type_target_url' => ''
                     ));
                 }
             }
