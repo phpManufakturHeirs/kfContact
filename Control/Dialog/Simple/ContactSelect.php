@@ -92,7 +92,7 @@ class ContactSelect extends Dialog {
             'data' => self::$contact_id
         ))
         ->add('select_type', 'choice', array(
-            'choices' => array('PERSON' => 'PERSON', 'COMPANY' => 'COMPANY'),
+            'choices' => array('PERSON' => 'Person', 'COMPANY' => 'Company'),
             'empty_value' => false,
             'multiple' => false,
             'expanded' => true,
