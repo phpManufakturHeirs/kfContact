@@ -6,6 +6,11 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.41** - 2014-09-05
+
+* fixed: `category_type_target_url` can not be NULL
+* improved translation
+
 **2.0.40** - 2014-08-28
 
 * the `PRIVATE` flag is no longer in use, fixed multiple files
