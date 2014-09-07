@@ -261,6 +261,10 @@ return array(
     => 'Land',
   'Create a new contact'
     => 'Einen neuen Kontakt anlegen',
+  'Create contact'
+    => 'Kontakt anlegen',
+  'Create or edit a contact record'
+    => 'Kontakt Datensatz anlegen oder bearbeiten',
   'Create or edit category'
     => 'Kategorie erstellen oder bearbeiten',
   'Create or edit contact'
