@@ -28,7 +28,7 @@
     {% endfor %}
     {% if usage is defined and usage != 'framework' %}
       <li>
-        <a class="kitframework-icon" href="{{ default_link }}" title="{{ 'Open the Contact extension in kitFramework'|trans }}" target="_blank"><i class="fa fa-puzzle-piece"></i></a>
+        <a class="kitframework-icon" href="{{ default_link }}" title="{{ 'Open the %extension% extension in kitFramework'|trans({'%extension%':'Contact'}) }}" target="_blank"><i class="fa fa-puzzle-piece"></i></a>
       </li>
     {% endif %}
   </ul>
