@@ -17,6 +17,38 @@ if ('á' != "\xc3\xa1") {
 }
 
 return array(
+    'Address delivery area'
+        => 'Bezirk, Region',
+    'Address delivery state'
+        => 'Bundesland',
+    'Address business country code'
+        => 'Land',
+    'Address private street'
+        => 'Straße',
+    'Address private zip'
+        => 'PLZ',
+    'Address private city'
+        => 'Stadt',
+    'Address private area'
+        => 'Bezirk, Region',
+    'Address private state'
+        => 'Bundesland',
+    'Address private country code'
+        => 'Land',
+    'Address billing area'
+        => 'Bezirk, Region',
+    'Address billing state'
+        => 'Bundesland',
+    'Address private'
+        => 'Adresse',
+    'Address business'
+        => 'Geschäftsadresse',
+    'Contact note'
+        => 'Notiz',
+    'Contact category'
+        => 'Kategorie',
+    'Contact tags'
+        => 'Markierungen',
   '%count% hits for the search term </i>%search%</i>.'
     => '%count% Treffer für den Suchbegriff <i>%search%</i>.',
   '%hits% hits for the search of <strong>%search%</strong>'
@@ -749,5 +781,5 @@ return array(
     => 'Ihr Kontaktdatensatz wurde veröffentlicht, wir haben Ihnen eine E-Mail mit weiteren Informationen zugesendet.',
   'Zip'
     => 'Postleitzahl',
-  
+
 );
