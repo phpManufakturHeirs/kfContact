@@ -132,11 +132,11 @@ class CategoryEdit extends Dialog {
         foreach ($extra_field_ids as $type_id) {
             $type = $this->ExtraType->select($type_id);
             $form->add("extra_field_".$type_id, 'choice', array(
-                'choices' => array($type['extra_type_type'] => ucfirst(strtolower($type['extra_type_type']))),
+                'choices' => array($type['extra_type_type'] => $this->app['utils']->humanize($type['extra_type_type'])),
                 'empty_value' => '- delete field -',
                 'multiple' => false,
                 'required' => false,
-                'label' => ucfirst(str_replace('_', ' ', strtolower($type['extra_type_name']))),
+                'label' => $this->app['utils']->humanize($type['extra_type_name']),
                 'data' => $type['extra_type_type']
             ));
             // remove the type name from the possible selections

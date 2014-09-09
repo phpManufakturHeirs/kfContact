@@ -364,7 +364,7 @@ class ContactCompany extends Dialog {
                 $form->add($name, $form_type, array(
                     'attr' => array('class' => $name),
                     'data' => $field['extra_value'],
-                    'label' => ucfirst(str_replace('_', ' ', strtolower($field['extra_type_name']))),
+                    'label' => $this->app['utils']->humanize($field['extra_type_name']),
                     'required' => false
                 ));
 

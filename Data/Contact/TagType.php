@@ -218,7 +218,7 @@ EOD;
             $results = $this->app['db']->fetchAll($SQL);
             $tags = array();
             foreach ($results as $tag) {
-                $tags[$tag['tag_name']] = ucfirst(strtolower($tag['tag_name']));
+                $tags[$tag['tag_name']] = $this->app['utils']->humanize($tag['tag_name']);
             }
             return $tags;
         } catch (\Doctrine\DBAL\DBALException $e) {
