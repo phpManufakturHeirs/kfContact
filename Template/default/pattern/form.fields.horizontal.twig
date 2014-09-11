@@ -84,7 +84,7 @@
 {% block checkbox_row %}
   <div class="form-group">
     <div class="col-sm-9 col-sm-offset-3">
-      {{ block('checkbox_widget') }}&nbsp;&nbsp;{% if label is empty %}{{ name|humanize|trans }}{% else %}{{ label|trans }}{% endif %}{% if required %}<span class="required">*</span>{% endif %}
+      {{ block('checkbox_widget') }}&nbsp;&nbsp;{% if label is empty %}{{ name|lower|humanize|trans }}{% else %}{{ label|trans }}{% endif %}{% if required %}<span class="required">*</span>{% endif %}
     </div>
   </div>
 {% endblock %}
@@ -159,7 +159,7 @@
   {% spaceless %}  
   <select class="form-control" {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
       {% if empty_value is not none and not read_only %}
-          <option value=""{% if required and value is empty %} selected="selected"{% endif %}>{{ empty_value|humanize|trans({}, translation_domain) }}</option>
+          <option value=""{% if required and value is empty %} selected="selected"{% endif %}>{{ empty_value|lower|humanize|trans({}, translation_domain) }}</option>
       {% endif %}
       {% if preferred_choices|length > 0 %}
           {% set options = preferred_choices %}
@@ -199,7 +199,7 @@
         <div class="col-lg-{{ 12/columns }} col-sm-{{ 12/columns }}">
           <div class="checkbox {{ class|default('') }}">
             <label>
-              {{ form_widget(child) }} {{ child.vars.value|humanize|trans }}
+              {{ form_widget(child) }} {{ child.vars.value|lower|humanize|trans }}
             </label>
           </div>
         </div>
@@ -248,7 +248,7 @@
           {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
       {% endif %}
       {% if label is empty %}
-          {% set label = name|humanize %}
+          {% set label = name|lower|humanize|trans %}
       {% endif %}
       {% if attr.label_column is defined %}
         {% set label_column = attr.label_column %}
