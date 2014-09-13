@@ -4,7 +4,7 @@
  * Contact
  *
  * @author Team phpManufaktur <team@phpmanufaktur.de>
- * @link https://kit2.phpmanufaktur.de/contact
+ * @link https://kit2.phpmanufaktur.de/Contact
  * @copyright 2013 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
@@ -54,6 +54,25 @@ $entry_points['ROLE_ADMIN'][] = array(
         'url' => MANUFAKTUR_URL.'/Contact/extension.jpg'
     )
 );
+$entry_points['ROLE_ADMIN'][] = array(
+    'route' => '/admin/contact/export',
+    'name' => $app['translator']->trans('Contact Export'),
+    'info' => $app['translator']->trans('Export Contact records in CSV or Excel file format'),
+    'icon' => array(
+        'path' => '/extension/phpmanufaktur/phpManufaktur/Contact/extension.jpg',
+        'url' => MANUFAKTUR_URL.'/Contact/extension.jpg'
+    )
+);
+$entry_points['ROLE_ADMIN'][] = array(
+    'route' => '/admin/contact/import',
+    'name' => $app['translator']->trans('Contact Import'),
+    'info' => $app['translator']->trans('Import address and contact records from KeepInTouch or as CSV, Excel or Open Data file format.'),
+    'icon' => array(
+        'path' => '/extension/phpmanufaktur/phpManufaktur/Contact/extension.jpg',
+        'url' => MANUFAKTUR_URL.'/Contact/extension.jpg'
+    )
+);
+
 $app['security.role_entry_points'] = $entry_points;
 
 // add all ROLES provided and used by CONTACT

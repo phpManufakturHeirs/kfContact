@@ -4,7 +4,7 @@
  * kitFramework::Contact
  *
  * @author Team phpManufaktur <team@phpmanufaktur.de>
- * @link https://kit2.phpmanufaktur.de
+ * @link https://kit2.phpmanufaktur.de/Contact
  * @copyright 2014 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  *
@@ -17,38 +17,6 @@ if ('á' != "\xc3\xa1") {
 }
 
 return array(
-    'Address delivery area'
-        => 'Bezirk, Region',
-    'Address delivery state'
-        => 'Bundesland',
-    'Address business country code'
-        => 'Land',
-    'Address private street'
-        => 'Straße',
-    'Address private zip'
-        => 'PLZ',
-    'Address private city'
-        => 'Stadt',
-    'Address private area'
-        => 'Bezirk, Region',
-    'Address private state'
-        => 'Bundesland',
-    'Address private country code'
-        => 'Land',
-    'Address billing area'
-        => 'Bezirk, Region',
-    'Address billing state'
-        => 'Bundesland',
-    'Address private'
-        => 'Adresse',
-    'Address business'
-        => 'Geschäftsadresse',
-    'Contact note'
-        => 'Notiz',
-    'Contact category'
-        => 'Kategorie',
-    'Contact tags'
-        => 'Markierungen',
   '%count% hits for the search term </i>%search%</i>.'
     => '%count% Treffer für den Suchbegriff <i>%search%</i>.',
   '%hits% hits for the search of <strong>%search%</strong>'
@@ -93,19 +61,27 @@ return array(
     => 'Bezirk, Region',
   'Address billing'
     => 'Rechungsadresse',
+  'Address billing area'
+    => 'Bezirk, Region',
   'Address billing city'
     => 'Stadt',
   'Address billing country code'
     => 'Land',
+  'Address billing state'
+    => 'Bundesland',
   'Address billing street'
     => 'Straße',
   'Address billing zip'
     => 'PLZ',
+  'Address business'
+    => 'Geschäftsadresse',
   'Address business area'
     => 'Bezirk, Region',
   'Address business city'
     => 'Stadt',
   'Address business country'
+    => 'Land',
+  'Address business country code'
     => 'Land',
   'Address business id'
     => 'ID',
@@ -123,6 +99,8 @@ return array(
     => 'Land',
   'Address delivery'
     => 'Lieferadresse',
+  'Address delivery area'
+    => 'Bezirk, Region',
   'Address delivery city'
     => 'Stadt',
   'Address delivery country'
@@ -131,12 +109,28 @@ return array(
     => 'Land',
   'Address delivery id'
     => 'ID',
+  'Address delivery state'
+    => 'Bundesland',
   'Address delivery street'
     => 'Straße',
   'Address delivery zip'
     => 'PLZ',
   'Address id'
     => 'ID',
+  'Address private'
+    => 'Adresse',
+  'Address private area'
+    => 'Bezirk, Region',
+  'Address private city'
+    => 'Stadt',
+  'Address private country code'
+    => 'Land',
+  'Address private state'
+    => 'Bundesland',
+  'Address private street'
+    => 'Straße',
+  'Address private zip'
+    => 'PLZ',
   'Address state'
     => 'Bundesland',
   'Address street'
@@ -249,10 +243,16 @@ return array(
     => 'Kontakt',
   'Contact Administration - About'
     => 'Kontakt Verwaltung - Über',
+  'Contact category'
+    => 'Kategorie',
   'Contact data submitted'
     => 'Kontaktdaten übermittelt',
+  'Contact Export'
+    => 'Kontakt Export',
   'Contact id'
     => 'ID',
+  'Contact Import'
+    => 'Kontakt Import',
   'Contact list'
     => 'Kontaktliste',
   'Contact login'
@@ -261,6 +261,8 @@ return array(
     => 'Kontakt Bezeichner',
   'Contact need a unique identifier for each record. By default this is the email address but it can also the contact login. For this reason you must assign the field communication_email or contact_login.'
     => 'Contact benötigt eine eindeutige Kennung für jeden Datensatz. Normalerweise ist die E-Mail Adresse aber es kann auch der Anmeldename (Login) verwendet werden. Aus diesem Grund müssen Sie das Feld <em>communication_email</em> oder <em>contact_login</em> zuordnen.',
+  'Contact note'
+    => 'Notiz',
   'Contact pending'
     => 'Kontaktdaten werden geprüft',
   'Contact published'
@@ -281,6 +283,8 @@ return array(
     => 'Kontakt seit',
   'Contact status'
     => 'Status',
+  'Contact tags'
+    => 'Markierungen',
   'Contact timestamp'
     => 'Letzte Änderung',
   'Contact type'
@@ -369,6 +373,8 @@ return array(
     => 'Exportieren im Format',
   'Export contact records'
     => 'Kontaktdatensätze exportieren',
+  'Export Contact records in CSV or Excel file format'
+    => 'Export von Kontakt Datensätzen im CSV oder Excel Dateiformat',
   'Extra field'
     => 'Zusatzfeld',
   'Extra field definition'
@@ -413,6 +419,8 @@ return array(
     => 'Falls Sie bisher kein Passwort erhalten oder das Passwort verloren haben, können Sie einen Link anfordern um ein neues Passwort zu erstellen. Geben Sie einfach die E-Mail Adresse an, die dem Kontaktdatensatz zugeordnet ist den Sie ändern oder aktualisieren möchten, wir senden Ihnen einen Link zu.',
   'Import'
     => 'Import',
+  'Import address and contact records from KeepInTouch or as CSV, Excel or Open Data file format.'
+    => 'Importieren von Adress- und Kontaktdatensätzen aus KeepInTouch oder im CSV, Excel oder Open Data Dateiformat',
   'Import contact records'
     => 'Kontaktdaten importieren',
   'Import contacts from KeepInTouch (KIT)'
@@ -781,5 +789,5 @@ return array(
     => 'Ihr Kontaktdatensatz wurde veröffentlicht, wir haben Ihnen eine E-Mail mit weiteren Informationen zugesendet.',
   'Zip'
     => 'Postleitzahl',
-
+  
 );
