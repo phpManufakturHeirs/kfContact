@@ -6,6 +6,17 @@ MIT License (MIT) - <http://www.opensource.org/licenses/MIT>
 
 kitFramework - <https://kit2.phpmanufaktur.de>
 
+**2.0.42** - 2014-09-14
+
+* fixed wrong release date
+* changed toolbar layout
+* changed source for translation
+* replaced usage of `ucfirst()` with `$app['utils']->humanize()`
+* small fix for `|humanize` filter
+* updated `@link` references
+* updated info URL
+* added URL for the changelog in the CMS Tool
+
 **2.0.41** - 2014-09-05
 
 * fixed: `category_type_target_url` can not be NULL

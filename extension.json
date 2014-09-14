@@ -22,8 +22,8 @@
     "about":"\/contact\/about"
   },
   "release":{
-    "number":"2.0.41",
-    "date":"2014-09-05",
+    "number":"2.0.42",
+    "date":"2014-09-14",
     "status":"beta",
     "changelog":"https:\/\/github.com\/phpManufaktur\/kfContact\/blob\/master\/CHANGELOG.md"
   },
@@ -48,7 +48,7 @@
     "extension":{
         "phpmanufaktur":{
             "Basic":{
-                "release":"1.0.10"
+                "release":"1.0.12"
             },
             "Library":{
                 "release":"0.37"
