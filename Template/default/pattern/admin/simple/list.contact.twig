@@ -88,7 +88,7 @@
                     {% endif %}
                   </td>
                 {% elseif column == 'contact_type' %}
-                  <td class="{{ column }}">{{ value|humanize|trans }}</td>
+                  <td class="{{ column }}">{{ value|lower|humanize|trans }}</td>
                 {% elseif column == 'communication_email' %}
                   <td class="{{ column }}"><a href="mailto:{{ value }}">{{ value }}</a></td>
                 {% else %}

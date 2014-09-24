@@ -195,7 +195,7 @@ class Form extends Basic
                     case 'person_gender':
                         $value = isset($field['value']) ? $field['value'] : 'MALE';
                         $settings = array(
-                            'choices' => array('MALE' => 'MALE', 'FEMALE' => 'FEMALE'),
+                            'choices' => array('MALE' => 'Male', 'FEMALE' => 'Female'),
                             'expanded' => false,
                             'multiple' => false,
                             'empty_value' => isset($field['empty_value']) ? $field['empty_value'] : '- please select -',
