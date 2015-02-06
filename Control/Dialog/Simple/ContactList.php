@@ -37,6 +37,7 @@ class ContactList extends Dialog {
         if (!is_null($app)) {
             $this->initialize($app, $options);
         }
+        $this->Overview = new Overview($this->app);
     }
 
     /**
@@ -78,7 +79,7 @@ class ContactList extends Dialog {
             self::$order_direction = isset($cfg['list']['order']['direction']) ? $cfg['list']['order']['direction'] : 'ASC';
         } catch (\Exception $e) {
             // the config file does not exists - use all available columns
-            self::$columns = $this->ContactListControl->getColumns();
+            self::$columns = $this->Overview->getColumns();
             self::$rows_per_page = 100;
             self::$select_status = array('ACTIVE', 'LOCKED');
             self::$select_type = array('PERSON', 'COMPANY');

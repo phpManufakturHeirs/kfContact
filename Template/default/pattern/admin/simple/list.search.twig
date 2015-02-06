@@ -44,7 +44,7 @@
         <tr>  
           {% for head in list.0|keys %}
             {% if head in columns %}
-              <th class="head">{{ head|trans }}</th>
+              <th class="head">{{ head|lower|humanize|trans }}</th>
             {% endif %}
           {% endfor %}
         </tr>
