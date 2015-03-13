@@ -1142,7 +1142,7 @@ class Contact extends ContactParent
                     }
                     if (!$checked) {
                         // delete the tag
-                        $this->ContactTag->delete($old_tag['tag_name']);
+                        $this->ContactTag->delete($old_tag['tag_name'],$contact_id);
                         $data_changed = true;
                     }
                 }

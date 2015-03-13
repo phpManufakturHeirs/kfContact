@@ -120,9 +120,9 @@ class ContactTag extends ContactParent
      *
      * @param string $tag_name
      */
-    public function delete($tag_name)
+    public function delete($tag_name, $contact_id)
     {
-        $this->Tag->delete($tag_name);
+        $this->Tag->delete($tag_name, $contact_id);
     }
 
     /**

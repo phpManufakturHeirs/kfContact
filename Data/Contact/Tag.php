@@ -133,10 +133,14 @@ EOD;
         }
     }
 
-    public function delete($tag_name)
+    public function delete($tag_name, $contact_id = NULL)
     {
         try {
-            $this->app['db']->delete(self::$table_name, array('tag_name' => $tag_name));
+            $data = array('tag_name' => $tag_name);
+            if($contact_id) {
+                $data['contact_id'] = $contact_id;
+            }
+            $this->app['db']->delete(self::$table_name, $data);
         } catch (\Doctrine\DBAL\DBALException $e) {
             throw new \Exception($e);
         }
